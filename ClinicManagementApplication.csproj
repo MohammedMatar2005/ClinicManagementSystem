@@ -225,12 +225,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClinicBusiness\ClinicBusiness.csproj">
-      <Project>{26eba636-97f4-4fb8-b933-95748c5ec759}</Project>
-      <Name>ClinicBusiness</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\EditedPhoto.png" />
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +238,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ClinicBusiness\ClinicBusiness.csproj">
+      <Project>{26eba636-97f4-4fb8-b933-95748c5ec759}</Project>
+      <Name>ClinicBusiness</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
