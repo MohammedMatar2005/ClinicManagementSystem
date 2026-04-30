@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="ClinicManagementApplication.Views.HomeUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000" FlowDirection="RightToLeft">
+
+    <UserControl.DataContext>
+        <vm:HomeViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#F0F3F8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="White" Margin="20,20,20,10" CornerRadius="15" Padding="25,15">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.05"/>
+            </Border.Effect>
+            <DockPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="مرحباً بك مجدداً،" FontSize="16" Foreground="#8FA3B8"/>
+                    <TextBlock Text="لوحة تحكم عيادة الشفاء" FontSize="24" FontWeight="Bold" Foreground="#1A2533"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <TextBlock Text="{Binding CurrentTime}" FontSize="28" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding CurrentDate}" FontSize="14" Foreground="#8FA3B8" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <UniformGrid Grid.Row="1" Columns="4" Margin="10">
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📅 مواعيد اليوم" Foreground="#8FA3B8" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Foreground="#3498DB" FontSize="32" FontWeight="Bold" Margin="0,10,0,5" Text="12"/>
+                    <TextBlock Text="{Binding PendingAppointmentsText}" Foreground="#5D7A95" FontSize="11"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="👥 إجمالي المرضى" Foreground="#8FA3B8" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Foreground="#27AE60" FontSize="32" FontWeight="Bold" Margin="0,10,0,5" Text="10"/>
+                    <TextBlock Text="مرضى جدد هذا الأسبوع" Foreground="#5D7A95" FontSize="11"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="👨‍⚕️ الأطباء المناوبون" Foreground="#8FA3B8" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Foreground="#8E44AD" FontSize="32" FontWeight="Bold" Margin="0,10,0,5" Text="3"/>
+                    <TextBlock Text="جميع العيادات تعمل" Foreground="#5D7A95" FontSize="11"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#1A2533" CornerRadius="15" Margin="10" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="💰 دخل اليوم المتوقع" Foreground="#ABB2B9" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,10,0,5" Text="1200"/>
+                    <ProgressBar Value="{Binding RevenuePercentage}" Height="4" Background="#34495E" Foreground="#2ECC71" Margin="0,5"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid Grid.Row="2" Margin="20,10,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="15" Padding="20" Margin="0,0,10,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="🕌 مواقيت الصلاة" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,15"/>
+
+                    <UniformGrid Grid.Row="1" Columns="5">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="الفجر" Foreground="#8FA3B8"/>
+                            <TextBlock Text="{Binding PrayerTimes.Fajr}" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="الظهر" Foreground="#8FA3B8"/>
+                            <TextBlock Text="{Binding PrayerTimes.Dhuhr}" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Background="#F4F7FA" >
+                            <TextBlock Text="العصر" Foreground="#3498DB" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding PrayerTimes.Asr}" FontSize="16" FontWeight="Bold" Foreground="#1A2533"/>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="المغرب" Foreground="#8FA3B8"/>
+                            <TextBlock Text="{Binding PrayerTimes.Maghrib}" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="العشاء" Foreground="#8FA3B8"/>
+                            <TextBlock Text="{Binding PrayerTimes.Isha}" FontWeight="Bold"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="#2ECC71" CornerRadius="15" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="💡" FontSize="30" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock 
+                               Foreground="White" FontSize="15" FontWeight="Medium" 
+                               TextWrapping="Wrap" TextAlignment="Center" FontStyle="Italic" Text="الطبيب الماهر هو الذي يدواي القلب قبل الجسد"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

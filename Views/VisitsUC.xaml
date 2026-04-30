@@ -1,0 +1,158 @@
+﻿<UserControl x:Class="ClinicManagementApplication.Views.VisitsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="1100" FlowDirection="RightToLeft">
+
+    <UserControl.DataContext>
+        <vm:VisitsViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#F4F7FA">
+        <TabControl Background="Transparent" BorderThickness="0" Margin="10">
+
+            <TabItem Header="تسجيل زيارة جديدة" FontSize="16" Padding="20,10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="بيانات الزيارة الطبية" FontSize="22" FontWeight="Bold" Foreground="#1A2533" Margin="10,0,0,15"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.05"/>
+                                    </Border.Effect>
+                                    <StackPanel>
+                                        <TextBlock Text="البيانات العامة" FontSize="18" FontWeight="Bold" Foreground="#2E7D32" Margin="0,0,0,15"/>
+
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="5">
+                                                <TextBlock Text="المريض" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                                <ComboBox Height="38" ItemsSource="{Binding Patients}" 
+                                                          SelectedValue="{Binding CurrentVisit.PatientId}"
+                                                          DisplayMemberPath="FullName" SelectedValuePath="PatientId"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="5">
+                                                <TextBlock Text="الطبيب المعالج" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                                <ComboBox Height="38" ItemsSource="{Binding Doctors}" 
+                                                          SelectedValue="{Binding CurrentVisit.DoctorId}"
+                                                          DisplayMemberPath="DoctorName" SelectedValuePath="DoctorId"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+
+                                        <Separator Margin="0,15" Background="#F0F0F0"/>
+
+                                        <TextBlock Text="الأعراض (Symptoms)" Foreground="#8FA3B8" FontSize="12" Margin="5,10,0,5"/>
+                                        <TextBox Text="{Binding CurrentVisit.Symptoms}" Height="70" TextWrapping="Wrap" AcceptsReturn="True" Background="#F9FAFB" Padding="8"/>
+
+                                        <TextBlock Text="التشخيص (Diagnosis)" Foreground="#8FA3B8" FontSize="12" Margin="5,10,0,5"/>
+                                        <TextBox Text="{Binding CurrentVisit.Diagnosis}" Height="70" TextWrapping="Wrap" AcceptsReturn="True" Background="#F9FAFB" Padding="8"/>
+
+                                        <TextBlock Text="خطة العلاج (Treatment Plan)" Foreground="#8FA3B8" FontSize="12" Margin="5,10,0,5"/>
+                                        <TextBox Text="{Binding CurrentVisit.TreatmentPlan}" Height="90" TextWrapping="Wrap" AcceptsReturn="True" Background="#F9FAFB" Padding="8"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <Border Background="#E8F5E9" CornerRadius="15" Margin="10" Padding="20" BorderBrush="#C8E6C9" BorderThickness="1">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                            <TextBlock Text="🩺" FontSize="20" Margin="0,0,10,0"/>
+                                            <TextBlock Text="العلامات الحيوية" FontSize="18" FontWeight="Bold" Foreground="#2E7D32"/>
+                                        </StackPanel>
+
+                                        <StackPanel Margin="0,5">
+                                            <TextBlock Text="ضغط الدم" FontSize="11" Foreground="#5D7A95"/>
+                                            <TextBox Text="{Binding CurrentVisit.BloodPressure}" Height="35" VerticalContentAlignment="Center" Margin="0,5"/>
+                                        </StackPanel>
+
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="0,5,5,5">
+                                                <TextBlock Text="الحرارة (C°)" FontSize="11" Foreground="#5D7A95"/>
+                                                <TextBox Text="{Binding CurrentVisit.Temperature}" Height="35" VerticalContentAlignment="Center" Margin="0,5"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="5,5,0,5">
+                                                <TextBlock Text="النبض" FontSize="11" Foreground="#5D7A95"/>
+                                                <TextBox Text="{Binding CurrentVisit.HeartRate}" Height="35" VerticalContentAlignment="Center" Margin="0,5"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+
+                                        <UniformGrid Columns="2" Margin="0,5">
+                                            <StackPanel Margin="0,0,5,0">
+                                                <TextBlock Text="الوزن (kg)" FontSize="11" Foreground="#5D7A95"/>
+                                                <TextBox Text="{Binding CurrentVisit.Weight}" Height="35" VerticalContentAlignment="Center" Margin="0,5"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="5,0,0,0">
+                                                <TextBlock Text="الطول (cm)" FontSize="11" Foreground="#5D7A95"/>
+                                                <TextBox Text="{Binding CurrentVisit.Height}" Height="35" VerticalContentAlignment="Center" Margin="0,5"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                                    <StackPanel>
+                                        <TextBlock Text="ملاحظات إضافية" FontSize="12" Foreground="#8FA3B8" Margin="0,0,0,5"/>
+                                        <TextBox Text="{Binding CurrentVisit.Notes}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" Background="#F9FAFB"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,10">
+                            <Button Command="{Binding SaveVisitCommand}" Content="💾 حفظ الزيارة" Width="180" Height="45" Background="#27AE60" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+                            <Button Command="{Binding ClearCommand}" Content="🔄 مسح الحقول" Width="150" Height="45" Background="#7F8C8D" Foreground="White" FontWeight="Bold"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="سجل الزيارات السابقة" FontSize="16" Padding="20,10">
+                <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
+                            <TextBlock Text="قائمة زيارات المرضى" FontSize="20" FontWeight="Bold" Foreground="#1A2533" VerticalAlignment="Center"/>
+                            <TextBox Width="250" Margin="30,0,0,0" Height="35" VerticalContentAlignment="Center" 
+                                     Tag="بحث باسم المريض..." Background="#F9FAFB"/>
+                        </StackPanel>
+
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding AllVisits}" AutoGenerateColumns="False" 
+                                  IsReadOnly="True" Style="{StaticResource DGStyle}" ColumnHeaderStyle="{StaticResource DGHeader}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="التاريخ" Binding="{Binding VisitDate, StringFormat={}{0:yyyy/MM/dd HH:mm}}" Width="150"/>
+                                <DataGridTextColumn Header="المريض" Binding="{Binding PatientName}" Width="*"/>
+                                <DataGridTextColumn Header="الطبيب" Binding="{Binding DoctorName}" Width="150"/>
+                                <DataGridTextColumn Header="التشخيص" Binding="{Binding Diagnosis}" Width="1.5*"/>
+                                <DataGridTemplateColumn Header="إجراءات" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="👁️" Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" ToolTip="عرض التفاصيل" Background="Transparent" BorderThickness="0" FontSize="16" Cursor="Hand"/>
+                                                <Button Content="🗑️" Command="{Binding DataContext.DeleteVisitCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" ToolTip="حذف" Background="Transparent" BorderThickness="0" FontSize="16" Cursor="Hand" Foreground="#E74C3C" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

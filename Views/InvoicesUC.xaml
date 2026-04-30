@@ -1,0 +1,191 @@
+﻿<UserControl x:Class="ClinicManagementApplication.Views.InvoicesUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="1100" FlowDirection="RightToLeft">
+
+    <UserControl.DataContext>
+        <vm:InvoicesViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#F4F7FA">
+        <TabControl Background="Transparent" BorderThickness="0" Margin="10">
+            <TabItem Header="إنشاء فاتورة جديدة" FontSize="16" Padding="20,10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Background="White" CornerRadius="15" Margin="10" Padding="20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.05"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="بيانات الفاتورة" FontSize="22" FontWeight="Bold" Foreground="#1A2533"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10">
+                                        <StackPanel Margin="0,0,20,0">
+                                            <TextBlock Text="اسم المريض" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                            <ComboBox ItemsSource="{Binding Patients}" 
+                                                      SelectedValue="{Binding SelectedPatientId}"
+                                                      DisplayMemberPath="FullName" 
+                                                      SelectedValuePath="PatientId"
+                                                      Width="230" Height="38"/>
+                                        </StackPanel>
+
+                                        <StackPanel Margin="0,0,20,0">
+                                            <TextBlock Text="رقم الزيارة المتاحة" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                            <ComboBox ItemsSource="{Binding PatientVisits}"
+                                                      SelectedValue="{Binding SelectedVisitId}"
+                                                      DisplayMemberPath="VisitDate" 
+                                                      SelectedValuePath="VisitId"
+                                                      IsEnabled="{Binding IsVisitSelectionEnabled}"
+                                                      Width="180" Height="38"
+                                                     />
+                                        </StackPanel>
+
+                                        <StackPanel>
+                                            <TextBlock Text="رقم الفاتورة" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                            <TextBox Text="{Binding SelectedInvoice.InvoiceNumber}" IsReadOnly="True" Width="120" Height="38" VerticalContentAlignment="Center" Background="#F9FAFB"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+                                    <TextBlock Text="تاريخ الاستحقاق" Foreground="#8FA3B8" FontSize="12" Margin="0,0,0,5"/>
+                                    <DatePicker SelectedDate="{Binding SelectedInvoice.DueDate}" Width="150" Height="38"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Background="White" CornerRadius="15" Margin="10" Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <UniformGrid Columns="4" Margin="0,0,0,20">
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="رسوم الكشفية" FontSize="12" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                        <TextBox Text="{Binding ConsultationFee, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="رسوم المختبر" FontSize="12" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                        <TextBox Text="{Binding LabTestFee, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="رسوم الإجراءات" FontSize="12" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                        <TextBox Text="{Binding ProcedureFee, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="أخرى" FontSize="12" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                        <TextBox Text="{Binding OtherCharges, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center"/>
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <Border Grid.Row="1" Background="#E8F5E9" CornerRadius="15" BorderBrush="#C8E6C9" BorderThickness="1">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock Text="🩺" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                        <TextBlock Text="نظام إدارة الفواتير الطبية" FontSize="22" FontWeight="SemiBold" Foreground="#2E7D32" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="تأكد من مراجعة الرسوم بدقة قبل الحفظ" FontSize="15" Foreground="#66BB6A" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Row="2" Background="#1A2533" CornerRadius="15" Margin="10" Padding="25">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="350"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center">
+                                    <UniformGrid Columns="2" Margin="0,0,20,15">
+                                        <StackPanel Margin="0,0,10,0">
+                                            <TextBlock Text="الخصم (%)" Foreground="#ABB2B9" FontSize="12" Margin="0,0,0,5"/>
+                                            <TextBox Text="{Binding DiscountPercentage, UpdateSourceTrigger=PropertyChanged}" Height="35" Background="#2C3E50" Foreground="White" BorderThickness="0"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="الضريبة (%)" Foreground="#ABB2B9" FontSize="12" Margin="0,0,0,5"/>
+                                            <TextBox Text="{Binding TaxPercentage, UpdateSourceTrigger=PropertyChanged}" Height="35" Background="#2C3E50" Foreground="White" BorderThickness="0"/>
+                                        </StackPanel>
+                                    </UniformGrid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Command="{Binding SaveCommand}" Content="✅ حفظ الفاتورة" Width="160" Height="45" Background="#27AE60" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"/>
+                                        <Button Command="{Binding ClearCommand}" Content="🔄 فاتورة جديدة" Width="160" Height="45" Background="#7F8C8D" Foreground="White" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <DockPanel Margin="0,5">
+                                        <TextBlock Text="المجموع الفرعي:" Foreground="#ABB2B9"/>
+                                        <TextBlock Text="{Binding SubTotal, StringFormat={}{0:N2}}" Foreground="White" HorizontalAlignment="Left" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="0,5">
+                                        <TextBlock Text="قيمة الخصم:" Foreground="#ABB2B9"/>
+                                        <TextBlock Text="{Binding DiscountAmount, StringFormat={}{0:N2}-}" Foreground="#E74C3C" HorizontalAlignment="Left" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                    <Separator Margin="0,10" Background="#34495E"/>
+                                    <DockPanel>
+                                        <TextBlock Text="الإجمالي النهائي:" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding FinalAmount, StringFormat={}{0:N2} $}" Foreground="#2ECC71" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="سجل الفواتير السابقة" FontSize="16" Padding="20,10">
+                <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
+                            <TextBlock Text="قائمة الفواتير المسجلة" FontSize="20" FontWeight="Bold" Foreground="#1A2533" VerticalAlignment="Center"/>
+                            <Button Command="{Binding ExportToPdfCommand}" Content="📄 تصدير الكل إلى PDF" Margin="30,0,0,0" Padding="15,8" Background="#E67E22" Foreground="White" FontWeight="Bold">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </StackPanel>
+
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding Invoices}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedInvoice}"
+                                  IsReadOnly="True" Style="{StaticResource DGStyle}" ColumnHeaderStyle="{StaticResource DGHeader}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="رقم الفاتورة" Binding="{Binding InvoiceNumber}" Width="120"/>
+                                <DataGridTextColumn Header="المريض" Binding="{Binding PatientName}" Width="*"/>
+                                <DataGridTextColumn Header="التاريخ" Binding="{Binding DueDate, StringFormat={}{0:yyyy/MM/dd}}" Width="150"/>
+                                <DataGridTextColumn Header="المجموع" Binding="{Binding FinalAmount, StringFormat={}{0:N2} $}" Width="150"/>
+                                <DataGridTemplateColumn Header="إجراءات" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="تحميل PDF" Command="{Binding DataContext.PrintInvoiceCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                    CommandParameter="{Binding}" Foreground="#3498DB" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

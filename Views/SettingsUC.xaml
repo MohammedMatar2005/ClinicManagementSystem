@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="ClinicManagementApplication.Views.SettingsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1000" FlowDirection="RightToLeft">
+
+    <UserControl.DataContext>
+        <vm:SettingsViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#F4F7FA" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="10,0,10,25">
+            <TextBlock Text="إعدادات النظام والحساب" FontSize="26" FontWeight="Bold" Foreground="#1A2533" VerticalAlignment="Center"/>
+            <Button Command="{Binding LogoutCommand}" DockPanel.Dock="Left" Content="تسجيل الخروج" Background="#E74C3C" Foreground="White" 
+                    Padding="15,8" FontWeight="Bold" BorderThickness="0" Cursor="Hand" >
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </DockPanel>
+
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0">
+            <TabItem Header="👤 الملف الشخصي" Width="150" Height="45">
+                <Border Background="White" CornerRadius="0,15,15,15" Padding="30">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" Opacity="0.05"/>
+                    </Border.Effect>
+                    <StackPanel MaxWidth="600" HorizontalAlignment="Right">
+                        <TextBlock Text="بيانات المستخدم المسجل" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="اسم المستخدم" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding CurrentUser.Username, Mode=OneWay}" Height="38" IsReadOnly="True" Background="#F8F9FA" VerticalContentAlignment="Center" Padding="10"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="الدور / الصلاحية" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding CurrentUser.Role, Mode=OneWay}" Height="38" IsReadOnly="True" Background="#F8F9FA" VerticalContentAlignment="Center" Padding="10"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="البريد الإلكتروني" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding CurrentUser.Email, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,0,15" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <Button Command="{Binding UpdateProfileCommand}" Content="تحديث البيانات الشخصية" Width="180" Height="40" Background="#3498DB" Foreground="White" HorizontalAlignment="Left" Margin="0,10,0,0">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+
+            <TabItem Header="🔒 الأمان" Width="150" Height="45">
+                <Border Background="White" CornerRadius="0,15,15,15" Padding="30">
+                    <StackPanel MaxWidth="450" HorizontalAlignment="Right">
+                        <TextBlock Text="تغيير كلمة المرور" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
+
+                        <TextBlock Text="كلمة المرور الحالية" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <PasswordBox x:Name="pbCurrentPass" Height="38" Margin="0,0,0,15" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <TextBlock Text="كلمة المرور الجديدة" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <PasswordBox x:Name="pbNewPass" Height="38" Margin="0,0,0,15" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <TextBlock Text="تأكيد كلمة المرور الجديدة" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <PasswordBox x:Name="pbConfirmPass" Height="38" Margin="0,0,0,20" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <Button Command="{Binding ChangePasswordCommand}" 
+                                CommandParameter="{Binding ElementName=pbNewPass}"
+                                Content="حفظ كلمة المرور الجديدة" Width="200" Height="40" Background="#27AE60" Foreground="White" HorizontalAlignment="Left">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+
+            <TabItem Header="🏢 بيانات العيادة" Width="150" Height="45">
+                <Border Background="White" CornerRadius="0,15,15,15" Padding="30">
+                    <StackPanel MaxWidth="600" HorizontalAlignment="Right">
+                        <TextBlock Text="إعدادات المنشأة الطبية" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
+
+                        <TextBlock Text="اسم العيادة (يظهر في التقارير والفواتير)" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding ClinicInfo.ClinicName, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,0,15" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <TextBlock Text="العنوان" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding ClinicInfo.Address, UpdateSourceTrigger=PropertyChanged}" Height="38" Margin="0,0,0,15" VerticalContentAlignment="Center" Padding="10"/>
+
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="رقم الهاتف" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding ClinicInfo.Phone, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="10"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="الرقم الضريبي" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding ClinicInfo.TaxNo, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="10"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Button Command="{Binding SaveClinicSettingsCommand}" Content="حفظ إعدادات العيادة" Width="180" Height="40" Background="#1A2533" Foreground="White" HorizontalAlignment="Left" Margin="0,10,0,0">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

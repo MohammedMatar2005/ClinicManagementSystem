@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="ClinicManagementApplication.Views.ReportsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1000" FlowDirection="RightToLeft">
+
+    <UserControl.DataContext>
+        <vm:ReportsViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#F4F7FA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="25,20,25,10">
+            <TextBlock Text="لوحة الإحصائيات والتقارير" FontSize="24" FontWeight="Bold" Foreground="#1A2533"/>
+            <TextBlock Text="ملخص أداء العيادة للفترة الحالية" Foreground="#8FA3B8" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <UniformGrid Grid.Row="1" Columns="4" Margin="15,10">
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="إجمالي المرضى" Foreground="#8FA3B8" FontSize="14"/>
+                    <TextBlock Text="{Binding TotalPatientsCount}" Foreground="{x:Null}" FontSize="28" FontWeight="Bold" Margin="0,10" LineStackingStrategy="BlockLineHeight"/>
+                    <TextBlock Text="{Binding PatientsGrowthRate}" Foreground="#2ECC71" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="مواعيد اليوم" Foreground="#8FA3B8" FontSize="14"/>
+                    <TextBlock Text="{Binding TodayAppointmentsCount}" Foreground="#3498DB" FontSize="28" FontWeight="Bold" Margin="0,10"/>
+                    <TextBlock Text="{Binding PendingAppointmentsText}" Foreground="#F1C40F" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="إيرادات الشهر" Foreground="#8FA3B8" FontSize="14"/>
+                    <TextBlock Text="{Binding MonthlyRevenue, StringFormat={}{0:C0}}" Foreground="#2ECC71" FontSize="28" FontWeight="Bold" Margin="0,10"/>
+                    <TextBlock Text="{Binding RevenueStatusText}" Foreground="#8FA3B8" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="15" Margin="10" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="الأطباء المتواجدون" Foreground="#8FA3B8" FontSize="14"/>
+                    <TextBlock Text="{Binding ActiveDoctorsCount}" Foreground="#9B59B6" FontSize="28" FontWeight="Bold" Margin="0,10"/>
+                    <TextBlock Text="جميع التخصصات مغطاة" Foreground="#8FA3B8" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+        </UniformGrid>
+
+        <Grid Grid.Row="2" Margin="25,10,25,25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="15" Margin="0,0,10,0" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <Grid>
+                    <TextBlock Text="تحليل الزيارات الأسبوعي" FontWeight="SemiBold" Foreground="#1A2533"/>
+                    <ContentControl Content="{Binding ChartControl}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="10,0,0,0" Padding="20">
+                <Border.Effect>
+                    <StaticResource ResourceKey="CardShadow"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="الأكثر نشاطاً" FontWeight="SemiBold" Foreground="#1A2533" Margin="0,0,0,20"/>
+
+                    <ItemsControl ItemsSource="{Binding TopDoctors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <DockPanel Margin="0,5">
+                                        <Ellipse Width="8" Height="8" Fill="{Binding StatusColor}" Margin="0,0,10,0"/>
+                                        <TextBlock Text="{Binding Name}" Foreground="#2C3E50"/>
+                                        <TextBlock Text="{Binding AppointmentCountText}" DockPanel.Dock="Left" Foreground="#8FA3B8" FontSize="12"/>
+                                    </DockPanel>
+                                    <Separator Margin="0,10" Background="#F0F3F8"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
