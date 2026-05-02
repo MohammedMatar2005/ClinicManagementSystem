@@ -125,6 +125,25 @@ namespace ClinicBusiness
             return clsUsersData.IsUserExist(UserId);
         }
 
+        public static clsUser Login(string UserName, string PasswordHash)
+        {
+            int PersonId = -1;
+            int UserId = -1;    
+            int RoleId = -1;
+            bool IsActive = false;
+            DateTime CreatedDate = DateTime.Now;
+            DateTime LastLoginDate = DateTime.Now;
+
+
+            // استدعاء الـ DAL التي تستخدم SP_Users_GetByID
+            bool isFound = clsUsersData.GetByUsernameAndPassword(UserName, PasswordHash, ref UserId, ref PersonId,  ref RoleId, ref IsActive, ref CreatedDate, ref LastLoginDate);
+
+            if (isFound)
+                return new clsUser(UserId, PersonId, UserName, PasswordHash, RoleId, IsActive, CreatedDate, LastLoginDate);
+            else
+                return null;
+        }
+
         // في clsUser
         protected override string ValidateProperty(string columnName)
         {

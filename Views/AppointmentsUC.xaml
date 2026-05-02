@@ -45,7 +45,7 @@
 
                     <StackPanel Margin="10,5">
                         <TextBlock Text="اسم المريض" Foreground="#5D7A95" Margin="0,0,0,5"/>
-                        <ComboBox ItemsSource="{Binding Patients}" 
+                        <ComboBox x:Name="cbPatientName" ItemsSource="{Binding Patients}" 
                                   SelectedItem="{Binding SelectedPatient}"
                                   DisplayMemberPath="FullName" 
                                   Height="38" VerticalContentAlignment="Center"/>

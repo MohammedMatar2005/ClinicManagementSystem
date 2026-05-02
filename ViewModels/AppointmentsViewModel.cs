@@ -191,7 +191,12 @@ namespace ClinicManagementApplication.ViewModels
         }
         private async Task SaveAppointmentAsync()
         {
-            if (string.IsNullOrEmpty(PatientFullName) || string.IsNullOrEmpty(DoctorFullName))
+            clsAppointment newAppointment = new clsAppointment();
+
+            newAppointment.PatientFullName = PatientFullName;
+
+
+            if (SelectedPatient.FullName == "" || string.IsNullOrEmpty(DoctorFullName) || )
             {
                 MessageBox.Show("الرجاء اختيار المريض والطبيب أولاً!",
                     "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);

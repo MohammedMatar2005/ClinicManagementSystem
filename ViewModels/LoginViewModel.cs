@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using ClinicManagementApplication.Infrastructure;
+using System.Threading.Tasks;
 
 namespace ClinicManagementApplication.ViewModels
 {
@@ -93,15 +94,25 @@ namespace ClinicManagementApplication.ViewModels
             var passwordBox = parameter as System.Windows.Controls.PasswordBox;
             if (passwordBox == null) return;
 
+            
+
             string password = passwordBox.Password;
+             
 
             IsBusy = true;
             try
             {
-                // هنا يتم الاستدعاء من طبقة البزنس (مثال)
-                // bool isAuthenticated = await Task.Run(() => clsUser.Login(Username, password));
+                 //    هنا يتم الاستدعاء من طبقة البزنس(مثال)
+                clsUser AuthenticatedUser = await Task.Run(() => clsUser.Login(Username, password));
 
-                if (Username == "admin" && password == "123")
+                if(AuthenticatedUser == null)
+                {
+                    MessageBox.Show("خطأ في معلومات تسجيل الدخول");
+                    return;
+                }
+
+
+                if (Username == AuthenticatedUser.Username && AuthenticatedUser.PasswordHash == password)
                 {
                     // 1. إنشاء نسخة من الشاشة الرئيسية
                     var mainDashboard = new MainWindow();

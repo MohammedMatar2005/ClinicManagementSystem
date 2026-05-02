@@ -166,4 +166,40 @@ public class clsUsersData
         }
         return isFound;
     }
+
+    public static bool GetByUsernameAndPassword(string Username, string PasswordHash, ref int UserId, ref int PersonId, ref int RoleId, ref bool IsActive, ref DateTime CreatedDate, ref DateTime LastLoginDate)
+    {
+        bool isFound = false;
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command = new SqlCommand("Sp_Users_FindByCredintials", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Username", Username);
+                command.Parameters.AddWithValue("@Password", PasswordHash);
+
+
+                try
+                {
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            isFound = true;
+                            UserId = (int)reader["UserId"];
+                            PersonId = (int)reader["PersonId"];
+                            RoleId = (int)reader["RoleId"];
+                            IsActive = (bool)reader["IsActive"];
+                            CreatedDate = (DateTime)reader["CreatedDate"];
+                            LastLoginDate = (DateTime)reader["LastLoginDate"];
+
+                        }
+                    }
+                }
+                catch (Exception ex) { isFound = false; }
+            }
+        }
+        return isFound;
+    }
 }
