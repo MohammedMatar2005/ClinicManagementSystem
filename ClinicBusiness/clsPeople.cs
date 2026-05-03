@@ -192,6 +192,8 @@ namespace ClinicBusiness
         // 4. Save Method (The core Business Logic decision)
         public bool Save()
         {
+
+
             switch (Mode)
             {
                 case enMode.AddNew:

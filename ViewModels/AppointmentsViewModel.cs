@@ -43,6 +43,18 @@ namespace ClinicManagementApplication.ViewModels
             }
         }
 
+        private clsDoctor _selectedDoctor;
+        public clsDoctor SelectedDoctor
+        {
+            get => _selectedDoctor;
+            set
+            {
+                _selectedDoctor = value;
+                OnPropertyChanged();
+                DoctorId = _selectedDoctor?.DoctorId ?? -1;
+            }
+        }
+
         private int _patientId = -1;
         public int PatientId
         {
@@ -191,68 +203,16 @@ namespace ClinicManagementApplication.ViewModels
         }
         private async Task SaveAppointmentAsync()
         {
-            clsAppointment newAppointment = new clsAppointment();
-
-            newAppointment.PatientFullName = PatientFullName;
-
-
-            if (SelectedPatient.FullName == "" || string.IsNullOrEmpty(DoctorFullName) || )
+            clsAppointment newAppointment = new clsAppointment
             {
-                MessageBox.Show("الرجاء اختيار المريض والطبيب أولاً!",
-                    "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (!TimeSpan.TryParse(AppointmentTime, out TimeSpan time))
-            {
-                MessageBox.Show("صيغة الوقت غير صحيحة. استخدم HH:mm",
-                    "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            IsLoading = true;
-            try
-            {
-                var newAppointment = new clsAppointment
-                {
-                    PatientId = this.PatientId,
-                    DoctorId = this.DoctorId,
-                    AppointmentDate = AppointmentDate.Date.Add(time),
-                    ReasonForVisit = this.ReasonForVisit,
-                    Notes = this.Notes,
-                    StatusId = (short)this.StatusId,
-                    PatientFullName = this.SelectedPatient?.FullName,
-                    PatientPhone = this.PatientPhone,
-                    UpdatedDate = this.UpdatedDate,
-                    CreatedDate = DateTime.Now,
-                    IsActive = this.IsActive
-
-                };
-
-                bool success = await Task.Run(() => newAppointment.Save());
-
-                if (success)
-                {
-                    MessageBox.Show("تم حفظ الموعد بنجاح!",
-                        "نجاح", MessageBoxButton.OK, MessageBoxImage.Information);
-                    await LoadInitialDataAsync();
-                    ClearFields();
-                }
-                else
-                {
-                    MessageBox.Show("فشل حفظ الموعد.",
-                        "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"خطأ غير متوقع: {ex.Message}",
-                    "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+                PatientId = PatientId,
+                DoctorId = DoctorId,
+                AppointmentDate = AppointmentDate,
+                //AppointmentTime = AppointmentTime,
+                StatusId = StatusId,
+                Notes = Notes,
+                ReasonForVisit = ReasonForVisit
+            };
         }
 
         private void ClearFields()

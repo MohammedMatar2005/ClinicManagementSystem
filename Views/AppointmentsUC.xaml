@@ -1,5 +1,4 @@
-﻿
-<UserControl x:Class="ClinicManagementApplication.Views.AppointmentsUC"
+﻿<UserControl x:Class="ClinicManagementApplication.Views.AppointmentsUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +7,7 @@
              xmlns:vm="clr-namespace:ClinicManagementApplication.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="900">
 
     <UserControl.DataContext>
         <vm:AppointmentsViewModel/>
@@ -27,12 +26,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Header Line -->
         <Border Grid.Row="0" Height="4" Background="#1A2533" CornerRadius="2" Margin="20,0">
             <Border.Effect>
                 <DropShadowEffect Color="#1A2533" BlurRadius="8" ShadowDepth="0" Opacity="0.3"/>
             </Border.Effect>
         </Border>
 
+        <!-- Input Form Section -->
         <Border Grid.Row="1" Background="White" CornerRadius="15" Margin="20,10" Padding="25">
             <Border.Effect>
                 <DropShadowEffect Color="#000000" BlurRadius="15" ShadowDepth="2" Opacity="0.05"/>
@@ -41,50 +42,44 @@
             <StackPanel>
                 <TextBlock Text="حجز موعد طبي جديد" FontSize="20" FontWeight="Bold" Foreground="#1A2533" Margin="0,0,0,20"/>
 
-                <UniformGrid Columns="2" Margin="0,10">
-
+                <!-- Row 1: Patient Search & Reason -->
+                <UniformGrid Columns="2" Margin="0,5">
                     <StackPanel Margin="10,5">
-                        <TextBlock Text="اسم المريض" Foreground="#5D7A95" Margin="0,0,0,5"/>
-                        <ComboBox x:Name="cbPatientName" ItemsSource="{Binding Patients}" 
+                        <TextBlock Text="بحث عن مريض (بالاسم)" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <!-- جعل الـ ComboBox قابلاً للبحث بالاسم -->
+                        <ComboBox x:Name="cbPatientName" 
+                                  ItemsSource="{Binding Patients}" 
                                   SelectedItem="{Binding SelectedPatient}"
                                   DisplayMemberPath="FullName" 
+                                  IsEditable="True" 
+                                  IsTextSearchEnabled="True"
+                                  StaysOpenOnEdit="True"
                                   Height="38" VerticalContentAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel Margin="10,5">
-                        <TextBlock Text="رقم هاتف المريض" Foreground="#5D7A95" Margin="0,0,0,5"/>
-                        <TextBox Text="{Binding PatientPhone, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="38" 
-                                 VerticalContentAlignment="Center" 
-                                 Padding="8" 
-                                 Background="White" 
-                                 Foreground="#2C3E50" 
-                                 FontWeight="SemiBold"/>
+                        <TextBlock Text="سبب الزيارة" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding ReasonForVisit, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="38" VerticalContentAlignment="Center" Padding="8"/>
                     </StackPanel>
-
                 </UniformGrid>
 
-                <UniformGrid Columns="4" Margin="0,10">
-
+                <!-- Row 2: Doctor, Date, Status -->
+                <UniformGrid Columns="3" Margin="0,5">
                     <StackPanel Margin="10,5">
                         <TextBlock Text="الطبيب المختص" Foreground="#5D7A95" Margin="0,0,0,5"/>
-                        <!-- ✅ DoctorId بدل DoctorID -->
                         <ComboBox ItemsSource="{Binding Doctors}" 
-                                  SelectedValue="{Binding DoctorId}"
+                                  SelectedItem="{Binding SelectedDoctor}"
+                                  SelectedValue="{Binding SelectedDoctor.FullName}"
                                   DisplayMemberPath="FullName" 
                                   SelectedValuePath="DoctorId" 
                                   Height="38" VerticalContentAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel Margin="10,5">
-                        <TextBlock Text="تاريخ الموعد" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <TextBlock Text="تاريخ ووقت الموعد" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                        <!-- استخدام حقل واحد للتاريخ والوقت يسهل التعامل مع Database -->
                         <DatePicker SelectedDate="{Binding AppointmentDate}" Height="38"/>
-                    </StackPanel>
-
-                    <StackPanel Margin="10,5">
-                        <TextBlock Text="وقت الموعد" Foreground="#5D7A95" Margin="0,0,0,5"/>
-                        <TextBox Text="{Binding AppointmentTime, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="38" VerticalContentAlignment="Center" Padding="8"/>
                     </StackPanel>
 
                     <StackPanel Margin="10,5">
@@ -97,8 +92,13 @@
                             <ComboBoxItem Content="ملغي" Tag="3"/>
                         </ComboBox>
                     </StackPanel>
-
                 </UniformGrid>
+
+                <!-- Row 3: Notes -->
+                <StackPanel Margin="10,5">
+                    <TextBlock Text="ملاحظات إضافية" Foreground="#5D7A95" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding Notes}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Padding="8"/>
+                </StackPanel>
 
                 <Button x:Name="btnSave" Command="{Binding SaveCommand}" Content="تأكيد وحفظ الموعد" 
                         Background="#2ECC71" Foreground="White" FontWeight="Bold" 
@@ -125,6 +125,7 @@
             </StackPanel>
         </Border>
 
+        <!-- Data Grid Section -->
         <Border Grid.Row="2" Background="White" CornerRadius="15" Margin="20,10,20,20" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
@@ -140,22 +141,21 @@
                     </StackPanel>
                 </DockPanel>
 
-                <!-- ✅ SelectedAppointment بدل SelectedItem الخطأ -->
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Appointments}" 
                           SelectedItem="{Binding SelectedAppointment}" 
                           AutoGenerateColumns="False" CanUserAddRows="False" 
                           GridLinesVisibility="None" Background="White" BorderThickness="0">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="التاريخ" Binding="{Binding AppointmentDate, StringFormat=\{0:yyyy/MM/dd\}}" Width="120"/>
-                        <!-- ✅ AppointmentDate بدل AppointmentTime -->
-                        <DataGridTextColumn Header="الوقت" Binding="{Binding AppointmentDate, StringFormat=\{0:HH:mm\}}" Width="100"/>
+
                         <DataGridTextColumn Header="المريض" Binding="{Binding PatientFullName}" Width="*"/>
-                        <DataGridTextColumn Header="رقم الهاتف" Binding="{Binding PatientPhone}" Width="120"/>
                         <DataGridTextColumn Header="الطبيب" Binding="{Binding DoctorFullName}" Width="*"/>
-                        <DataGridTextColumn Header="الحالة" Binding="{Binding StatusName}" Width="110"/>
+                        <DataGridTextColumn Header="سبب الزيارة" Binding="{Binding ReasonForVisit}" Width="150"/>
+                        <DataGridTextColumn Header="التاريخ والوقت" Binding="{Binding AppointmentDate, StringFormat=\{0:yyyy/MM/dd HH:mm\}}" Width="150"/>
+                        <DataGridTextColumn Header="الحالة" Binding="{Binding StatusName}" Width="100"/>
+                        <DataGridCheckBoxColumn Header="نشط" Binding="{Binding IsActive}" Width="60"/>
+
                     </DataGrid.Columns>
                 </DataGrid>
-
             </Grid>
         </Border>
     </Grid>
