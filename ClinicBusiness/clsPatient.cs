@@ -1,29 +1,17 @@
-
-using ClinicDataAccess;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-
-
+using ClinicDataAccess;
 
 namespace ClinicBusiness
 {
-    public class clsPatient : INotifyPropertyChanged
+    public class clsPatient
     {
+        public enum enMode { AddNew = 0, Update = 1 }
+        public enMode Mode { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        public enum enMode { AddNew = 0, Update = 1 };
-        public enMode Mode = enMode.AddNew;
-
+        // =========================
+        // Properties
+        // =========================
         public int PatientId { get; set; }
         public int PersonId { get; set; }
         public string EmergencyContact { get; set; }
@@ -34,45 +22,36 @@ namespace ClinicBusiness
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        private string _email;
-        public string Email
-        {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
-        }
-        public clsPeople PersonInfo { get; set; } = new clsPeople();
+        //public string FullName => GetFullName(); // خاصية إضافية اختيارية
 
-        private string _phone = "";
+        //private string GetFullName()
+        //{
+        //    // يمكنك تخصيص هذا الجزء حسب أعمدة الاسم لديك
+        //    return "";
+        //}
 
-
-        private string _fullName = "";
-
-
-        public string FullName
-        {
-            get => _fullName;
-            set { _fullName = value; OnPropertyChanged(); }
-        }
-        public string Phone
-        {
-            get => !string.IsNullOrEmpty(PersonInfo?.Phone)
-                       ? PersonInfo.Phone
-                       : _phone;
-            set => _phone = value ?? "";
-        }
-
-
-        // 1. Default Constructor (Add New Mode)
+        // =========================
+        // Constructor (AddNew)
+        // =========================
         public clsPatient()
         {
             this.PatientId = -1;
+            this.PersonId = 0;
+            this.EmergencyContact = string.Empty;
+            this.EmergencyPhone = string.Empty;
+            this.BloodType = string.Empty;
+            this.Allergies = string.Empty;
+            this.MedicalHistory = string.Empty;
+            this.IsActive = false;
+            this.CreatedDate = DateTime.Now;
 
             Mode = enMode.AddNew;
-            PersonInfo = new clsPeople();
         }
 
-        // 2. Private Constructor (Update Mode - Used by Find)
-        private clsPatient(int PatientId, int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate, string Email)
+        // =========================
+        // Constructor (Update)
+        // =========================
+        private clsPatient(int PatientId, int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate)
         {
             this.PatientId = PatientId;
             this.PersonId = PersonId;
@@ -83,14 +62,13 @@ namespace ClinicBusiness
             this.MedicalHistory = MedicalHistory;
             this.IsActive = IsActive;
             this.CreatedDate = CreatedDate;
-            this.Email = Email;
-            this.PersonInfo = clsPeople.Find(PersonId);
-            this.Phone = PersonInfo.Phone;
-            this.FullName = clsPeople.Find(PersonId).FullName;
+
             Mode = enMode.Update;
         }
 
-        // 3. Find Method (Business Logic handles the data retrieval via DAL)
+        // =========================
+        // Find
+        // =========================
         public static clsPatient Find(int PatientId)
         {
             int PersonId = -1;
@@ -101,26 +79,53 @@ namespace ClinicBusiness
             string MedicalHistory = "";
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
-            string Email = "";
 
+            bool found = clsPatientsData.GetPatientById(
+                PatientId,
+                ref PersonId, ref EmergencyContact, ref EmergencyPhone, ref BloodType, ref Allergies, ref MedicalHistory, ref IsActive, ref CreatedDate
+            );
 
-            // استدعاء الـ DAL التي تستخدم SP_Patients_GetByID
-            bool isFound = clsPatientsData.GetPatientInfoByID(PatientId, ref PersonId, ref EmergencyContact, ref EmergencyPhone, ref BloodType, ref Allergies, ref MedicalHistory, ref IsActive, ref CreatedDate, ref Email);
-
-            if (isFound)
-                return new clsPatient(PatientId, PersonId, EmergencyContact, EmergencyPhone, BloodType, Allergies, MedicalHistory, IsActive, CreatedDate, Email);
-            else
+            if (!found)
                 return null;
+
+            return new clsPatient(
+                PatientId,
+                PersonId, EmergencyContact, EmergencyPhone, BloodType, Allergies, MedicalHistory, IsActive, CreatedDate
+            );
         }
 
+        // =========================
+        // Add
+        // =========================
+        private bool _Add()
+        {
+            this.PatientId = clsPatientsData.AddNewPatient(
+                this.PersonId, this.EmergencyContact, this.EmergencyPhone, this.BloodType, this.Allergies, this.MedicalHistory, this.IsActive
+            );
 
-        // 4. Save Method (The core Business Logic decision)
+            return this.PatientId != -1;
+        }
+
+        // =========================
+        // Update
+        // =========================
+        private bool _Update()
+        {
+            return clsPatientsData.UpdatePatient(
+                this.PatientId,
+                this.PersonId, this.EmergencyContact, this.EmergencyPhone, this.BloodType, this.Allergies, this.MedicalHistory, this.IsActive
+            );
+        }
+
+        // =========================
+        // Save
+        // =========================
         public bool Save()
         {
             switch (Mode)
             {
                 case enMode.AddNew:
-                    if (_AddNewPatient())
+                    if (_Add())
                     {
                         Mode = enMode.Update;
                         return true;
@@ -128,41 +133,31 @@ namespace ClinicBusiness
                     return false;
 
                 case enMode.Update:
-                    return _UpdatePatient();
+                    return _Update();
+
+                default:
+                    return false;
             }
-            return false;
         }
 
-        // 5. Private CRUD helpers that talk to the DAL Stored Procedures
-        private bool _AddNewPatient()
-        {
-            // استدعاء الـ DAL التي تستخدم SP_Patients_Add
-            this.PatientId = clsPatientsData.AddNewPatient(this.PersonId, this.EmergencyContact, this.EmergencyPhone, this.BloodType, this.Allergies, this.MedicalHistory, this.IsActive, this.CreatedDate, this.Email);
-            return (this.PatientId != -1);
-        }
+        // =========================
+        // Delete
+        // =========================
+        public static bool Delete(int id)
+            => clsPatientsData.DeletePatient(id);
 
-        private bool _UpdatePatient()
-        {
-            // استدعاء الـ DAL التي تستخدم SP_Patients_Update
-            return clsPatientsData.UpdatePatient(this.PatientId, this.PersonId, this.EmergencyContact, this.EmergencyPhone, this.BloodType, this.Allergies, this.MedicalHistory, this.IsActive, this.CreatedDate, this.Email);
-        }
+        // =========================
+        // Get All (DataTable)
+        // =========================
+        public static DataTable GetAll()
+            => clsPatientsData.GetAllPatients();
 
-        // 6. Static Methods for list operations
-        public static ObservableCollection<clsPatient> GetAllPatients()
-        {
-            return clsPatientsData.GetAllPatients().ToObservableCollection<clsPatient>();
-        }
-
-        public static bool Delete(int PatientId)
-        {
-            return clsPatientsData.DeletePatient(PatientId);
-        }
-
+        // =========================
+        // Is Exist
+        // =========================
         public static bool IsExist(int PatientId)
         {
-            return clsPatientsData.IsPatientExist(PatientId);
+            return clsPatientsData.IsPatientExistByPersonId(PatientId);         
         }
-
-
     }
 }

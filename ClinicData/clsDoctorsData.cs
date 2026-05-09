@@ -130,7 +130,8 @@ public class clsDoctorsData
         decimal? salary,
         string officeLocation,
         int? experienceYears,
-        bool isActive)
+        bool isActive
+        )
     {
         int newDoctorId = -1;
 
@@ -143,6 +144,8 @@ public class clsDoctorsData
                 command.CommandType = CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@UserId", userId);
+
+                
 
                 command.Parameters.AddWithValue(
                     "@Specialization",

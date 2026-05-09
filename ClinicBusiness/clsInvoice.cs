@@ -1,198 +1,308 @@
-
 using System;
-using System.Collections.ObjectModel;
 using System.Data;
 using ClinicDataAccess;
-using System.Xml.Linq;
-using ClinicBusiness;
-public class clsInvoice
+
+namespace ClinicBusiness
 {
-    public enum enMode { AddNew = 0, Update = 1 };
-    public enMode Mode = enMode.AddNew;
-
-    public enum enStatus { Unpaid = 1,Partial = 2, Paid = 3, Refunded = 4 };
-    public enStatus Status
+    public class clsInvoice
     {
-        get;set;
-    }
-    public int InvoiceId { get; set; }
-    public int VisitId { get; set; }
-    public int PatientId { get; set; }
-    public string InvoiceNumber { get; set; }
-    public DateTime InvoiceDate { get; set; }
-    public decimal ConsultationFee { get; set; }
-    public decimal LabTestFee { get; set; }
-    public decimal ProcedureFee { get; set; }
-    public decimal OtherCharges { get; set; }
-    public decimal SubTotal { get; set; }
-    public decimal TaxPercentage { get; set; }
-    public decimal TaxAmount { get; set; }
-    public decimal DiscountPercentage { get; set; }
-    public decimal DiscountAmount { get; set; }
-    public decimal FinalAmount { get; set; }
-    public int StatusId { get; set; }
-    public DateTime DueDate { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public bool IsActive { get; set; }
+        public enum enMode { AddNew = 0, Update = 1 }
+        public enMode Mode { get; set; }
 
-    public string FullName { get; set; }
+        // =========================
+        // Properties
+        // =========================
+        public int InvoiceId { get; set; }
+        public int VisitId { get; set; }
+        public string InvoiceNumber { get; set; }
+        public DateTime InvoiceDate { get; set; }
+        public decimal ConsultationFee { get; set; }
+        public decimal LabTestFee { get; set; }
+        public decimal ProcedureFee { get; set; }
+        public decimal OtherCharges { get; set; }
+        public decimal TaxPercentage { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal DiscountPercentage { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public byte StatusId { get; set; }
+        public DateTime? DueDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public bool IsActive { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal FinalAmount { get; set; }
 
+      
 
-
-    // 1. Default Constructor (Add New Mode)
-    public clsInvoice()
-    {
-        this.InvoiceId = -1;
-       
-        this.PatientId = -1;
-        this.VisitId = -1;
-        this.InvoiceNumber = "";
-        this.InvoiceDate = DateTime.Now;
-        this.ConsultationFee = 0;
-        this.LabTestFee = 0;
-        this.ProcedureFee = 0;
-        this.OtherCharges = 0;
-        this.SubTotal = 0;
-        this.TaxPercentage = 0;
-        this.TaxAmount = 0;
-        this.IsActive =  false;
-        this.FinalAmount = 0;
-        this.DiscountAmount = 0;
-        this.DueDate = DateTime.Now.AddDays(7); // Default due date is 7 days from now
-        this.CreatedDate = DateTime.Now;
-        this.FullName = "";
-
-        Status = enStatus.Unpaid;
-        Mode = enMode.AddNew;
-    }
-
-    // 2. Private Constructor (Update Mode - Used by Find)
-    private clsInvoice(int InvoiceId, int VisitId, int PatientId, string InvoiceNumber, DateTime InvoiceDate, decimal ConsultationFee, decimal LabTestFee, decimal ProcedureFee, decimal OtherCharges, decimal SubTotal, decimal TaxPercentage, decimal TaxAmount, decimal DiscountPercentage, decimal DiscountAmount, decimal FinalAmount, int StatusId, DateTime DueDate, DateTime CreatedDate, bool IsActive)
-    {
-        this.InvoiceId = InvoiceId;
-        this.VisitId = VisitId;
-        this.PatientId = PatientId;
-        this.InvoiceNumber = InvoiceNumber;
-        this.InvoiceDate = InvoiceDate;
-        this.ConsultationFee = ConsultationFee;
-        this.LabTestFee = LabTestFee;
-        this.ProcedureFee = ProcedureFee;
-        this.OtherCharges = OtherCharges;
-        this.SubTotal = SubTotal;
-        this.TaxPercentage = TaxPercentage;
-        this.TaxAmount = TaxAmount;
-        this.DiscountPercentage = DiscountPercentage;
-        this.DiscountAmount = DiscountAmount;
-        this.FinalAmount = FinalAmount;
-        this.StatusId = StatusId;
-        this.DueDate = DueDate;
-        this.CreatedDate = CreatedDate;
-        this.IsActive = IsActive;
-        this.FullName = clsPatient.Find(PatientId).FullName;
-        Status = enStatus.Unpaid;
-        Mode = enMode.Update;
-    }
-
-    // 3. Find Method (Business Logic handles the data retrieval via DAL)
-    public static clsInvoice Find(int InvoiceId)
-    {
-        int VisitId = -1;
-        int PatientId = -1;
-        string InvoiceNumber = "";
-        DateTime InvoiceDate = DateTime.Now;
-        decimal ConsultationFee = 0;
-        decimal LabTestFee = 0;
-        decimal ProcedureFee = 0;
-        decimal OtherCharges = 0;
-        decimal SubTotal = 0;
-        decimal TaxPercentage = 0;
-        decimal TaxAmount = 0;
-        decimal DiscountPercentage = 0;
-        decimal DiscountAmount = 0;
-        decimal FinalAmount = 0;
-        int StatusId = -1;
-        DateTime DueDate = DateTime.Now;
-        DateTime CreatedDate = DateTime.Now;
-        bool IsActive = false;
-
-
-        // استدعاء الـ DAL التي تستخدم SP_Invoices_GetByID
-        bool isFound = clsInvoicesData.GetInvoiceInfoByID(InvoiceId, ref VisitId, ref PatientId, ref InvoiceNumber, ref InvoiceDate, ref ConsultationFee, ref LabTestFee, ref ProcedureFee, ref OtherCharges, ref SubTotal, ref TaxPercentage, ref TaxAmount, ref DiscountPercentage, ref DiscountAmount, ref FinalAmount, ref StatusId, ref DueDate, ref CreatedDate, ref IsActive);
-
-        if (isFound)
-            return new clsInvoice(InvoiceId, VisitId, PatientId, InvoiceNumber, InvoiceDate, ConsultationFee, LabTestFee, ProcedureFee, OtherCharges, SubTotal, TaxPercentage, TaxAmount, DiscountPercentage, DiscountAmount, FinalAmount, StatusId, DueDate, CreatedDate, IsActive);
-        else
-            return null;
-    }
-
-    // 4. Save Method (The core Business Logic decision)
-    public bool Save()
-    {
-        switch (Mode)
+        // =========================
+        // Constructor (AddNew)
+        // =========================
+        public clsInvoice()
         {
-            case enMode.AddNew:
-                if (_AddNewInvoice())
-                {
-                    Mode = enMode.Update;
-                    return true;
-                }
-                return false;
+            this.InvoiceId = -1;
+            this.VisitId = 0;
+            this.InvoiceNumber = string.Empty;
+            this.InvoiceDate = DateTime.Now;
+            this.ConsultationFee = 0.0M;
+            this.LabTestFee = 0.0M;
+            this.ProcedureFee = 0.0M;
+            this.OtherCharges = 0.0M;
+            this.TaxPercentage = 0.0M;
+            this.TaxAmount = 0.0M;
+            this.DiscountPercentage = 0.0M;
+            this.DiscountAmount = 0.0M;
+            this.StatusId = 0;
+            this.DueDate = null;
+            this.CreatedDate = DateTime.Now;
+            this.IsActive = false;
+            this.SubTotal = 0.0M;
+            this.FinalAmount = 0.0M;
 
-            case enMode.Update:
-                return _UpdateInvoice();
+            Mode = enMode.AddNew;
         }
-        return false;
-    }
 
-    public string GenerateInvoiceNumber()
-    {
+        // =========================
+        // Constructor (Update)
+        // =========================
+        private clsInvoice(int InvoiceId, int VisitId, string InvoiceNumber, DateTime InvoiceDate, decimal ConsultationFee, decimal LabTestFee, decimal ProcedureFee, decimal OtherCharges, decimal TaxPercentage, decimal TaxAmount, decimal DiscountPercentage, decimal DiscountAmount, byte StatusId, DateTime DueDate, DateTime CreatedDate, bool IsActive, decimal SubTotal, decimal FinalAmount)
+        {
+            this.InvoiceId = InvoiceId;
+            this.VisitId = VisitId;
+            this.InvoiceNumber = InvoiceNumber;
+            this.InvoiceDate = InvoiceDate;
+            this.ConsultationFee = ConsultationFee;
+            this.LabTestFee = LabTestFee;
+            this.ProcedureFee = ProcedureFee;
+            this.OtherCharges = OtherCharges;
+            this.TaxPercentage = TaxPercentage;
+            this.TaxAmount = TaxAmount;
+            this.DiscountPercentage = DiscountPercentage;
+            this.DiscountAmount = DiscountAmount;
+            this.StatusId = StatusId;
+            this.DueDate = DueDate;
+            this.CreatedDate = CreatedDate;
+            this.IsActive = IsActive;
+            this.SubTotal = SubTotal;
+            this.FinalAmount = FinalAmount;
+
+            Mode = enMode.Update;
+        }
+
+        // =========================
+        // Find
+        // =========================
+        // =========================
+        // Find
+        // =========================
+        // =========================
+        // Find
+        // =========================
+        public static clsInvoice Find(int InvoiceId)
+        {
+            // تعريف المتغيرات لتتوافق مع بارامترات الـ DAL
+            int VisitId = -1;
+            string InvoiceNumber = "";
+            DateTime InvoiceDate = DateTime.Now;
+            decimal ConsultationFee = 0, LabTestFee = 0, ProcedureFee = 0, OtherCharges = 0;
+
+            decimal? TaxPercentage = 0, TaxAmount = 0, DiscountPercentage = 0, DiscountAmount = 0;
+
+            // أضفنا هذه المتغيرات لأن الـ DAL يطلبها الآن
+            decimal SubTotal = 0;
+            decimal FinalAmount = 0;
+
+            byte StatusId = 0;
+            DateTime? DueDate = null; // النوع Nullable كما في الـ DAL
+            DateTime CreatedDate = DateTime.Now;
+            bool IsActive = false;
+
+            // استدعاء دالة الـ DAL
+            bool found = clsInvoicesData.GetInvoiceInfoByID(
+                InvoiceId,
+                ref VisitId, ref InvoiceNumber, ref InvoiceDate, ref ConsultationFee,
+                ref LabTestFee, ref ProcedureFee, ref OtherCharges,
+                ref TaxPercentage, ref TaxAmount, ref DiscountPercentage, ref DiscountAmount,
+                ref SubTotal, ref FinalAmount, // تمرير القيم المسترجعة من الـ DB
+                ref StatusId, ref DueDate, ref CreatedDate, ref IsActive
+            );
+
+            if (found)
+            {
+                return new clsInvoice(
+                    InvoiceId,
+                    VisitId,
+                    InvoiceNumber,
+                    InvoiceDate,
+                    ConsultationFee,
+                    LabTestFee,
+                    ProcedureFee,
+                    OtherCharges,
+                    TaxPercentage ?? 0,
+                    TaxAmount ?? 0,
+                    DiscountPercentage ?? 0,
+                    DiscountAmount ?? 0,
+                    StatusId,
+                    DueDate ?? DateTime.Now, // معالجة التاريخ إذا كان Null
+                    CreatedDate,
+                    IsActive,
+                    SubTotal,
+                    FinalAmount
+                );
+            }
+            else
+            {
+                return null;
+            }
+        }        // =========================
+                 // Add
+                 // =========================
+        private bool _AddInvoice()
+        {
+           
+            this.InvoiceId = clsInvoicesData.AddNewInvoice(
+                this.VisitId,
+                this.InvoiceNumber,
+                this.InvoiceDate,
+                this.ConsultationFee,
+                this.LabTestFee,
+                this.ProcedureFee,
+                this.OtherCharges,
+                this.TaxPercentage,
+                this.TaxAmount,
+                this.DiscountPercentage,
+                this.DiscountAmount,
+                this.StatusId,
+                this.DueDate
+            );
+
+            // إذا نجحت العملية سيعود الرقم المعرف للفاتورة، وإلا سيعود -1
+            return (this.InvoiceId != -1);
+        }
+
+        // =========================
+        // Update
+        // =========================
+        private bool _UpdateInvoice()
+        {
+           
+            return clsInvoicesData.UpdateInvoice(
+                this.InvoiceId,
+                this.VisitId,
+                this.InvoiceNumber,
+                this.InvoiceDate,
+                this.ConsultationFee,
+                this.LabTestFee,
+                this.ProcedureFee,
+                this.OtherCharges,
+                this.TaxPercentage,
+                this.TaxAmount,
+                this.DiscountPercentage,
+                this.DiscountAmount,
+                this.StatusId,
+                this.DueDate,
+                this.IsActive
+            );
+        }
+
+        // =========================
+        // Save
+        // =========================
+        public bool Save()
+        {
+            switch (Mode)
+            {
+                case enMode.AddNew:
+                    if (_AddInvoice())
+                    {
+                        Mode = enMode.Update;
+                        return true;
+                    }
+                    return false;
+
+                case enMode.Update:
+                    return _UpdateInvoice();
+
+                default:
+                    return false;
+            }
+        }
+
+        // =========================
+        // Delete
+        // =========================
+        public static bool Delete(int id)
+            => clsInvoicesData.DeleteInvoice(id);
+
+        // =========================
+        // Get All (DataTable)
+        // =========================
+        public static DataTable GetAll() 
+            => clsInvoicesData.GetAllInvoices();
+
+        // =========================
+        // Is Exist
+        // =========================
+        public static bool IsExist(int InvoiceId)
+        {
+            // تعريف المتغيرات المحلية لتطابق بارامترات الـ DAL
+            int VisitId = -1;
+            string InvoiceNumber = "";
+            DateTime InvoiceDate = DateTime.Now;
+            decimal ConsultationFee = 0, LabTestFee = 0, ProcedureFee = 0, OtherCharges = 0;
+
+            // ملاحظة: يجب أن تكون الأنواع Nullable لتتوافق مع الـ ref في الـ DAL
+            decimal? TaxPercentage = 0;
+            decimal? TaxAmount = 0;
+            decimal? DiscountPercentage = 0;
+            decimal? DiscountAmount = 0;
+
+            decimal SubTotal = 0;
+            decimal FinalAmount = 0;
+            byte StatusId = 0;
+            DateTime? DueDate = null; // تاريخ قابل للقيمة الفارغة
+            DateTime CreatedDate = DateTime.Now;
+            bool IsActive = false;
+
+            // استدعاء الدالة مع مراعاة ترتيب الـ ref كما هو في الـ DAL
+            bool isFound = clsInvoicesData.GetInvoiceInfoByID(
+                InvoiceId,
+                ref VisitId,
+                ref InvoiceNumber,
+                ref InvoiceDate,
+                ref ConsultationFee,
+                ref LabTestFee,
+                ref ProcedureFee,
+                ref OtherCharges,
+                ref TaxPercentage,
+                ref TaxAmount,
+                ref DiscountPercentage,
+                ref DiscountAmount,
+                ref SubTotal,
+                ref FinalAmount,
+                ref StatusId,
+                ref DueDate,
+                ref CreatedDate,
+                ref IsActive
+            );
+
+            return isFound;
+        }
+
+        public string GenerateInvoiceNumber()
+        {
+            
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
         
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var random = new Random();
-
-        // إنشاء مصفوفة من 5 عناصر واختيار حرف عشوائي لكل عنصر
-        char[] result = new char[5];
-        for (int i = 0; i < 5; i++)
-        {
-            result[i] = chars[random.Next(chars.Length)];
+            // إنشاء مصفوفة من 5 عناصر واختيار حرف عشوائي لكل عنصر
+            char[] result = new char[5];
+            for (int i = 0; i < 5; i++)
+            {
+                result[i] = chars[random.Next(chars.Length)];
+            }
+        
+            return new string(result);
         }
-
-        return new string(result);
     }
 
-
-    // 5. Private CRUD helpers that talk to the DAL Stored Procedures
-    private bool _AddNewInvoice()
-    {
-        // استدعاء الـ DAL التي تستخدم SP_Invoices_Add
-        this.InvoiceId = clsInvoicesData.AddNewInvoice(this.VisitId, this.PatientId, this.InvoiceNumber, this.InvoiceDate, this.ConsultationFee, this.LabTestFee, this.ProcedureFee, this.OtherCharges, this.SubTotal, this.TaxPercentage, this.TaxAmount, this.DiscountPercentage, this.DiscountAmount, this.FinalAmount, this.StatusId, this.DueDate, this.CreatedDate, this.IsActive);
-        return (this.InvoiceId != -1);
-    }
-
-    private bool _UpdateInvoice()
-    {
-        // استدعاء الـ DAL التي تستخدم SP_Invoices_Update
-        return clsInvoicesData.UpdateInvoice(this.InvoiceId, this.VisitId, this.PatientId, this.InvoiceNumber, this.InvoiceDate, this.ConsultationFee, this.LabTestFee, this.ProcedureFee, this.OtherCharges, this.SubTotal, this.TaxPercentage, this.TaxAmount, this.DiscountPercentage, this.DiscountAmount, this.FinalAmount, this.StatusId, this.DueDate, this.CreatedDate, this.IsActive);
-    }
-
-    // 6. Static Methods for list operations
-    public static ObservableCollection<clsInvoice> GetAllInvoices()
-    {
-        return clsInvoicesData.GetAllInvoices().ToObservableCollection<clsInvoice>();
-    }
-
-    public static ObservableCollection<clsInvoice> GetAllInvoices_Sorted()
-    {
-        return clsInvoicesData.GetAllInvoices_Sorted().ToObservableCollection<clsInvoice>();
-    }
-
-    public static bool Delete(int InvoiceId)
-    {
-        return clsInvoicesData.DeleteInvoice(InvoiceId);
-    }
-
-    public static bool IsExist(int InvoiceId)
-    {
-        return clsInvoicesData.IsInvoiceExist(InvoiceId);
-    }
 }
+

@@ -10,18 +10,16 @@ public class clsPrescriptionsData
     {
         DataTable dt = new DataTable();
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_GetAll", connection))
+            //  „  ⁄œÌ· «·«”„ ·Ì ÿ«»ﬁ „⁄ «·‹ Script
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
                 try
                 {
                     connection.Open();
-
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -30,12 +28,10 @@ public class clsPrescriptionsData
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Log(ex.ToString(),
-                        System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
-
         return dt;
     }
 
@@ -55,11 +51,10 @@ public class clsPrescriptionsData
     {
         bool isFound = false;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_GetByID", connection))
+            //  „  ⁄œÌ· «·«”„ ·Ì ÿ«»ﬁ „⁄ «·‹ Script
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_GetById", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
@@ -67,38 +62,21 @@ public class clsPrescriptionsData
                 try
                 {
                     connection.Open();
-
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
-
                             VisitId = (int)reader["VisitId"];
                             MedicineName = (string)reader["MedicineName"];
                             Dosage = (string)reader["Dosage"];
                             Frequency = (string)reader["Frequency"];
 
-                            Duration = reader["Duration"] != DBNull.Value
-                                ? (int?)reader["Duration"]
-                                : null;
-
-                            Instructions = reader["Instructions"] != DBNull.Value
-                                ? (string)reader["Instructions"]
-                                : null;
-
-                            Quantity = reader["Quantity"] != DBNull.Value
-                                ? (int?)reader["Quantity"]
-                                : null;
-
-                            StartDate = reader["StartDate"] != DBNull.Value
-                                ? (DateTime?)reader["StartDate"]
-                                : null;
-
-                            EndDate = reader["EndDate"] != DBNull.Value
-                                ? (DateTime?)reader["EndDate"]
-                                : null;
-
+                            Duration = reader["Duration"] != DBNull.Value ? (int?)reader["Duration"] : null;
+                            Instructions = reader["Instructions"] != DBNull.Value ? (string)reader["Instructions"] : null;
+                            Quantity = reader["Quantity"] != DBNull.Value ? (int?)reader["Quantity"] : null;
+                            StartDate = reader["StartDate"] != DBNull.Value ? (DateTime?)reader["StartDate"] : null;
+                            EndDate = reader["EndDate"] != DBNull.Value ? (DateTime?)reader["EndDate"] : null;
                             CreatedDate = (DateTime)reader["CreatedDate"];
                         }
                     }
@@ -106,13 +84,10 @@ public class clsPrescriptionsData
                 catch (Exception ex)
                 {
                     isFound = false;
-
-                    EventLogger.Log(ex.ToString(),
-                        System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
-
         return isFound;
     }
 
@@ -130,11 +105,10 @@ public class clsPrescriptionsData
     {
         int newID = -1;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_Insert", connection))
+            //  „  ⁄œÌ· «·«”„ ·Ì ÿ«»ﬁ „⁄ «·‹ Script
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -142,41 +116,25 @@ public class clsPrescriptionsData
                 command.Parameters.AddWithValue("@MedicineName", MedicineName);
                 command.Parameters.AddWithValue("@Dosage", Dosage);
                 command.Parameters.AddWithValue("@Frequency", Frequency);
-
-                command.Parameters.AddWithValue("@Duration",
-                    (object)Duration ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@Instructions",
-                    (object)Instructions ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@Quantity",
-                    (object)Quantity ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@StartDate",
-                    (object)StartDate ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@EndDate",
-                    (object)EndDate ?? DBNull.Value);
-
-               
+                command.Parameters.AddWithValue("@Duration", (object)Duration ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Instructions", (object)Instructions ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Quantity", (object)Quantity ?? DBNull.Value);
+                command.Parameters.AddWithValue("@StartDate", (object)StartDate ?? DBNull.Value);
+                command.Parameters.AddWithValue("@EndDate", (object)EndDate ?? DBNull.Value);
 
                 try
                 {
                     connection.Open();
-
                     object result = command.ExecuteScalar();
-
                     if (result != null && result != DBNull.Value)
                         newID = Convert.ToInt32(result);
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Log(ex.ToString(),
-                        System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
-
         return newID;
     }
 
@@ -195,11 +153,10 @@ public class clsPrescriptionsData
     {
         int rowsAffected = 0;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_Update", connection))
+            //  „  ⁄œÌ· «·«”„ ·Ì ÿ«»ﬁ „⁄ «·‹ Script
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -208,21 +165,11 @@ public class clsPrescriptionsData
                 command.Parameters.AddWithValue("@MedicineName", MedicineName);
                 command.Parameters.AddWithValue("@Dosage", Dosage);
                 command.Parameters.AddWithValue("@Frequency", Frequency);
-
-                command.Parameters.AddWithValue("@Duration",
-                    (object)Duration ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@Instructions",
-                    (object)Instructions ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@Quantity",
-                    (object)Quantity ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@StartDate",
-                    (object)StartDate ?? DBNull.Value);
-
-                command.Parameters.AddWithValue("@EndDate",
-                    (object)EndDate ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Duration", (object)Duration ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Instructions", (object)Instructions ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Quantity", (object)Quantity ?? DBNull.Value);
+                command.Parameters.AddWithValue("@StartDate", (object)StartDate ?? DBNull.Value);
+                command.Parameters.AddWithValue("@EndDate", (object)EndDate ?? DBNull.Value);
 
                 try
                 {
@@ -231,12 +178,10 @@ public class clsPrescriptionsData
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Log(ex.ToString(),
-                        System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
-
         return (rowsAffected > 0);
     }
 
@@ -245,11 +190,10 @@ public class clsPrescriptionsData
     {
         int rowsAffected = 0;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_Delete", connection))
+            //  „  ⁄œÌ· «·«”„ ·Ì ÿ«»ﬁ „⁄ «·‹ Script
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_Delete", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
@@ -261,25 +205,78 @@ public class clsPrescriptionsData
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Log(ex.ToString(),
-                        System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
-
         return (rowsAffected > 0);
     }
 
-    // 6. Exists
+    // 6. Get Prescriptions By Patient (≈÷«›… »‰«¡ ⁄·Ï ﬁ«∆„… «·‹ SP's ·œÌﬂ)
+    public static DataTable GetPrescriptionsByPatient(int PatientId)
+    {
+        DataTable dt = new DataTable();
+
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_GetByPatient", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PatientId", PatientId);
+
+                try
+                {
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows) dt.Load(reader);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
+                }
+            }
+        }
+        return dt;
+    }
+
+    // 7. Get Prescriptions By Visit (≈÷«›… »‰«¡ ⁄·Ï ﬁ«∆„… «·‹ SP's ·œÌﬂ)
+    public static DataTable GetPrescriptionsByVisit(int VisitId)
+    {
+        DataTable dt = new DataTable();
+
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_GetByVisit", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@VisitId", VisitId);
+
+                try
+                {
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows) dt.Load(reader);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
+                }
+            }
+        }
+        return dt;
+    }
+
     public static bool IsPrescriptionExist(int PrescriptionId)
     {
         bool isFound = false;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("SP_Prescriptions_IsExist", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Prescriptions_IsExist", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
@@ -287,11 +284,17 @@ public class clsPrescriptionsData
                 try
                 {
                     connection.Open();
+                    // ‰” Œœ„ ExecuteScalar ·√‰‰« ‰⁄Ìœ ﬁÌ„… Ê«Õœ… (0 √Ê 1)
                     object result = command.ExecuteScalar();
-                    isFound = (result != null);
+
+                    if (result != null)
+                    {
+                        isFound = Convert.ToBoolean(result);
+                    }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                     isFound = false;
                 }
             }

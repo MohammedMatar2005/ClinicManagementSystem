@@ -53,10 +53,11 @@ public class clsPeopleData
         ref string thirdName,
         ref string lastName,
         ref DateTime dateOfBirth,
-        ref byte gender,
+        ref bool gender,
         ref string phone,
         ref string email,
-        ref string address
+        ref string address,
+        ref string nationalNumber
         )
     {
         bool isFound = false;
@@ -100,7 +101,7 @@ public class clsPeopleData
                                 (DateTime)reader["DateOfBirth"];
 
                             gender =
-                                Convert.ToByte(reader["Gender"]);
+                                Convert.ToBoolean(reader["Gender"]);
 
                             phone =
                                 reader["Phone"] != DBNull.Value
@@ -117,7 +118,8 @@ public class clsPeopleData
                                 ? (string)reader["Address"]
                                 : string.Empty;
 
-                            
+                            nationalNumber = (string)reader["NationalNumber"];
+                               
 
                            
                         }
@@ -148,7 +150,8 @@ public class clsPeopleData
         bool gender,
         string phone,
         string email,
-        string address)
+        string address,
+        string nationalNumber)
     {
         int newPersonId = -1;
 
@@ -176,6 +179,8 @@ public class clsPeopleData
                 command.Parameters.AddWithValue("@Gender", gender);
 
                 command.Parameters.AddWithValue("@Phone", phone);
+
+                command.Parameters.AddWithValue("@NationalNumber", nationalNumber);
 
                 command.Parameters.AddWithValue("@Email",
                     string.IsNullOrWhiteSpace(email)
@@ -222,7 +227,8 @@ public class clsPeopleData
         bool gender,
         string phone,
         string email,
-        string address)
+        string address,
+        string nationalNumber)
     {
         int rowsAffected = 0;
 
@@ -255,6 +261,8 @@ public class clsPeopleData
 
                 command.Parameters.AddWithValue("@Phone", phone);
 
+                command.Parameters.AddWithValue("@NationalNumber", nationalNumber); 
+
                 command.Parameters.AddWithValue("@Email",
                     string.IsNullOrWhiteSpace(email)
                     ? DBNull.Value
@@ -264,6 +272,8 @@ public class clsPeopleData
                     string.IsNullOrWhiteSpace(address)
                     ? DBNull.Value
                     : (object)address);
+
+
 
                 try
                 {

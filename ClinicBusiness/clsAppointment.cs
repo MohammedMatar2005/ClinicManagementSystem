@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Data;
-using ClinicBusiness;
+using ClinicDataAccess;
 
 namespace ClinicBusiness
 {
-
     public class clsAppointment
     {
-        public enum enMode { AddNew = 0, Update = 1 };
-        public enMode Mode = enMode.AddNew;
+        public enum enMode { AddNew = 0, Update = 1 }
+        public enMode Mode { get; set; }
 
-        // --- خصائص الجدول الأساسي (للحفظ والتعديل) ---
         public int AppointmentId { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
@@ -23,94 +20,196 @@ namespace ClinicBusiness
         public DateTime UpdatedDate { get; set; }
         public bool IsActive { get; set; }
 
-        // --- خصائص العرض (تأتي من الـ View فقط عند العرض في الجدول) ---
-        public string StatusName { get; set; }
-        public string PatientFullName { get; set; }
-        public string PatientPhone { get; set; }
-        public string DoctorFullName { get; set; }
-
-        // 1. Constructor الافتراضي
+        // =========================
+        // Constructor (AddNew)
+        // =========================
         public clsAppointment()
         {
-            this.AppointmentId = -1;
-            this.AppointmentDate = DateTime.Now;
-            this.StatusId = 1;
-            this.IsActive = true;
-            this.Mode = enMode.AddNew;
+            AppointmentId = -1;
+            PatientId = -1;
+            DoctorId = -1;
+            StatusId = 1;
+
+            AppointmentDate = DateTime.Now;
+
+            ReasonForVisit = string.Empty;
+            Notes = string.Empty;
+
+            CreatedDate = DateTime.Now;
+            UpdatedDate = DateTime.Now;
+
+            IsActive = true;
+
+            Mode = enMode.AddNew;
         }
 
-        // 2. Constructor خاص لوضع التعديل
-        private clsAppointment(int appointmentId, int patientId, int doctorId, DateTime appointmentDate,
-                               string reason, int statusId, string notes, DateTime createdDate,
-                               DateTime updatedDate, bool isActive)
+        // =========================
+        // Constructor (Update)
+        // =========================
+        private clsAppointment(
+            int appointmentId,
+            int patientId,
+            int doctorId,
+            DateTime appointmentDate,
+            string reasonForVisit,
+            int statusId,
+            string notes,
+            DateTime createdDate,
+            DateTime updatedDate,
+            bool isActive)
         {
-            this.AppointmentId = appointmentId;
-            this.PatientId = patientId;
-            this.DoctorId = doctorId;
-            this.AppointmentDate = appointmentDate;
-            this.ReasonForVisit = reason;
-            this.StatusId = statusId;
-            this.Notes = notes;
-            this.CreatedDate = createdDate;
-            this.UpdatedDate = updatedDate;
-            this.IsActive = isActive;
-            this.Mode = enMode.Update;
+            AppointmentId = appointmentId;
+            PatientId = patientId;
+            DoctorId = doctorId;
+            AppointmentDate = appointmentDate;
+
+            ReasonForVisit = reasonForVisit ?? string.Empty;
+            Notes = notes ?? string.Empty;
+
+            StatusId = statusId;
+
+            CreatedDate = createdDate;
+            UpdatedDate = updatedDate;
+
+            IsActive = isActive;
+
+            Mode = enMode.Update;
         }
 
-        // 3. البحث عن موعد
-        public static clsAppointment Find(int appointmentId)
+        // =========================
+        // Find
+        // =========================
+        public static clsAppointment Find(int id)
         {
             int patientId = -1, doctorId = -1, statusId = -1;
-            string reason = "", notes = "";
-            DateTime appDate = DateTime.Now, createdDate = DateTime.Now, updatedDate = DateTime.Now;
+
+            DateTime appDate = DateTime.MinValue;
+            DateTime created = DateTime.MinValue;
+            DateTime updated = DateTime.MinValue;
+
             bool isActive = false;
 
-            bool isFound = clsAppointmentsData.GetAppointmentInfoByID(
-                appointmentId, ref patientId, ref doctorId, ref appDate,
-                ref reason, ref statusId, ref notes, ref createdDate, ref updatedDate, ref isActive);
+            string reason = string.Empty;
+            string notes = string.Empty;
 
-            return isFound ? new clsAppointment(appointmentId, patientId, doctorId, appDate,
-                             reason, statusId, notes, createdDate, updatedDate, isActive) : null;
+            bool found = clsAppointmentsData.GetAppointmentById(
+                id,
+                ref patientId,
+                ref doctorId,
+                ref appDate,
+                ref reason,
+                ref statusId,
+                ref notes,
+                ref created,
+                ref updated,
+                ref isActive);
+
+            if (!found)
+                return null;
+
+            return new clsAppointment(
+                id,
+                patientId,
+                doctorId,
+                appDate,
+                reason,
+                statusId,
+                notes,
+                created,
+                updated,
+                isActive);
         }
 
-        // 4. الحفظ (إضافة أو تعديل)
+        // =========================
+        // Add
+        // =========================
+        private bool _AddNewAppointment()
+        {
+            AppointmentId = clsAppointmentsData.AddNewAppointment(
+                PatientId,
+                DoctorId,
+                AppointmentDate,
+                ReasonForVisit,
+                StatusId,
+                Notes,
+                IsActive
+            );
+
+            if (AppointmentId != -1)
+            {
+                CreatedDate = DateTime.Now;
+                UpdatedDate = DateTime.Now;
+                return true;
+            }
+
+            return false;
+        }
+
+        // =========================
+        // Update
+        // =========================
+        private bool _UpdateAppointment()
+        {
+            UpdatedDate = DateTime.Now;
+
+            return clsAppointmentsData.UpdateAppointment(
+                AppointmentId,
+                PatientId,
+                DoctorId,
+                AppointmentDate,
+                ReasonForVisit,
+                StatusId,
+                Notes,
+                IsActive
+            );
+        }
+
+        // =========================
+        // Save
+        // =========================
         public bool Save()
         {
             switch (Mode)
             {
                 case enMode.AddNew:
-                    if (_AddNew()) { Mode = enMode.Update; return true; }
+                    if (_AddNewAppointment())
+                    {
+                        Mode = enMode.Update;
+                        return true;
+                    }
                     return false;
+
                 case enMode.Update:
-                    return _Update();
+                    return _UpdateAppointment();
+
                 default:
                     return false;
             }
         }
 
-        private bool _AddNew()
-        {
-            this.AppointmentId = clsAppointmentsData.AddNewAppointment(
-                this.PatientId, this.DoctorId, this.AppointmentDate, this.ReasonForVisit,
-                this.StatusId, this.Notes, this.CreatedDate, this.UpdatedDate, this.IsActive);
-            return (this.AppointmentId != -1);
-        }
+        // =========================
+        // Delete
+        // =========================
+        public static bool Delete(int id)
+            => clsAppointmentsData.DeleteAppointment(id);
 
-        private bool _Update()
-        {
-            return clsAppointmentsData.UpdateAppointment(
-                this.AppointmentId, this.PatientId, this.DoctorId, this.AppointmentDate,
-                this.ReasonForVisit, this.StatusId, this.Notes, this.CreatedDate,
-                this.UpdatedDate, this.IsActive);
-        }
+     
+        // =========================
+        // Get All 
+        // =========================
+        public static DataTable GetAll()
+            => clsAppointmentsData.GetAllAppointments();
 
-        // --- ميثودات ثابتة للقوائم ---
-        public static ObservableCollection<clsAppointment> GetAllAppointments()
-         => clsAppointmentsData.GetAllAppointments()
-                               .ToObservableCollection<clsAppointment>();
+        // =========================
+        // Filters
+        // =========================
+        public static DataTable GetByPatient(int patientId)
+            => clsAppointmentsData.GetAppointmentsByPatient(patientId);
 
-        public static bool Delete(int id) => clsAppointmentsData.DeleteAppointment(id);
+        public static DataTable GetByDoctor(int doctorId)
+            => clsAppointmentsData.GetAppointmentsByDoctor(doctorId);
 
-        public static bool IsExist(int id) => clsAppointmentsData.IsAppointmentExist(id);
+        public static DataTable GetByDateRange(DateTime start, DateTime end)
+            => clsAppointmentsData.GetAppointmentsByDateRange(start, end);
     }
 }

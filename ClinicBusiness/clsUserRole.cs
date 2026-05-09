@@ -37,70 +37,70 @@ namespace ClinicBusiness
             Mode = enMode.Update;
         }
 
-        // 3. Find Method (Business Logic handles the data retrieval via DAL)
-        public static clsUserRole Find(int RoleId)
-        {
-            string RoleName = "";
-            string Description = "";
-            DateTime CreatedDate = DateTime.Now;
+        //// 3. Find Method (Business Logic handles the data retrieval via DAL)
+        //public static clsUserRole Find(int RoleId)
+        //{
+        //    string RoleName = "";
+        //    string Description = "";
+        //    DateTime CreatedDate = DateTime.Now;
 
 
-            // استدعاء الـ DAL التي تستخدم SP_UserRoles_GetByID
-            bool isFound = clsUserRolesData.GetUserRoleInfoByID(RoleId, ref RoleName, ref Description, ref CreatedDate);
+        //    // استدعاء الـ DAL التي تستخدم SP_UserRoles_GetByID
+        //    bool isFound = clsUserRolesData.GetUserRoleInfoByID(RoleId, ref RoleName, ref Description, ref CreatedDate);
 
-            if (isFound)
-                return new clsUserRole(RoleId, RoleName, Description, CreatedDate);
-            else
-                return null;
-        }
+        //    if (isFound)
+        //        return new clsUserRole(RoleId, RoleName, Description, CreatedDate);
+        //    else
+        //        return null;
+        //}
 
-        // 4. Save Method (The core Business Logic decision)
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewUserRole())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    return false;
+        //// 4. Save Method (The core Business Logic decision)
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewUserRole())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            return false;
 
-                case enMode.Update:
-                    return _UpdateUserRole();
-            }
-            return false;
-        }
+        //        case enMode.Update:
+        //            return _UpdateUserRole();
+        //    }
+        //    return false;
+        //}
 
-        // 5. Private CRUD helpers that talk to the DAL Stored Procedures
-        private bool _AddNewUserRole()
-        {
-            // استدعاء الـ DAL التي تستخدم SP_UserRoles_Add
-            this.RoleId = clsUserRolesData.AddNewUserRole(this.RoleName, this.Description, this.CreatedDate);
-            return (this.RoleId != -1);
-        }
+        //// 5. Private CRUD helpers that talk to the DAL Stored Procedures
+        //private bool _AddNewUserRole()
+        //{
+        //    // استدعاء الـ DAL التي تستخدم SP_UserRoles_Add
+        //    this.RoleId = clsUserRolesData.AddNewUserRole(this.RoleName, this.Description, this.CreatedDate);
+        //    return (this.RoleId != -1);
+        //}
 
-        private bool _UpdateUserRole()
-        {
-            // استدعاء الـ DAL التي تستخدم SP_UserRoles_Update
-            return clsUserRolesData.UpdateUserRole(this.RoleId, this.RoleName, this.Description, this.CreatedDate);
-        }
+        //private bool _UpdateUserRole()
+        //{
+        //    // استدعاء الـ DAL التي تستخدم SP_UserRoles_Update
+        //    return clsUserRolesData.UpdateUserRole(this.RoleId, this.RoleName, this.Description, this.CreatedDate);
+        //}
 
         // 6. Static Methods for list operations
-        public static ObservableCollection<clsUserRole> GetAllUserRoles()
+        public static DataTable GetAllUserRoles()
         {
-            return clsUserRolesData.GetAllUserRoles().ToObservableCollection<clsUserRole>();
+            return clsUserRolesData.GetAllUserRoles();
         }
 
-        public static bool Delete(int RoleId)
-        {
-            return clsUserRolesData.DeleteUserRole(RoleId);
-        }
+        //public static bool Delete(int RoleId)
+        //{
+        //    return clsUserRolesData.DeleteUserRole(RoleId);
+        //}
 
-        public static bool IsExist(int RoleId)
-        {
-            return clsUserRolesData.IsUserRoleExist(RoleId);
-        }
+        //public static bool IsExist(int RoleId)
+        //{
+        //    return clsUserRolesData.IsUserRoleExist(RoleId);
+        //}
     }
 }

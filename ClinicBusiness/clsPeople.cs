@@ -1,203 +1,185 @@
-﻿
-using ClinicDataAccess;
+﻿using ClinicDataAccess;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Runtime.CompilerServices;
 
 namespace ClinicBusiness
 {
-    public class clsPeople : ValidationBase, INotifyPropertyChanged
+    public class clsPeople
     {
+        public enum enMode { AddNew = 0, Update = 1 }
+        public enMode Mode { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        // =========================
+        // Properties
+        // =========================
+        public int PersonId { get; set; }
+        public string FirstName { get; set; }
+        public string SecondName { get; set; }
+        public string ThirdName { get; set; }
+        public string LastName { get; set; }
 
-        // دالة مساعدة لإرسال الإشعار
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        public DateTime DateOfBirth { get; set; }
+        public bool Gender { get; set; }
 
-        public enum enMode { AddNew = 0, Update = 1 };
-        public enMode Mode = enMode.AddNew;
+        public string NationalNumber{ get; set; }
 
-        private int _personId;
-        public int PersonId
-        {
-            get => _personId;
-            set { _personId = value; OnPropertyChanged(); }
-        }
+        public string Phone { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Address { get; set; }
 
-        private string _firstName;
-        public string FirstName
-        {
-            get => _firstName;
-            set
-            {
-                _firstName = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName)); // تحديث الاسم الكامل تلقائياً
-            }
-        }
+        public string FullName =>
+            $"{FirstName} {SecondName} {ThirdName} {LastName}"
+            .Replace("  ", " ")
+            .Trim();
 
-        private string _secondName;
-        public string SecondName
-        {
-            get => _secondName;
-            set
-            {
-                _secondName = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName));
-            }
-        }
-
-        private string _thirdName;
-        public string ThirdName
-        {
-            get => _thirdName;
-            set
-            {
-                _thirdName = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName));
-            }
-        }
-
-        private string _lastName;
-        public string LastName
-        {
-            get => _lastName;
-            set
-            {
-                _lastName = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FullName));
-            }
-        }
-
-        // هذه الخاصية للقراءة فقط، وتعتمد على الأسماء الأربعة
-        public string FullName
-        {
-            get => $"{FirstName} {SecondName} {ThirdName} {LastName}".Replace("  ", " ").Trim();
-        }
-
-        private DateTime _dateOfBirth = DateTime.Now;
-        public DateTime DateOfBirth
-        {
-            get => _dateOfBirth;
-            set { _dateOfBirth = value; OnPropertyChanged(); }
-        }
-
-        private byte _gender;
-        public byte Gender
-        {
-            get => _gender;
-            set { _gender = value; OnPropertyChanged(); }
-        }
-
-        private string _phone;
-        public string Phone
-        {
-            get => _phone;
-            set { _phone = value; OnPropertyChanged(); }
-        }
-
-        private string _email;
-        public string Email
-        {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
-        }
-
-        private string _address;
-        public string Address
-        {
-            get => _address;
-            set { _address = value; OnPropertyChanged(); }
-        }
-
-        private string _imagePath;
-        public string ImagePath
-        {
-            get => _imagePath;
-            set { _imagePath = value; OnPropertyChanged(); }
-        }
-
-        // 1. Default Constructor (Add New Mode)
+        // =========================
+        // Constructor (AddNew)
+        // =========================
         public clsPeople()
         {
             this.PersonId = -1;
-
-            this.FirstName = "";
-            this.SecondName = "";
-            this.ThirdName = "";
-            this.LastName = "";
+            
+            this.FirstName = string.Empty;
+            this.SecondName = string.Empty;
+            this.ThirdName = string.Empty;
+            this.LastName = string.Empty;
+           
             this.DateOfBirth = DateTime.Now;
-            this.Gender = 1;
-            this.Phone = "";
-            this.Email = "";
-            this.Address = "";
-            this.ImagePath = "";
-
-
+            this.Gender = false;
+           
+            this.Phone = string.Empty;
+            this.Email = string.Empty;
+            this.Address = string.Empty;
+            this.NationalNumber = string.Empty;
 
             Mode = enMode.AddNew;
         }
 
-        // 2. Private Constructor (Update Mode - Used by Find)
-        private clsPeople(int PersonId, string FirstName, string SecondName, string ThirdName, string LastName, DateTime DateOfBirth, byte Gender, string Phone, string Email, string Address, string ImagePath)
+        // =========================
+        // Constructor (Update)
+        // =========================
+        private clsPeople(
+            int personId,
+            string firstName,
+            string secondName,
+            string thirdName,
+            string lastName,
+            DateTime dateOfBirth,
+            bool gender,
+            string phone,
+            string email,
+            string address,
+            string nationalNo)
         {
-            this.PersonId = PersonId;
-            this.FirstName = FirstName;
-            this.SecondName = SecondName;
-            this.ThirdName = ThirdName;
-            this.LastName = LastName;
-            this.DateOfBirth = DateOfBirth;
-            this.Gender = Gender;
-            this.Phone = Phone;
-            this.Email = Email;
-            this.Address = Address;
-            this.ImagePath = ImagePath;
-
+            this.PersonId = personId;
+            this.FirstName = firstName;
+            this.SecondName = secondName;
+            this.ThirdName = thirdName;
+            this.LastName = lastName;
+            
+            this.DateOfBirth = dateOfBirth;
+            this.Gender = gender;
+            
+            this.Phone = phone;
+            this.Email = email;
+            this.Address = address;
+            this.NationalNumber = nationalNo;
 
             Mode = enMode.Update;
         }
 
-        // 3. Find Method (Business Logic handles the data retrieval via DAL)
-        public static clsPeople Find(int PersonId)
+        // =========================
+        // Find
+        // =========================
+        public static clsPeople Find(int personId)
         {
-            string FirstName = "";
-            string SecondName = "";
-            string ThirdName = "";
-            string LastName = "";
-            DateTime DateOfBirth = DateTime.Now;
-            byte Gender = 0;
-            string Phone = "";
-            string Email = "";
-            string Address = "";
-            string ImagePath = "";
+            string firstName = "", secondName = "", thirdName = "", lastName = "";
+            DateTime dob = DateTime.Now;
+            bool gender = false;
+            string phone = "", email = "", address = "", nationalNo = "";
 
+            bool found = clsPeopleData.GetPersonById(
+                personId,
+                ref firstName,
+                ref secondName,
+                ref thirdName,
+                ref lastName,
+                ref dob,
+                ref gender,
+                ref phone,
+                ref email,
+                ref address,
+                ref nationalNo
+            );
 
-            // استدعاء الـ DAL التي تستخدم SP_People_GetByID
-            bool isFound = clsPeopleData.GetPeopleInfoByID(PersonId, ref FirstName, ref SecondName, ref ThirdName, ref LastName, ref DateOfBirth, ref Gender, ref Phone, ref Email, ref Address, ref ImagePath);
-
-            if (isFound)
-                return new clsPeople(PersonId, FirstName, SecondName, ThirdName, LastName, DateOfBirth, Gender, Phone, Email, Address, ImagePath);
-            else
+            if (!found)
                 return null;
+
+            return new clsPeople(
+                personId,
+                firstName,
+                secondName,
+                thirdName,
+                lastName,
+                dob,
+                gender,
+                phone,
+                email,
+                address,
+                nationalNo
+            );
         }
 
-        // 4. Save Method (The core Business Logic decision)
+        // =========================
+        // Add
+        // =========================
+        private bool _Add()
+        {
+            this.PersonId = clsPeopleData.AddNewPerson(
+                this.FirstName,
+                this.SecondName,
+                this.ThirdName,
+                this.LastName,
+                this.DateOfBirth,
+                this.Gender,
+                this.Phone,
+                this.Email,
+                this.Address,
+                this.NationalNumber
+            );
+
+            return this.PersonId != -1;
+        }
+
+        // =========================
+        // Update
+        // =========================
+        private bool _Update()
+        {
+            return clsPeopleData.UpdatePerson(
+                this.PersonId,
+                this.FirstName,
+                this.SecondName,
+                this.ThirdName,
+                this.LastName,
+                this.DateOfBirth,
+                this.Gender,
+                this.Phone,
+                this.Email,
+                this.Address,
+                this.NationalNumber
+            );
+        }
+
+        // =========================
+        // Save
+        // =========================
         public bool Save()
         {
-
-
             switch (Mode)
             {
                 case enMode.AddNew:
-                    if (_AddNewPeople())
+                    if (_Add())
                     {
                         Mode = enMode.Update;
                         return true;
@@ -205,77 +187,55 @@ namespace ClinicBusiness
                     return false;
 
                 case enMode.Update:
-                    return _UpdatePeople();
+                    return _Update();
+
+                default:
+                    return false;
             }
-            return false;
         }
 
-        // 5. Private CRUD helpers that talk to the DAL Stored Procedures
-        private bool _AddNewPeople()
+        // =========================
+        // Delete
+        // =========================
+        public static bool Delete(int id)
+            => clsPeopleData.DeletePerson(id);
+
+        // =========================
+        // Get All (DataTable)
+        // =========================
+        public static DataTable GetAll()
+            => clsPeopleData.GetAllPeople();
+
+        // =========================
+        // Is Exist
+        // =========================
+        public static bool IsExist(int personId)
         {
-            // استدعاء الـ DAL التي تستخدم SP_People_Add
-            this.PersonId = clsPeopleData.AddNewPeople(this.FirstName, this.SecondName, this.ThirdName, this.LastName, this.DateOfBirth, this.Gender, this.Phone, this.Email, this.Address, this.ImagePath);
-            return (this.PersonId != -1);
+            // تعريف متغيرات مؤقتة فقط لاستقبال البيانات من الدالة
+            string firstName = "", secondName = "", thirdName = "", lastName = "";
+            string nationalNo = "", email = "", phone = "", address = "";
+            DateTime dateOfBirth = DateTime.Now;
+            bool gender = false;
+            
+
+            // نقوم باستدعاء الدالة وتخزين النتيجة في متغير بولين
+            bool isFound = clsPeopleData.GetPersonById(
+                personId,
+                ref firstName,
+                ref secondName,
+                ref thirdName,
+                ref lastName,
+                // تأكد من ترتيب الحقول حسب تعريفها في clsPeopleData
+                ref dateOfBirth,
+                ref gender,
+                ref phone,
+                ref email,
+                ref address,
+                ref nationalNo
+            );
+
+            // إذا كانت النتيجة true تعيد الدالة true، وإذا لم تجد الشخص تعيد false
+            return isFound;
         }
-
-        private bool _UpdatePeople()
-        {
-            // استدعاء الـ DAL التي تستخدم SP_People_Update
-            return clsPeopleData.UpdatePeople(this.PersonId, this.FirstName, this.SecondName, this.ThirdName, this.LastName, this.DateOfBirth, this.Gender, this.Phone, this.Email, this.Address, this.ImagePath);
-        }
-
-        // 6. Static Methods for list operations
-        public static ObservableCollection<clsPeople> GetAllPeople()
-        {
-            return clsPeopleData.GetAllPeople().ToObservableCollection<clsPeople>();
-        }
-
-        public static bool Delete(int PersonId)
-        {
-            return clsPeopleData.DeletePeople(PersonId);
-        }
-
-        public static bool IsExist(int PersonId)
-        {
-            return clsPeopleData.IsPeopleExist(PersonId);
-        }
-
-        protected override string ValidateProperty(string columnName)
-        {
-            // هنا نضع القواعد (Rules) لكل حقل
-            switch (columnName)
-            {
-                case nameof(FirstName):
-                    if (string.IsNullOrWhiteSpace(FirstName)) return "الاسم الأول مطلوب";
-                    break;
-
-                case nameof(LastName):
-                    if (string.IsNullOrWhiteSpace(LastName)) return "اسم العائلة مطلوب";
-                    break;
-
-                case nameof(Phone):
-                    if (string.IsNullOrWhiteSpace(Phone)) return "رقم الهاتف مطلوب";
-                    if (Phone.Length < 9) return "رقم الهاتف قصير جداً";
-                    break;
-
-                case nameof(Email):
-                    if (!string.IsNullOrWhiteSpace(Email) && !Email.Contains("@"))
-                        return "صيغة البريد الإلكتروني غير صحيحة";
-                    break;
-
-                case nameof(DateOfBirth):
-                    if (DateOfBirth > DateTime.Now.AddYears(-18))
-                        return "يجب أن يكون عمر الطبيب 18 عاماً على الأقل";
-                    break;
-
-
-            }
-            return null;
-        }
-
     }
-
-
-
-
 }

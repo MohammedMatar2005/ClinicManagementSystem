@@ -1,20 +1,11 @@
-
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Runtime.CompilerServices;
+using ClinicDataAccess;
 
 namespace ClinicBusiness
 {
-    public class clsUser : ValidationBase, INotifyPropertyChanged
+    public class clsUser
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
@@ -25,23 +16,29 @@ namespace ClinicBusiness
         public int RoleId { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime LastLoginDate { get; set; }
+        public DateTime? LastLoginDate { get; set; } // Nullable لأن المستخدم الجديد لم يدخل بعد
 
+        // كائن الشخص المرتبط بالمستخدم
         public clsPeople PersonInfo { get; set; }
 
-
-        // 1. Default Constructor (Add New Mode)
+        // 1. Constructor للـ Add New
         public clsUser()
         {
             this.UserId = -1;
-            // تعيين القيم الافتراضية هنا
+            this.PersonId = -1;
+            this.Username = "";
+            this.PasswordHash = "";
+            this.RoleId = -1;
+            this.IsActive = true;
+            this.CreatedDate = DateTime.Now;
+            this.LastLoginDate = null;
 
-            PersonInfo = new clsPeople();
             Mode = enMode.AddNew;
         }
 
-        // 2. Private Constructor (Update Mode - Used by Find)
-        private clsUser(int UserId, int PersonId, string Username, string PasswordHash, int RoleId, bool IsActive, DateTime CreatedDate, DateTime LastLoginDate)
+        // 2. Constructor خاص للـ Update (يستخدم داخلياً عند البحث)
+        private clsUser(int UserId, int PersonId, string Username, string PasswordHash,
+            int RoleId, bool IsActive, DateTime CreatedDate, DateTime? LastLoginDate)
         {
             this.UserId = UserId;
             this.PersonId = PersonId;
@@ -51,11 +48,13 @@ namespace ClinicBusiness
             this.IsActive = IsActive;
             this.CreatedDate = CreatedDate;
             this.LastLoginDate = LastLoginDate;
+
+            // جلب معلومات الشخص تلقائياً عند تحميل المستخدم
             this.PersonInfo = clsPeople.Find(PersonId);
             Mode = enMode.Update;
         }
 
-        // 3. Find Method (Business Logic handles the data retrieval via DAL)
+        // 3. دالة Find لجلب مستخدم عن طريق ID
         public static clsUser Find(int UserId)
         {
             int PersonId = -1;
@@ -64,11 +63,10 @@ namespace ClinicBusiness
             int RoleId = -1;
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
-            DateTime LastLoginDate = DateTime.Now;
+            DateTime? LastLoginDate = null;
 
-
-            // استدعاء الـ DAL التي تستخدم SP_Users_GetByID
-            bool isFound = clsUsersData.GetUserInfoByID(UserId, ref PersonId, ref Username, ref PasswordHash, ref RoleId, ref IsActive, ref CreatedDate, ref LastLoginDate);
+            bool isFound = clsUsersData.GetUserById(UserId, ref PersonId, ref Username,
+                ref PasswordHash, ref RoleId, ref IsActive, ref CreatedDate, ref LastLoginDate);
 
             if (isFound)
                 return new clsUser(UserId, PersonId, Username, PasswordHash, RoleId, IsActive, CreatedDate, LastLoginDate);
@@ -76,7 +74,7 @@ namespace ClinicBusiness
                 return null;
         }
 
-        // 4. Save Method (The core Business Logic decision)
+        // 4. دالة Save (تحدد هل سنضيف أم سنعدل)
         public bool Save()
         {
             switch (Mode)
@@ -95,24 +93,24 @@ namespace ClinicBusiness
             return false;
         }
 
-        // 5. Private CRUD helpers that talk to the DAL Stored Procedures
         private bool _AddNewUser()
         {
-            // استدعاء الـ DAL التي تستخدم SP_Users_Add
-            this.UserId = clsUsersData.AddNewUser(this.PersonId, this.Username, this.PasswordHash, this.RoleId, this.IsActive, this.CreatedDate, this.LastLoginDate);
+            this.UserId = clsUsersData.AddNewUser(this.PersonId, this.Username,
+                 this.PasswordHash, this.RoleId, this.IsActive);
+
             return (this.UserId != -1);
         }
 
         private bool _UpdateUser()
         {
-            // استدعاء الـ DAL التي تستخدم SP_Users_Update
-            return clsUsersData.UpdateUser(this.UserId, this.PersonId, this.Username, this.PasswordHash, this.RoleId, this.IsActive, this.CreatedDate, this.LastLoginDate);
+            return clsUsersData.UpdateUser(this.UserId, this.PersonId, this.Username,
+                this.PasswordHash, this.RoleId, this.IsActive, this.LastLoginDate);
         }
 
-        // 6. Static Methods for list operations
-        public static ObservableCollection<clsUser> GetAllUsers()
+        // 5. العمليات الـ Static (DataTable) كما طلبت
+        public static DataTable GetAllUsers()
         {
-            return clsUsersData.GetAllUsers().ToObservableCollection<clsUser>();
+            return clsUsersData.GetAllUsers();
         }
 
         public static bool Delete(int UserId)
@@ -120,50 +118,25 @@ namespace ClinicBusiness
             return clsUsersData.DeleteUser(UserId);
         }
 
-        public static bool IsExist(int UserId)
+        public static bool IsExistByPersonId(int PersonId)
         {
-            return clsUsersData.IsUserExist(UserId);
+            return clsUsersData.IsUserExistByPersonId(PersonId);
         }
 
-        public static clsUser Login(string UserName, string PasswordHash)
+        // 6. دالة Login (مبسطة وتعتمد على دالة Find لجلب البيانات الكاملة)
+        public static clsUser Login(string Username, string PasswordHash)
         {
+            int UserId = -1;
             int PersonId = -1;
-            int UserId = -1;    
             int RoleId = -1;
             bool IsActive = false;
-            DateTime CreatedDate = DateTime.Now;
-            DateTime LastLoginDate = DateTime.Now;
 
-
-            // استدعاء الـ DAL التي تستخدم SP_Users_GetByID
-            bool isFound = clsUsersData.GetByUsernameAndPassword(UserName, PasswordHash, ref UserId, ref PersonId,  ref RoleId, ref IsActive, ref CreatedDate, ref LastLoginDate);
+            bool isFound = clsUsersData.Login(Username, PasswordHash, ref UserId, ref PersonId, ref RoleId, ref IsActive);
 
             if (isFound)
-                return new clsUser(UserId, PersonId, UserName, PasswordHash, RoleId, IsActive, CreatedDate, LastLoginDate);
+                return Find(UserId); // نستخدم Find هنا لملء كل تفاصيل الكائن (CreatedDate, الخ)
             else
                 return null;
-        }
-
-        // في clsUser
-        protected override string ValidateProperty(string columnName)
-        {
-            switch (columnName)
-            {
-                case nameof(Username):
-                    if (string.IsNullOrWhiteSpace(Username)) return "اسم المستخدم مطلوب";
-                    if (Username.Length < 3) return "اسم المستخدم قصير جداً (3 أحرف على الأقل)";
-                    break;
-
-                case nameof(PasswordHash):
-                    if (string.IsNullOrWhiteSpace(PasswordHash)) return "كلمة المرور مطلوبة";
-                    if (PasswordHash.Length < 6) return "كلمة المرور قصيرة جداً (6 أحرف على الأقل)";
-                    break;
-
-                case nameof(RoleId):
-                    if (RoleId <= 0) return "يرجى اختيار دور المستخدم";
-                    break;
-            }
-            return null;
         }
     }
 }

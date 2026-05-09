@@ -1,7 +1,6 @@
-
 using System;
-using System.Collections.ObjectModel;
 using System.Data;
+using ClinicDataAccess;
 
 namespace ClinicBusiness
 {
@@ -10,34 +9,50 @@ namespace ClinicBusiness
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        // =========================
+        // Properties
+        // =========================
         public int PrescriptionId { get; set; }
         public int VisitId { get; set; }
-        public int PatientId { get; set; }
         public string MedicineName { get; set; }
         public string Dosage { get; set; }
         public string Frequency { get; set; }
-        public int Duration { get; set; }
+        public int? Duration { get; set; } // تم التعديل ليكون Nullable
         public string Instructions { get; set; }
-        public int Quantity { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public int? Quantity { get; set; } // تم التعديل ليكون Nullable
+        public DateTime? StartDate { get; set; } // تم التعديل ليكون Nullable
+        public DateTime? EndDate { get; set; } // تم التعديل ليكون Nullable
         public DateTime CreatedDate { get; set; }
 
+        // =========================
+        // Constructors
+        // =========================
 
         // 1. Default Constructor (Add New Mode)
         public clsPrescription()
         {
             this.PrescriptionId = -1;
-            // تعيين القيم الافتراضية هنا
+            this.VisitId = -1;
+            this.MedicineName = string.Empty;
+            this.Dosage = string.Empty;
+            this.Frequency = string.Empty;
+            this.Duration = null;
+            this.Instructions = string.Empty;
+            this.Quantity = null;
+            this.StartDate = null;
+            this.EndDate = null;
+            this.CreatedDate = DateTime.Now;
+
             Mode = enMode.AddNew;
         }
 
-        // 2. Private Constructor (Update Mode - Used by Find)
-        private clsPrescription(int PrescriptionId, int VisitId, int PatientId, string MedicineName, string Dosage, string Frequency, int Duration, string Instructions, int Quantity, DateTime StartDate, DateTime EndDate, DateTime CreatedDate)
+        // 2. Private Constructor (Update Mode)
+        private clsPrescription(int PrescriptionId, int VisitId, string MedicineName, string Dosage,
+            string Frequency, int? Duration, string Instructions, int? Quantity,
+            DateTime? StartDate, DateTime? EndDate, DateTime CreatedDate)
         {
             this.PrescriptionId = PrescriptionId;
             this.VisitId = VisitId;
-            this.PatientId = PatientId;
             this.MedicineName = MedicineName;
             this.Dosage = Dosage;
             this.Frequency = Frequency;
@@ -51,32 +66,36 @@ namespace ClinicBusiness
             Mode = enMode.Update;
         }
 
-        // 3. Find Method (Business Logic handles the data retrieval via DAL)
+        // =========================
+        // Methods
+        // =========================
+
+        // 3. Find Method
         public static clsPrescription Find(int PrescriptionId)
         {
             int VisitId = -1;
-            int PatientId = -1;
             string MedicineName = "";
             string Dosage = "";
             string Frequency = "";
-            int Duration = -1;
+            int? Duration = null;
             string Instructions = "";
-            int Quantity = -1;
-            DateTime StartDate = DateTime.Now;
-            DateTime EndDate = DateTime.Now;
+            int? Quantity = null;
+            DateTime? StartDate = null;
+            DateTime? EndDate = null;
             DateTime CreatedDate = DateTime.Now;
 
-
-            // استدعاء الـ DAL التي تستخدم SP_Prescriptions_GetByID
-            bool isFound = clsPrescriptionsData.GetPrescriptionInfoByID(PrescriptionId, ref VisitId, ref PatientId, ref MedicineName, ref Dosage, ref Frequency, ref Duration, ref Instructions, ref Quantity, ref StartDate, ref EndDate, ref CreatedDate);
+            bool isFound = clsPrescriptionsData.GetPrescriptionInfoByID(
+                PrescriptionId, ref VisitId, ref MedicineName, ref Dosage, ref Frequency,
+                ref Duration, ref Instructions, ref Quantity, ref StartDate, ref EndDate, ref CreatedDate);
 
             if (isFound)
-                return new clsPrescription(PrescriptionId, VisitId, PatientId, MedicineName, Dosage, Frequency, Duration, Instructions, Quantity, StartDate, EndDate, CreatedDate);
+                return new clsPrescription(PrescriptionId, VisitId, MedicineName, Dosage,
+                    Frequency, Duration, Instructions, Quantity, StartDate, EndDate, CreatedDate);
             else
                 return null;
         }
 
-        // 4. Save Method (The core Business Logic decision)
+        // 4. Save Method
         public bool Save()
         {
             switch (Mode)
@@ -95,24 +114,41 @@ namespace ClinicBusiness
             return false;
         }
 
-        // 5. Private CRUD helpers that talk to the DAL Stored Procedures
+        // 5. Private CRUD helpers
         private bool _AddNewPrescription()
         {
-            // استدعاء الـ DAL التي تستخدم SP_Prescriptions_Add
-            this.PrescriptionId = clsPrescriptionsData.AddNewPrescription(this.VisitId, this.PatientId, this.MedicineName, this.Dosage, this.Frequency, this.Duration, this.Instructions, this.Quantity, this.StartDate, this.EndDate, this.CreatedDate);
+            this.PrescriptionId = clsPrescriptionsData.AddNewPrescription(
+                this.VisitId, this.MedicineName, this.Dosage, this.Frequency,
+                this.Duration, this.Instructions, this.Quantity, this.StartDate, this.EndDate);
+
             return (this.PrescriptionId != -1);
         }
 
         private bool _UpdatePrescription()
         {
-            // استدعاء الـ DAL التي تستخدم SP_Prescriptions_Update
-            return clsPrescriptionsData.UpdatePrescription(this.PrescriptionId, this.VisitId, this.PatientId, this.MedicineName, this.Dosage, this.Frequency, this.Duration, this.Instructions, this.Quantity, this.StartDate, this.EndDate, this.CreatedDate);
+            return clsPrescriptionsData.UpdatePrescription(
+                this.PrescriptionId, this.VisitId, this.MedicineName, this.Dosage,
+                this.Frequency, this.Duration, this.Instructions, this.Quantity,
+                this.StartDate, this.EndDate);
         }
 
-        // 6. Static Methods for list operations
-        public static ObservableCollection<clsPrescription> GetAllPrescriptions()
+        // =========================
+        // Static Methods
+        // =========================
+
+        public static DataTable GetAllPrescriptions()
         {
-            return clsPrescriptionsData.GetAllPrescriptions().ToObservableCollection<clsPrescription>();
+            return clsPrescriptionsData.GetAllPrescriptions();
+        }
+
+        public static DataTable GetPrescriptionsByVisit(int VisitId)
+        {
+            return clsPrescriptionsData.GetPrescriptionsByVisit(VisitId);
+        }
+
+        public static DataTable GetPrescriptionsByPatient(int PatientId)
+        {
+            return clsPrescriptionsData.GetPrescriptionsByPatient(PatientId);
         }
 
         public static bool Delete(int PrescriptionId)

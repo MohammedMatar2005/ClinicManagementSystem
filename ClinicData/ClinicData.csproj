@@ -49,7 +49,7 @@
     <Compile Include="clsPatientsData.cs" />
     <Compile Include="clsPatientVisitsData.cs" />
     <Compile Include="clsPaymentsData.cs" />
-    <Compile Include="clsPeople.cs" />
+    <Compile Include="clsPeopleData.cs" />
     <Compile Include="clsPrescriptionsData.cs" />
     <Compile Include="clsUserRolesData.cs" />
     <Compile Include="clsUsersData.cs" />
