@@ -13,7 +13,7 @@ public class clsPaymentsData
         DataTable dt = new DataTable();
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_GetAll", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 try
@@ -31,12 +31,14 @@ public class clsPaymentsData
     }
 
     // 2. Get Info By ID using SP_Payments_GetByID
-    public static bool GetPaymentInfoByID(int PaymentId, ref int InvoiceId, ref int PatientId, ref decimal PaymentAmount, ref string PaymentMethod, ref string PaymentStatus, ref string TransactionReference, ref DateTime PaymentDate, ref string Notes, ref DateTime CreatedDate, ref bool IsActive)
+    public static bool GetPaymentInfoByID(int PaymentId, ref int InvoiceId, ref decimal PaymentAmount, ref string PaymentMethod,
+        ref byte PaymentStatusId, ref string TransactionReference, ref DateTime PaymentDate,
+        ref string Notes, ref DateTime CreatedDate, ref bool IsActive)
     {
         bool isFound = false;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_GetByID", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_GetById", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PaymentId", PaymentId);
@@ -50,55 +52,63 @@ public class clsPaymentsData
                         {
                             isFound = true;
                             InvoiceId = (int)reader["InvoiceId"];
-                            PatientId = (int)reader["PatientId"];
+                            
                             PaymentAmount = (decimal)reader["PaymentAmount"];
-                            PaymentMethod = (string)reader["PaymentMethod"];
-                            PaymentStatus = (string)reader["PaymentStatus"];
+                            
+                            PaymentStatusId = (byte)reader["PaymentStatusId"];
                             TransactionReference = (string)reader["TransactionReference"];
                             PaymentDate = (DateTime)reader["PaymentDate"];
-                            Notes = (string)reader["Notes"];
+                           
                             CreatedDate = (DateTime)reader["CreatedDate"];
                             IsActive = (bool)reader["IsActive"];
+
+
+                            PaymentMethod =
+                                reader["PaymentMethod"] != DBNull.Value
+                                ? (string)reader["PaymentMethod"]
+                                : string.Empty;
+
+                            Notes =
+                                reader["Notes"] != DBNull.Value
+                                ? (string)reader["Notes"]
+                                : string.Empty;
 
                         }
                     }
                 }
-                catch (Exception ex) { isFound = false; }
+                catch (Exception ex) { isFound = false; EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
             }
         }
         return isFound;
     }
 
     // 3. Add New Payment using SP_Payments_Insert
-    public static int AddNewPayment(int InvoiceId, int PatientId, decimal PaymentAmount, string PaymentMethod, string PaymentStatus, string TransactionReference, DateTime PaymentDate, string Notes, DateTime CreatedDate, bool IsActive)
+    public static int AddNewPayment(int InvoiceId, decimal PaymentAmount, string PaymentMethod, byte PaymentStatusId, string TransactionReference, DateTime PaymentDate, string Notes, DateTime CreatedDate, bool IsActive)
     {
         int newID = -1;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_Insert", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@InvoiceId", InvoiceId);
-                command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@PaymentAmount", PaymentAmount);
-                command.Parameters.AddWithValue("@PaymentMethod", PaymentMethod);
-                command.Parameters.AddWithValue("@PaymentStatus", PaymentStatus);
+                command.Parameters.AddWithValue("@PaymentMethod", string.IsNullOrWhiteSpace(PaymentMethod)? DBNull.Value : (object) PaymentMethod);
+                command.Parameters.AddWithValue("@PaymentStatus", PaymentStatusId);
                 command.Parameters.AddWithValue("@TransactionReference", TransactionReference);
                 command.Parameters.AddWithValue("@PaymentDate", PaymentDate);
-                command.Parameters.AddWithValue("@Notes", Notes);
+                command.Parameters.AddWithValue("@Notes", string.IsNullOrWhiteSpace(Notes) ? DBNull.Value : (object)Notes);
                 command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
                 command.Parameters.AddWithValue("@IsActive", IsActive);
 
 
                 // نفترض أن الـ SP يحتوي على Parameter مخرجات لإعادة الـ ID الجديد
-                SqlParameter outputIdParam = new SqlParameter("@NewID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                command.Parameters.Add(outputIdParam);
 
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    newID = (int)command.Parameters["@NewID"].Value;
+                     newID = (int)command.ExecuteScalar();
+                  
                 }
                 catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
             }
@@ -107,23 +117,22 @@ public class clsPaymentsData
     }
 
     // 4. Update Payment using SP_Payments_Update
-    public static bool UpdatePayment(int PaymentId, int InvoiceId, int PatientId, decimal PaymentAmount, string PaymentMethod, string PaymentStatus, string TransactionReference, DateTime PaymentDate, string Notes, DateTime CreatedDate, bool IsActive)
+    public static bool UpdatePayment(int PaymentId, int InvoiceId,  decimal PaymentAmount, string PaymentMethod, byte PaymentStatusId, string TransactionReference, DateTime PaymentDate, string Notes, DateTime CreatedDate, bool IsActive)
     {
         int rowsAffected = 0;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_Update", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PaymentId", PaymentId);
                 command.Parameters.AddWithValue("@InvoiceId", InvoiceId);
-                command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@PaymentAmount", PaymentAmount);
-                command.Parameters.AddWithValue("@PaymentMethod", PaymentMethod);
-                command.Parameters.AddWithValue("@PaymentStatus", PaymentStatus);
-                command.Parameters.AddWithValue("@TransactionReference", TransactionReference);
+                command.Parameters.AddWithValue("@PaymentMethod", string.IsNullOrWhiteSpace( PaymentMethod) ? DBNull.Value : (object)PaymentMethod);
+                command.Parameters.AddWithValue("@PaymentStatus", PaymentStatusId);
+                command.Parameters.AddWithValue("@TransactionReference", string.IsNullOrWhiteSpace(TransactionReference) ? DBNull.Value : (object)TransactionReference);
                 command.Parameters.AddWithValue("@PaymentDate", PaymentDate);
-                command.Parameters.AddWithValue("@Notes", Notes);
+                command.Parameters.AddWithValue("@Notes", string.IsNullOrWhiteSpace(Notes) ? DBNull.Value : (object)Notes);
                 command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
                 command.Parameters.AddWithValue("@IsActive", IsActive);
 
@@ -141,7 +150,7 @@ public class clsPaymentsData
         int rowsAffected = 0;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_Delete", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_SoftDelete", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PaymentId", PaymentId);
@@ -159,7 +168,7 @@ public class clsPaymentsData
         bool isFound = false;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Payments_IsExist", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Payments_IsExist", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PaymentId", PaymentId);
@@ -170,7 +179,7 @@ public class clsPaymentsData
                     object result = command.ExecuteScalar();
                     isFound = (result != null);
                 }
-                catch { isFound = false; }
+                catch(Exception ex) { isFound = false; EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
             }
         }
         return isFound;

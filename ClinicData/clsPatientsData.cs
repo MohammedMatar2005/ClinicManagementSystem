@@ -1,181 +1,351 @@
-
 using ClinicDataAccess;
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
-
-using System.Windows;
-
 
 public class clsPatientsData
 {
-    // 1. Get All Patients using SP_Patients_GetAll
+    // =========================================
+    // Get All Patients
+    // =========================================
     public static DataTable GetAllPatients()
     {
         DataTable dt = new DataTable();
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_GetAll", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.HasRows) dt.Load(reader);
+                        if (reader.HasRows)
+                            dt.Load(reader);
                     }
                 }
                 catch (Exception ex)
                 {
-                   // MessageBox.Show($"خطأ في GetAllPatients: {ex.Message}");
-                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); 
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
+
         return dt;
     }
-    // 2. Get Info By ID using SP_Patients_GetByID
-    public static bool GetPatientInfoByID(int PatientId, ref int PersonId, ref string EmergencyContact, ref string EmergencyPhone, ref string BloodType, ref string Allergies, ref string MedicalHistory, ref bool IsActive, ref DateTime CreatedDate, ref string Email)
+
+    // =========================================
+    // Get Patient By ID
+    // =========================================
+    public static bool GetPatientById(
+        int patientId,
+        ref int personId,
+        ref string emergencyContact,
+        ref string emergencyPhone,
+        ref string bloodType,
+        ref string allergies,
+        ref string medicalHistory,
+        ref bool isActive,
+        ref DateTime createdDate)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_GetByID", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_GetById", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PatientId", PatientId);
+
+                command.Parameters.AddWithValue("@PatientId", patientId);
 
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
-                            PersonId = (int)reader["PersonId"];
-                            EmergencyContact = (string)reader["EmergencyContact"];
-                            EmergencyPhone = (string)reader["EmergencyPhone"];
-                            BloodType = (string)reader["BloodType"];
-                            Allergies = (string)reader["Allergies"];
-                            MedicalHistory = (string)reader["MedicalHistory"];
-                            IsActive = (bool)reader["IsActive"];
-                            CreatedDate = (DateTime)reader["CreatedDate"];
-                            Email = (string)reader["Email"];
 
+                            personId = (int)reader["PersonId"];
+
+                            emergencyContact =
+                                reader["EmergencyContact"] != DBNull.Value
+                                ? (string)reader["EmergencyContact"]
+                                : string.Empty;
+
+                            emergencyPhone =
+                                reader["EmergencyPhone"] != DBNull.Value
+                                ? (string)reader["EmergencyPhone"]
+                                : string.Empty;
+
+                            bloodType =
+                                reader["BloodType"] != DBNull.Value
+                                ? (string)reader["BloodType"]
+                                : string.Empty;
+
+                            allergies =
+                                reader["Allergies"] != DBNull.Value
+                                ? (string)reader["Allergies"]
+                                : string.Empty;
+
+                            medicalHistory =
+                                reader["MedicalHistory"] != DBNull.Value
+                                ? (string)reader["MedicalHistory"]
+                                : string.Empty;
+
+                            isActive = (bool)reader["IsActive"];
+
+                            createdDate = (DateTime)reader["CreatedDate"];
                         }
                     }
                 }
-                catch (Exception ex) { isFound = false; }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 
-    // 3. Add New Patient using SP_Patients_Insert
-    public static int AddNewPatient(int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate, string Email)
+    // =========================================
+    // Insert Patient
+    // =========================================
+    public static int AddNewPatient(
+        int personId,
+        string emergencyContact,
+        string emergencyPhone,
+        string bloodType,
+        string allergies,
+        string medicalHistory,
+        bool isActive)
     {
-        int newID = -1;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        int newPatientId = -1;
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_Insert", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PersonId", PersonId);
-                command.Parameters.AddWithValue("@EmergencyContact", EmergencyContact);
-                command.Parameters.AddWithValue("@EmergencyPhone", EmergencyPhone);
-                command.Parameters.AddWithValue("@BloodType", BloodType);
-                command.Parameters.AddWithValue("@Allergies", Allergies);
-                command.Parameters.AddWithValue("@MedicalHistory", MedicalHistory);
-                command.Parameters.AddWithValue("@IsActive", IsActive);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
-                command.Parameters.AddWithValue("@Email", Email);
 
+                command.Parameters.AddWithValue("@PersonId", personId);
 
-                // نفترض أن الـ SP يحتوي على Parameter مخرجات لإعادة الـ ID الجديد
-                SqlParameter outputIdParam = new SqlParameter("@NewID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                command.Parameters.Add(outputIdParam);
+                command.Parameters.AddWithValue(
+                    "@EmergencyContact",
+                    string.IsNullOrWhiteSpace(emergencyContact)
+                    ? DBNull.Value
+                    : (object)emergencyContact);
+
+                command.Parameters.AddWithValue(
+                    "@EmergencyPhone",
+                    string.IsNullOrWhiteSpace(emergencyPhone)
+                    ? DBNull.Value
+                    : (object)emergencyPhone);
+
+                command.Parameters.AddWithValue(
+                    "@BloodType",
+                    string.IsNullOrWhiteSpace(bloodType)
+                    ? DBNull.Value
+                    : (object)bloodType);
+
+                command.Parameters.AddWithValue(
+                    "@Allergies",
+                    string.IsNullOrWhiteSpace(allergies)
+                    ? DBNull.Value
+                    : (object)allergies);
+
+                command.Parameters.AddWithValue(
+                    "@MedicalHistory",
+                    string.IsNullOrWhiteSpace(medicalHistory)
+                    ? DBNull.Value
+                    : (object)medicalHistory);
+
+                command.Parameters.AddWithValue("@IsActive", isActive);
+
+             
 
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    newID = (int)command.Parameters["@NewID"].Value;
+
+                   
+
+                    newPatientId = (int)command.ExecuteScalar();
+                      
                 }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
-        return newID;
+
+        return newPatientId;
     }
 
-    // 4. Update Patient using SP_Patients_Update
-    public static bool UpdatePatient(int PatientId, int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate, string Email)
+    // =========================================
+    // Update Patient
+    // =========================================
+    public static bool UpdatePatient(
+        int patientId,
+        int personId,
+        string emergencyContact,
+        string emergencyPhone,
+        string bloodType,
+        string allergies,
+        string medicalHistory,
+        bool isActive)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_Update", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PatientId", PatientId);
-                command.Parameters.AddWithValue("@PersonId", PersonId);
-                command.Parameters.AddWithValue("@EmergencyContact", EmergencyContact);
-                command.Parameters.AddWithValue("@EmergencyPhone", EmergencyPhone);
-                command.Parameters.AddWithValue("@BloodType", BloodType);
-                command.Parameters.AddWithValue("@Allergies", Allergies);
-                command.Parameters.AddWithValue("@MedicalHistory", MedicalHistory);
-                command.Parameters.AddWithValue("@IsActive", IsActive);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
-                command.Parameters.AddWithValue("@Email", Email);
 
+                command.Parameters.AddWithValue("@PatientId", patientId);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                command.Parameters.AddWithValue("@PersonId", personId);
+
+                command.Parameters.AddWithValue(
+                    "@EmergencyContact",
+                    string.IsNullOrWhiteSpace(emergencyContact)
+                    ? DBNull.Value
+                    : (object)emergencyContact);
+
+                command.Parameters.AddWithValue(
+                    "@EmergencyPhone",
+                    string.IsNullOrWhiteSpace(emergencyPhone)
+                    ? DBNull.Value
+                    : (object)emergencyPhone);
+
+                command.Parameters.AddWithValue(
+                    "@BloodType",
+                    string.IsNullOrWhiteSpace(bloodType)
+                    ? DBNull.Value
+                    : (object)bloodType);
+
+                command.Parameters.AddWithValue(
+                    "@Allergies",
+                    string.IsNullOrWhiteSpace(allergies)
+                    ? DBNull.Value
+                    : (object)allergies);
+
+                command.Parameters.AddWithValue(
+                    "@MedicalHistory",
+                    string.IsNullOrWhiteSpace(medicalHistory)
+                    ? DBNull.Value
+                    : (object)medicalHistory);
+
+                command.Parameters.AddWithValue("@IsActive", isActive);
+
+                try
+                {
+                    connection.Open();
+
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 5. Delete Patient using SP_Patients_Delete
-    public static bool DeletePatient(int PatientId)
+    // =========================================
+    // Soft Delete Patient
+    // =========================================
+    public static bool DeletePatient(int patientId)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_Delete", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_Delete", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PatientId", PatientId);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                command.Parameters.AddWithValue("@PatientId", patientId);
+
+                try
+                {
+                    connection.Open();
+
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 6. Check Existence using SP_Patients_IsExist
-    public static bool IsPatientExist(int PatientId)
+    // =========================================
+    // Is Patient Exists By PersonId
+    // =========================================
+    public static bool IsPatientExistByPersonId(int personId)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Patients_IsExist", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_IsExist_ByPersonId", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PatientId", PatientId);
+
+                command.Parameters.AddWithValue("@PersonId", personId);
 
                 try
                 {
                     connection.Open();
+
                     object result = command.ExecuteScalar();
+
                     isFound = (result != null);
                 }
-                catch { isFound = false; }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 }

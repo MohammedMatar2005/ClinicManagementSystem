@@ -13,7 +13,7 @@ public class clsPatientVisitsData
         DataTable dt = new DataTable();
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_PatientVisits_GetAll", connection))
+            using (SqlCommand command = new SqlCommand("Sp_PatientVisits_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 try
@@ -31,7 +31,7 @@ public class clsPatientVisitsData
     }
 
     // 2. Get Info By ID using SP_PatientVisits_GetByID
-    public static bool GetPatientVisitInfoByID(int VisitId, ref int AppointmentId, ref int PatientId, ref int DoctorId, ref DateTime VisitDate, ref string Symptoms, ref string Diagnosis, ref string TreatmentPlan, ref string BloodPressure, ref decimal Temperature, ref int HeartRate, ref int RespiratoryRate, ref decimal Weight, ref decimal Height, ref string Notes, ref DateTime CreatedDate)
+    public static bool GetPatientVisitInfoByID(int VisitId, ref int AppointmentId, ref DateTime VisitDate, ref string Symptoms, ref string Diagnosis, ref string TreatmentPlan, ref string BloodPressure, ref decimal Temperature, ref int HeartRate, ref int RespiratoryRate, ref decimal Weight, ref decimal Height, ref string Notes, ref DateTime CreatedDate)
     {
         bool isFound = false;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
@@ -49,20 +49,50 @@ public class clsPatientVisitsData
                         if (reader.Read())
                         {
                             isFound = true;
+
                             AppointmentId = (int)reader["AppointmentId"];
-                            PatientId = (int)reader["PatientId"];
-                            DoctorId = (int)reader["DoctorId"];
                             VisitDate = (DateTime)reader["VisitDate"];
-                            Symptoms = (string)reader["Symptoms"];
-                            Diagnosis = (string)reader["Diagnosis"];
-                            TreatmentPlan = (string)reader["TreatmentPlan"];
-                            BloodPressure = (string)reader["BloodPressure"];
-                            Temperature = (decimal)reader["Temperature"];
-                            HeartRate = (int)reader["HeartRate"];
-                            RespiratoryRate = (int)reader["RespiratoryRate"];
-                            Weight = (decimal)reader["Weight"];
-                            Height = (decimal)reader["Height"];
-                            Notes = (string)reader["Notes"];
+
+                            Symptoms = reader["Symptoms"] != DBNull.Value
+                                ? (string)reader["Symptoms"]
+                                : string.Empty;
+
+                            Diagnosis = reader["Diagnosis"] != DBNull.Value
+                                ? (string)reader["Diagnosis"]
+                                : string.Empty;
+
+                            TreatmentPlan = reader["TreatmentPlan"] != DBNull.Value
+                                ? (string)reader["TreatmentPlan"]
+                                : string.Empty;
+
+                            BloodPressure = reader["BloodPressure"] != DBNull.Value
+                                ? (string)reader["BloodPressure"]
+                                : string.Empty;
+
+                            Temperature = reader["Temperature"] != DBNull.Value
+                                ? (decimal)reader["Temperature"]
+                                : 0;
+
+                            HeartRate = reader["HeartRate"] != DBNull.Value
+                                ? (int)reader["HeartRate"]
+                                : 0;
+
+                            RespiratoryRate = reader["RespiratoryRate"] != DBNull.Value
+                                ? (int)reader["RespiratoryRate"]
+                                : 0;
+
+                            Weight = reader["Weight"] != DBNull.Value
+                                ? (decimal)reader["Weight"]
+                                : 0;
+
+                            Height = reader["Height"] != DBNull.Value
+                                ? (decimal)reader["Height"]
+                                : 0;
+
+                            Notes = reader["Notes"] != DBNull.Value
+                                ? (string)reader["Notes"]
+                                : string.Empty;
+
                             CreatedDate = (DateTime)reader["CreatedDate"];
 
                         }
@@ -83,32 +113,83 @@ public class clsPatientVisitsData
             using (SqlCommand command = new SqlCommand("SP_PatientVisits_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 command.Parameters.AddWithValue("@AppointmentId", AppointmentId);
                 command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@DoctorId", DoctorId);
                 command.Parameters.AddWithValue("@VisitDate", VisitDate);
-                command.Parameters.AddWithValue("@Symptoms", Symptoms);
-                command.Parameters.AddWithValue("@Diagnosis", Diagnosis);
-                command.Parameters.AddWithValue("@TreatmentPlan", TreatmentPlan);
-                command.Parameters.AddWithValue("@BloodPressure", BloodPressure);
-                command.Parameters.AddWithValue("@Temperature", Temperature);
-                command.Parameters.AddWithValue("@HeartRate", HeartRate);
-                command.Parameters.AddWithValue("@RespiratoryRate", RespiratoryRate);
-                command.Parameters.AddWithValue("@Weight", Weight);
-                command.Parameters.AddWithValue("@Height", Height);
-                command.Parameters.AddWithValue("@Notes", Notes);
+
+                command.Parameters.AddWithValue(
+                    "@Symptoms",
+                    string.IsNullOrWhiteSpace(Symptoms)
+                    ? DBNull.Value
+                    : (object)Symptoms);
+
+                command.Parameters.AddWithValue(
+                    "@Diagnosis",
+                    string.IsNullOrWhiteSpace(Diagnosis)
+                    ? DBNull.Value
+                    : (object)Diagnosis);
+
+                command.Parameters.AddWithValue(
+                    "@TreatmentPlan",
+                    string.IsNullOrWhiteSpace(TreatmentPlan)
+                    ? DBNull.Value
+                    : (object)TreatmentPlan);
+
+                command.Parameters.AddWithValue(
+                    "@BloodPressure",
+                    string.IsNullOrWhiteSpace(BloodPressure)
+                    ? DBNull.Value
+                    : (object)BloodPressure);
+
+                command.Parameters.AddWithValue(
+                    "@Temperature",
+                    Temperature == 0
+                    ? DBNull.Value
+                    : (object)Temperature);
+
+                command.Parameters.AddWithValue(
+                    "@HeartRate",
+                    HeartRate == 0
+                    ? DBNull.Value
+                    : (object)HeartRate);
+
+                command.Parameters.AddWithValue(
+                    "@RespiratoryRate",
+                    RespiratoryRate == 0
+                    ? DBNull.Value
+                    : (object)RespiratoryRate);
+
+                command.Parameters.AddWithValue(
+                    "@Weight",
+                    Weight == 0
+                    ? DBNull.Value
+                    : (object)Weight);
+
+                command.Parameters.AddWithValue(
+                    "@Height",
+                    Height == 0
+                    ? DBNull.Value
+                    : (object)Height);
+
+                command.Parameters.AddWithValue(
+                    "@Notes",
+                    string.IsNullOrWhiteSpace(Notes)
+                    ? DBNull.Value
+                    : (object)Notes);
+
                 command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
 
 
                 // نفترض أن الـ SP يحتوي على Parameter مخرجات لإعادة الـ ID الجديد
-                SqlParameter outputIdParam = new SqlParameter("@NewID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                command.Parameters.Add(outputIdParam);
+
 
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    newID = (int)command.Parameters["@NewID"].Value;
+                    
+                    newID = (int)command.ExecuteScalar();
                 }
                 catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
             }
@@ -125,21 +206,63 @@ public class clsPatientVisitsData
             using (SqlCommand command = new SqlCommand("SP_PatientVisits_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 command.Parameters.AddWithValue("@VisitId", VisitId);
                 command.Parameters.AddWithValue("@AppointmentId", AppointmentId);
                 command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@DoctorId", DoctorId);
                 command.Parameters.AddWithValue("@VisitDate", VisitDate);
-                command.Parameters.AddWithValue("@Symptoms", Symptoms);
-                command.Parameters.AddWithValue("@Diagnosis", Diagnosis);
-                command.Parameters.AddWithValue("@TreatmentPlan", TreatmentPlan);
-                command.Parameters.AddWithValue("@BloodPressure", BloodPressure);
-                command.Parameters.AddWithValue("@Temperature", Temperature);
-                command.Parameters.AddWithValue("@HeartRate", HeartRate);
-                command.Parameters.AddWithValue("@RespiratoryRate", RespiratoryRate);
-                command.Parameters.AddWithValue("@Weight", Weight);
-                command.Parameters.AddWithValue("@Height", Height);
-                command.Parameters.AddWithValue("@Notes", Notes);
+
+                command.Parameters.AddWithValue("@Symptoms",
+                    string.IsNullOrWhiteSpace(Symptoms)
+                    ? DBNull.Value
+                    : (object)Symptoms);
+
+                command.Parameters.AddWithValue("@Diagnosis",
+                    string.IsNullOrWhiteSpace(Diagnosis)
+                    ? DBNull.Value
+                    : (object)Diagnosis);
+
+                command.Parameters.AddWithValue("@TreatmentPlan",
+                    string.IsNullOrWhiteSpace(TreatmentPlan)
+                    ? DBNull.Value
+                    : (object)TreatmentPlan);
+
+                command.Parameters.AddWithValue("@BloodPressure",
+                    string.IsNullOrWhiteSpace(BloodPressure)
+                    ? DBNull.Value
+                    : (object)BloodPressure);
+
+                command.Parameters.AddWithValue("@Temperature",
+                    Temperature == 0
+                    ? DBNull.Value
+                    : (object)Temperature);
+
+                command.Parameters.AddWithValue("@HeartRate",
+                    HeartRate == 0
+                    ? DBNull.Value
+                    : (object)HeartRate);
+
+                command.Parameters.AddWithValue("@RespiratoryRate",
+                    RespiratoryRate == 0
+                    ? DBNull.Value
+                    : (object)RespiratoryRate);
+
+                command.Parameters.AddWithValue("@Weight",
+                    Weight == 0
+                    ? DBNull.Value
+                    : (object)Weight);
+
+                command.Parameters.AddWithValue("@Height",
+                    Height == 0
+                    ? DBNull.Value
+                    : (object)Height);
+
+                command.Parameters.AddWithValue("@Notes",
+                    string.IsNullOrWhiteSpace(Notes)
+                    ? DBNull.Value
+                    : (object)Notes);
+
                 command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
 
 

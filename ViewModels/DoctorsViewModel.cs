@@ -166,7 +166,7 @@ namespace ClinicManagementApplication.ViewModels
             if (success)
             {
                 MessageBox.Show("تم حفظ بيانات الشخص بنجاح");
-                
+
                 PeopleList.Add(SelectedPerson);
                 SelectedUser.PersonId = SelectedPerson.PersonId; // ربط تلقائي
                 CurrentTabIndex = 1; // انتقال تلقائي للتاب التالي
@@ -197,22 +197,52 @@ namespace ClinicManagementApplication.ViewModels
             if (!IsPasswordMatch)
             {
                 MessageBox.Show("كلمة المرور غير متطابقة، يرجى التأكد قبل الحفظ النهائي");
-                CurrentTabIndex = 1; // إرجاع المستخدم لتبويب الحساب لتصحيح الخطأ
+                CurrentTabIndex = 1;
                 return;
             }
 
-            bool success = await Task.Run(() => SelectedDoctor.Save());
-            if (success)
+            var result = await Task.Run(() => SelectedDoctor.Save());
+
+            switch (result)
             {
-                MessageBox.Show("تم حفظ الطبيب بنجاح");
-                await LoadDoctors();
-                ResetAllData();
-            }
-            else
-            {
-                MessageBox.Show("فشل حفظ بيانات الطبيب");
+                case clsDoctor.enMode.AddNew:
+                    MessageBox.Show("تم إضافة الطبيب بنجاح");
+                    await LoadDoctors();
+                    ResetAllData();
+                    break;
+
+                case clsDoctor.enMode.Update:
+                    MessageBox.Show("تم تحديث بيانات الطبيب بنجاح");
+                    await LoadDoctors();
+                    ResetAllData();
+                    break;
+
+                case clsDoctor.enMode.Failed:
+                    MessageBox.Show("فشل حفظ بيانات الطبيب");
+                    break;
             }
         }
+        //private async Task SaveDoctor()
+        //{
+        //    if (!IsPasswordMatch)
+        //    {
+        //        MessageBox.Show("كلمة المرور غير متطابقة، يرجى التأكد قبل الحفظ النهائي");
+        //        CurrentTabIndex = 1; // إرجاع المستخدم لتبويب الحساب لتصحيح الخطأ
+        //        return;
+        //    }
+
+        //    bool success = await Task.Run(() => SelectedDoctor.Save());
+        //    if (success)
+        //    {
+        //        MessageBox.Show("تم حفظ الطبيب بنجاح");
+        //        await LoadDoctors();
+        //        ResetAllData();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("فشل حفظ بيانات الطبيب");
+        //    }
+        //}
         private void ExecuteNext(object p) => CurrentTabIndex++;
         private bool CanExecuteNext(object p) => CurrentTabIndex < 2;
         private void ExecuteBack(object p) => CurrentTabIndex--;

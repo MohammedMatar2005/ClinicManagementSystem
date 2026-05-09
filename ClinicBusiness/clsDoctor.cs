@@ -20,7 +20,9 @@ namespace ClinicBusiness
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public enum enMode { AddNew = 0, Update = 1 };
+       
+
+        public enum enMode { AddNew = 0, Update = 1, Failed = 2 };
         public enMode Mode = enMode.AddNew;
 
         public int DoctorId { get; set; }
@@ -112,8 +114,28 @@ namespace ClinicBusiness
             return FullName ?? "";
         }
 
+
+
         // 4. Save Method (The core Business Logic decision)
-        public bool Save()
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewDoctor())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            return false;
+
+        //        case enMode.Update:
+        //            return _UpdateDoctor();
+        //    }
+        //    return false;
+        //}
+
+        public enMode Save()
         {
             switch (Mode)
             {
@@ -121,14 +143,18 @@ namespace ClinicBusiness
                     if (_AddNewDoctor())
                     {
                         Mode = enMode.Update;
-                        return true;
+                        return enMode.AddNew;
                     }
-                    return false;
+                    return enMode.Failed;
 
                 case enMode.Update:
-                    return _UpdateDoctor();
+                    if (_UpdateDoctor())
+                        return enMode.Update;
+
+                    return enMode.Failed;
             }
-            return false;
+
+            return enMode.Failed;
         }
 
         // 5. Private CRUD helpers that talk to the DAL Stored Procedures

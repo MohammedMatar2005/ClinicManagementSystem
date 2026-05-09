@@ -1,42 +1,65 @@
-
 using ClinicDataAccess;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 
-
 public class clsPrescriptionsData
 {
-    // 1. Get All Prescriptions using SP_Prescriptions_GetAll
+    // 1. Get All Prescriptions
     public static DataTable GetAllPrescriptions()
     {
         DataTable dt = new DataTable();
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_GetAll", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.HasRows) dt.Load(reader);
+                        if (reader.HasRows)
+                            dt.Load(reader);
                     }
                 }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return dt;
     }
 
-    // 2. Get Info By ID using SP_Prescriptions_GetByID
-    public static bool GetPrescriptionInfoByID(int PrescriptionId, ref int VisitId, ref int PatientId, ref string MedicineName, ref string Dosage, ref string Frequency, ref int Duration, ref string Instructions, ref int Quantity, ref DateTime StartDate, ref DateTime EndDate, ref DateTime CreatedDate)
+    // 2. Get By ID
+    public static bool GetPrescriptionInfoByID(
+        int PrescriptionId,
+        ref int VisitId,
+        ref string MedicineName,
+        ref string Dosage,
+        ref string Frequency,
+        ref int? Duration,
+        ref string Instructions,
+        ref int? Quantity,
+        ref DateTime? StartDate,
+        ref DateTime? EndDate,
+        ref DateTime CreatedDate)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_GetByID", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_GetByID", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
@@ -44,125 +67,219 @@ public class clsPrescriptionsData
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
+
                             VisitId = (int)reader["VisitId"];
-                            PatientId = (int)reader["PatientId"];
                             MedicineName = (string)reader["MedicineName"];
                             Dosage = (string)reader["Dosage"];
                             Frequency = (string)reader["Frequency"];
-                            Duration = (int)reader["Duration"];
-                            Instructions = (string)reader["Instructions"];
-                            Quantity = (int)reader["Quantity"];
-                            StartDate = (DateTime)reader["StartDate"];
-                            EndDate = (DateTime)reader["EndDate"];
-                            CreatedDate = (DateTime)reader["CreatedDate"];
 
+                            Duration = reader["Duration"] != DBNull.Value
+                                ? (int?)reader["Duration"]
+                                : null;
+
+                            Instructions = reader["Instructions"] != DBNull.Value
+                                ? (string)reader["Instructions"]
+                                : null;
+
+                            Quantity = reader["Quantity"] != DBNull.Value
+                                ? (int?)reader["Quantity"]
+                                : null;
+
+                            StartDate = reader["StartDate"] != DBNull.Value
+                                ? (DateTime?)reader["StartDate"]
+                                : null;
+
+                            EndDate = reader["EndDate"] != DBNull.Value
+                                ? (DateTime?)reader["EndDate"]
+                                : null;
+
+                            CreatedDate = (DateTime)reader["CreatedDate"];
                         }
                     }
                 }
-                catch (Exception ex) { isFound = false; }
+                catch (Exception ex)
+                {
+                    isFound = false;
+
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return isFound;
     }
 
-    // 3. Add New Prescription using SP_Prescriptions_Insert
-    public static int AddNewPrescription(int VisitId, int PatientId, string MedicineName, string Dosage, string Frequency, int Duration, string Instructions, int Quantity, DateTime StartDate, DateTime EndDate, DateTime CreatedDate)
+    // 3. Add Prescription
+    public static int AddNewPrescription(
+        int VisitId,
+        string MedicineName,
+        string Dosage,
+        string Frequency,
+        int? Duration,
+        string Instructions,
+        int? Quantity,
+        DateTime? StartDate,
+        DateTime? EndDate)
     {
         int newID = -1;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_Insert", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 command.Parameters.AddWithValue("@VisitId", VisitId);
-                command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@MedicineName", MedicineName);
                 command.Parameters.AddWithValue("@Dosage", Dosage);
                 command.Parameters.AddWithValue("@Frequency", Frequency);
-                command.Parameters.AddWithValue("@Duration", Duration);
-                command.Parameters.AddWithValue("@Instructions", Instructions);
-                command.Parameters.AddWithValue("@Quantity", Quantity);
-                command.Parameters.AddWithValue("@StartDate", StartDate);
-                command.Parameters.AddWithValue("@EndDate", EndDate);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
 
+                command.Parameters.AddWithValue("@Duration",
+                    (object)Duration ?? DBNull.Value);
 
-                // نفترض أن الـ SP يحتوي على Parameter مخرجات لإعادة الـ ID الجديد
-                SqlParameter outputIdParam = new SqlParameter("@NewID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                command.Parameters.Add(outputIdParam);
+                command.Parameters.AddWithValue("@Instructions",
+                    (object)Instructions ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@Quantity",
+                    (object)Quantity ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@StartDate",
+                    (object)StartDate ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@EndDate",
+                    (object)EndDate ?? DBNull.Value);
+
+               
 
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    newID = (int)command.Parameters["@NewID"].Value;
+
+                    object result = command.ExecuteScalar();
+
+                    if (result != null && result != DBNull.Value)
+                        newID = Convert.ToInt32(result);
                 }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return newID;
     }
 
-    // 4. Update Prescription using SP_Prescriptions_Update
-    public static bool UpdatePrescription(int PrescriptionId, int VisitId, int PatientId, string MedicineName, string Dosage, string Frequency, int Duration, string Instructions, int Quantity, DateTime StartDate, DateTime EndDate, DateTime CreatedDate)
+    // 4. Update Prescription
+    public static bool UpdatePrescription(
+        int PrescriptionId,
+        int VisitId,
+        string MedicineName,
+        string Dosage,
+        string Frequency,
+        int? Duration,
+        string Instructions,
+        int? Quantity,
+        DateTime? StartDate,
+        DateTime? EndDate)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_Update", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
                 command.Parameters.AddWithValue("@VisitId", VisitId);
-                command.Parameters.AddWithValue("@PatientId", PatientId);
                 command.Parameters.AddWithValue("@MedicineName", MedicineName);
                 command.Parameters.AddWithValue("@Dosage", Dosage);
                 command.Parameters.AddWithValue("@Frequency", Frequency);
-                command.Parameters.AddWithValue("@Duration", Duration);
-                command.Parameters.AddWithValue("@Instructions", Instructions);
-                command.Parameters.AddWithValue("@Quantity", Quantity);
-                command.Parameters.AddWithValue("@StartDate", StartDate);
-                command.Parameters.AddWithValue("@EndDate", EndDate);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
 
+                command.Parameters.AddWithValue("@Duration",
+                    (object)Duration ?? DBNull.Value);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                command.Parameters.AddWithValue("@Instructions",
+                    (object)Instructions ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@Quantity",
+                    (object)Quantity ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@StartDate",
+                    (object)StartDate ?? DBNull.Value);
+
+                command.Parameters.AddWithValue("@EndDate",
+                    (object)EndDate ?? DBNull.Value);
+
+                try
+                {
+                    connection.Open();
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 5. Delete Prescription using SP_Prescriptions_Delete
+    // 5. Delete Prescription
     public static bool DeletePrescription(int PrescriptionId)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_Delete", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_Delete", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                try
+                {
+                    connection.Open();
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 6. Check Existence using SP_Prescriptions_IsExist
+    // 6. Exists
     public static bool IsPrescriptionExist(int PrescriptionId)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Prescriptions_IsExist", connection))
+            using (SqlCommand command =
+                   new SqlCommand("SP_Prescriptions_IsExist", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@PrescriptionId", PrescriptionId);
@@ -173,9 +290,13 @@ public class clsPrescriptionsData
                     object result = command.ExecuteScalar();
                     isFound = (result != null);
                 }
-                catch { isFound = false; }
+                catch
+                {
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 }

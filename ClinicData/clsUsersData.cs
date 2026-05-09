@@ -1,205 +1,342 @@
-
 using ClinicDataAccess;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 
-
 public class clsUsersData
 {
-    // 1. Get All Users using SP_Users_GetAll
+    // =========================================================
+    // Get All Users
+    // =========================================================
     public static DataTable GetAllUsers()
     {
         DataTable dt = new DataTable();
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_GetAll", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_GetAll", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
+
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.HasRows) dt.Load(reader);
+                        if (reader.HasRows)
+                            dt.Load(reader);
                     }
                 }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return dt;
     }
 
-    // 2. Get Info By ID using SP_Users_GetByID
-    public static bool GetUserInfoByID(int UserId, ref int PersonId, ref string Username, ref string PasswordHash, ref int RoleId, ref bool IsActive, ref DateTime CreatedDate, ref DateTime LastLoginDate)
+    // =========================================================
+    // Get User By ID
+    // =========================================================
+    public static bool GetUserById(
+        int userId,
+        ref int personId,
+        ref string username,
+        ref string passwordHash,
+        ref int roleId,
+        ref bool isActive,
+        ref DateTime createdDate,
+        ref DateTime? lastLoginDate)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_GetByID", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_GetById", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", UserId);
+
+                command.Parameters.AddWithValue("@UserId", userId);
 
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
-                            PersonId = (int)reader["PersonId"];
-                            Username = (string)reader["Username"];
-                            PasswordHash = (string)reader["PasswordHash"];
-                            RoleId = (int)reader["RoleId"];
-                            IsActive = (bool)reader["IsActive"];
-                            CreatedDate = (DateTime)reader["CreatedDate"];
-                            LastLoginDate = (DateTime)reader["LastLoginDate"];
 
+                            personId = (int)reader["PersonId"];
+                            username = (string)reader["Username"];
+                            passwordHash = (string)reader["PasswordHash"];
+                            roleId = (int)reader["RoleId"];
+                            isActive = (bool)reader["IsActive"];
+                            createdDate = (DateTime)reader["CreatedDate"];
+
+                            if (reader["LastLoginDate"] != DBNull.Value)
+                                lastLoginDate = (DateTime)reader["LastLoginDate"];
+                            else
+                                lastLoginDate = null;
                         }
                     }
                 }
-                catch (Exception ex) { isFound = false; }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 
-    // 3. Add New User using SP_Users_Insert
-    public static int AddNewUser(int PersonId, string Username, string PasswordHash, int RoleId, bool IsActive, DateTime CreatedDate, DateTime LastLoginDate)
+    // =========================================================
+    // Insert User
+    // =========================================================
+    public static int AddNewUser(
+        int personId,
+        string username,
+        string passwordHash,
+        int roleId,
+        bool isActive)
     {
-        int newID = -1;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        int newUserId = -1;
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_Insert", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@PersonId", PersonId);
-                command.Parameters.AddWithValue("@Username", Username);
-                command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
-                command.Parameters.AddWithValue("@RoleId", RoleId);
-                command.Parameters.AddWithValue("@IsActive", IsActive);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
-                command.Parameters.AddWithValue("@LastLoginDate", LastLoginDate);
 
-
-                // نفترض أن الـ SP يحتوي على Parameter مخرجات لإعادة الـ ID الجديد
-                SqlParameter outputIdParam = new SqlParameter("@NewID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                command.Parameters.Add(outputIdParam);
+                command.Parameters.AddWithValue("@PersonId", personId);
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@PasswordHash", passwordHash);
+                command.Parameters.AddWithValue("@RoleId", roleId);
+                command.Parameters.AddWithValue("@IsActive", isActive);
 
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                    newID = (int)command.Parameters["@NewID"].Value;
+
+                    object result = command.ExecuteScalar();
+
+                    if (result != null &&
+                        int.TryParse(result.ToString(), out int insertedId))
+                    {
+                        newUserId = insertedId;
+                    }
                 }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
-        return newID;
+
+        return newUserId;
     }
 
-    // 4. Update User using SP_Users_Update
-    public static bool UpdateUser(int UserId, int PersonId, string Username, string PasswordHash, int RoleId, bool IsActive, DateTime CreatedDate, DateTime LastLoginDate)
+    // =========================================================
+    // Update User
+    // =========================================================
+    public static bool UpdateUser(
+        int userId,
+        int personId,
+        string username,
+        string passwordHash,
+        int roleId,
+        bool isActive,
+        DateTime? lastLoginDate)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_Update", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_Update", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", UserId);
-                command.Parameters.AddWithValue("@PersonId", PersonId);
-                command.Parameters.AddWithValue("@Username", Username);
-                command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
-                command.Parameters.AddWithValue("@RoleId", RoleId);
-                command.Parameters.AddWithValue("@IsActive", IsActive);
-                command.Parameters.AddWithValue("@CreatedDate", CreatedDate);
-                command.Parameters.AddWithValue("@LastLoginDate", LastLoginDate);
 
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@PersonId", personId);
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@PasswordHash", passwordHash);
+                command.Parameters.AddWithValue("@RoleId", roleId);
+                command.Parameters.AddWithValue("@IsActive", isActive);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                if (lastLoginDate.HasValue)
+                    command.Parameters.AddWithValue(
+                        "@LastLoginDate",
+                        lastLoginDate.Value);
+                else
+                    command.Parameters.AddWithValue(
+                        "@LastLoginDate",
+                        DBNull.Value);
+
+                try
+                {
+                    connection.Open();
+
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 5. Delete User using SP_Users_Delete
-    public static bool DeleteUser(int UserId)
+    // =========================================================
+    // Soft Delete User
+    // =========================================================
+    public static bool DeleteUser(int userId)
     {
         int rowsAffected = 0;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_Delete", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_Delete", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", UserId);
 
-                try { connection.Open(); rowsAffected = command.ExecuteNonQuery(); }
-                catch (Exception ex) { EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                try
+                {
+                    connection.Open();
+
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+                }
             }
         }
+
         return (rowsAffected > 0);
     }
 
-    // 6. Check Existence using SP_Users_IsExist
-    public static bool IsUserExist(int UserId)
+    // =========================================================
+    // Check If Person Already Has User
+    // =========================================================
+    public static bool IsUserExistByPersonId(int personId)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("SP_Users_IsExist", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_IsExist_ByPersonId", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@UserId", UserId);
+
+                command.Parameters.AddWithValue("@PersonId", personId);
 
                 try
                 {
                     connection.Open();
+
                     object result = command.ExecuteScalar();
+
                     isFound = (result != null);
                 }
-                catch { isFound = false; }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 
-    public static bool GetByUsernameAndPassword(string Username, string PasswordHash, ref int UserId, ref int PersonId, ref int RoleId, ref bool IsActive, ref DateTime CreatedDate, ref DateTime LastLoginDate)
+    // =========================================================
+    // Login
+    // =========================================================
+    public static bool Login(
+        string username,
+        string passwordHash,
+        ref int userId,
+        ref int personId,
+        ref int roleId,
+        ref bool isActive)
     {
         bool isFound = false;
-        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("Sp_Users_FindByCredintials", connection))
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Users_Login", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Username", Username);
-                command.Parameters.AddWithValue("@Password", PasswordHash);
 
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@PasswordHash", passwordHash);
 
                 try
                 {
                     connection.Open();
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
-                            UserId = (int)reader["UserId"];
-                            PersonId = (int)reader["PersonId"];
-                            RoleId = (int)reader["RoleId"];
-                            IsActive = (bool)reader["IsActive"];
-                            CreatedDate = (DateTime)reader["CreatedDate"];
-                            LastLoginDate = (DateTime)reader["LastLoginDate"];
 
+                            userId = (int)reader["UserId"];
+                            personId = (int)reader["PersonId"];
+                            roleId = (int)reader["RoleId"];
+                            isActive = (bool)reader["IsActive"];
                         }
                     }
                 }
-                catch (Exception ex) { isFound = false; }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(
+                        ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
             }
         }
+
         return isFound;
     }
 }
