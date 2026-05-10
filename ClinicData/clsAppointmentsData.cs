@@ -47,10 +47,13 @@ public class clsAppointmentsData
     public static bool GetAppointmentById(
         int appointmentId,
         ref int patientId,
+        ref string patientFullName, // √÷›‰« Â–«
         ref int doctorId,
+        ref string doctorFullName,  // Ê√÷›‰« Â–«
         ref DateTime appointmentDate,
         ref string reasonForVisit,
         ref int statusId,
+        ref string statusName,      // Ì›÷· Ã·» «”„ «·Õ«·… √Ì÷« („À·«: Pending)
         ref string notes,
         ref DateTime createdDate,
         ref DateTime updatedDate,
@@ -58,58 +61,42 @@ public class clsAppointmentsData
     {
         bool isFound = false;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("Sp_Appointments_GetById", connection))
+            using (SqlCommand command = new SqlCommand("Sp_Appointments_GetById", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-
-                command.Parameters.AddWithValue(
-                    "@AppointmentId",
-                    appointmentId);
+                command.Parameters.AddWithValue("@AppointmentId", appointmentId);
 
                 try
                 {
                     connection.Open();
-
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             isFound = true;
 
-                            patientId =
-                                (int)reader["PatientId"];
+                            patientId = (int)reader["PatientId"];
+                            patientFullName = (string)reader["PatientFullName"]; // «·ﬁÌ„… „‰ «·‹ SP
 
-                            doctorId =
-                                (int)reader["DoctorId"];
+                            doctorId = (int)reader["DoctorId"];
+                            doctorFullName = (string)reader["DoctorFullName"];   // «·ﬁÌ„… „‰ «·‹ SP
 
-                            appointmentDate =
-                                (DateTime)reader["AppointmentDate"];
+                            appointmentDate = (DateTime)reader["AppointmentDate"];
 
-                            reasonForVisit =
-                                reader["ReasonForVisit"] != DBNull.Value
-                                ? (string)reader["ReasonForVisit"]
-                                : string.Empty;
+                            reasonForVisit = reader["ReasonForVisit"] != DBNull.Value
+                                ? (string)reader["ReasonForVisit"] : string.Empty;
 
-                            statusId =
-                                (int)reader["StatusId"];
+                            statusId = (int)reader["StatusId"];
+                            statusName = (string)reader["StatusName"]; // ≈–« ﬂ‰  Ã«·»Â« ›Ì «·‹ SP
 
-                            notes =
-                                reader["Notes"] != DBNull.Value
-                                ? (string)reader["Notes"]
-                                : string.Empty;
+                            notes = reader["Notes"] != DBNull.Value
+                                ? (string)reader["Notes"] : string.Empty;
 
-                            createdDate =
-                                (DateTime)reader["CreatedDate"];
-
-                            updatedDate =
-                                (DateTime)reader["UpdatedDate"];
-
-                            isActive =
-                                (bool)reader["IsActive"];
+                            createdDate = (DateTime)reader["CreatedDate"];
+                            updatedDate = (DateTime)reader["UpdatedDate"];
+                            isActive = (bool)reader["IsActive"];
                         }
                     }
                 }
@@ -117,15 +104,12 @@ public class clsAppointmentsData
                 {
                     EventLogger.Log(ex.ToString(),
                         System.Diagnostics.EventLogEntryType.Error);
-
                     isFound = false;
                 }
             }
         }
-
         return isFound;
     }
-
     // =========================================
     // Insert Appointment
     // =========================================

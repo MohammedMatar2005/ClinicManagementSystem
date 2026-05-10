@@ -51,7 +51,7 @@ namespace ClinicManagementApplication.ViewModels
             {
                 _selectedPatientId = value;
                 OnPropertyChanged();
-                  // بمجرد اختيار المريض، نقوم بتحميل زياراته
+                // بمجرد اختيار المريض، نقوم بتحميل زياراته
                 _ = LoadPatientVisits(value);
             }
         }
@@ -72,7 +72,7 @@ namespace ClinicManagementApplication.ViewModels
                 _selectedVisitId = value;
                 SelectedInvoice.VisitId = value; // ربط الزيارة بالمودل
                 OnPropertyChanged();
-                
+
                 // AutoFillFeesFromVisit(value);
             }
         }
@@ -81,7 +81,7 @@ namespace ClinicManagementApplication.ViewModels
 
         private async Task LoadPatientVisits(int patientId)
         {
-           // استعلام لجلب الزيارات التي ليس لها فواتير لهذا المريض
+            // استعلام لجلب الزيارات التي ليس لها فواتير لهذا المريض
             //var visits = await Task.Run(() => clsPatientVisit.GetUninvoicedVisitsByPatient(patientId));
             //PatientVisits = new ObservableCollection<clsPatientVisit>(visits);
         }
@@ -146,7 +146,7 @@ namespace ClinicManagementApplication.ViewModels
             SaveCommand = new RelayCommand(async _ => await SaveInvoice());
             ClearCommand = new RelayCommand(_ => PrepareNewInvoice());
             ExportToPdfCommand = new RelayCommand(_ => ExportAllToPdf());
-           // PrintInvoiceCommand = new RelayCommand(param => PrintSingleInvoice(param as clsInvoice));
+            // PrintInvoiceCommand = new RelayCommand(param => PrintSingleInvoice(param as clsInvoice));
 
             _ = LoadData();
         }
@@ -200,9 +200,9 @@ namespace ClinicManagementApplication.ViewModels
             IsLoading = true;
             try
             {
-              //  محاكاة// تحميل البيانات من قاعدة البيانات
-                 Invoices = new ObservableCollection<clsInvoice>(await Task.Run(() => clsInvoice.GetAllInvoices()));
-            //    Patients = new ObservableCollection<clsInvoice>(await Task.Run(() => clsPatient.GetAllPatients()));
+                //  محاكاة// تحميل البيانات من قاعدة البيانات
+                Invoices = new ObservableCollection<clsInvoice>(await Task.Run(() => clsInvoice.GetAllInvoices()));
+                //    Patients = new ObservableCollection<clsInvoice>(await Task.Run(() => clsPatient.GetAllPatients()));
             }
             finally { IsLoading = false; }
         }

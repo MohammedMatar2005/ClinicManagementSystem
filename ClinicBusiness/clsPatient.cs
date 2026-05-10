@@ -22,13 +22,13 @@ namespace ClinicBusiness
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        //public string FullName => GetFullName(); // خاصية إضافية اختيارية
+        public string FullName => GetFullName(); // خاصية إضافية اختيارية
 
-        //private string GetFullName()
-        //{
-        //    // يمكنك تخصيص هذا الجزء حسب أعمدة الاسم لديك
-        //    return "";
-        //}
+        private string GetFullName()
+        {
+            string fullname = clsPeople.Find(PersonId).FullName;
+            return fullname;
+        }
 
         // =========================
         // Constructor (AddNew)

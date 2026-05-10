@@ -80,10 +80,11 @@ namespace ClinicBusiness
             int? ExperienceYears = -1;
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
+            string DoctorFullName = "";
 
 
             bool found = clsDoctorsData.GetDoctorById(
-                DoctorId,
+                DoctorId, ref DoctorFullName,
                 ref UserId, ref Specialization, ref LicenseNumber, ref Salary, ref OfficeLocation, ref ExperienceYears, ref IsActive, ref CreatedDate
             );
 
@@ -167,9 +168,10 @@ namespace ClinicBusiness
             int? ExperienceYears = -1;
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
+            string DoctorFullName = "";
 
             bool isFound = clsDoctorsData.GetDoctorById(
-                DoctorId,
+                DoctorId, ref DoctorFullName,
                 ref UserId, ref Specialization, ref LicenseNumber, ref Salary, ref OfficeLocation, ref ExperienceYears, ref IsActive, ref CreatedDate
             );
 

@@ -46,6 +46,7 @@ public class clsDoctorsData
     // =========================================
     public static bool GetDoctorById(
         int doctorId,
+        ref string doctorFullName,
         ref int userId,
         ref string specialization,
         ref string licenseNumber,
@@ -76,6 +77,8 @@ public class clsDoctorsData
                         if (reader.Read())
                         {
                             isFound = true;
+
+                            doctorFullName = (string)reader["DoctorFullName"];
 
                             userId = (int)reader["UserId"];
 
