@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Security.Policy;
 using ClinicDataAccess;
 
 namespace ClinicBusiness
@@ -16,13 +17,15 @@ namespace ClinicBusiness
         public int InvoiceId { get; set; }
         public decimal PaymentAmount { get; set; }
         public string PaymentMethod { get; set; }
-        public byte PaymentStatusId { get; set; } 
+        public byte PaymentStatusId { get; set; }
         public string TransactionReference { get; set; }
         public DateTime PaymentDate { get; set; }
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsActive { get; set; }
 
+        public string DoctorFullName { get; set; }
+        public string PatientFullName { get; set; }
         // =========================
         // Constructors
         // =========================
@@ -45,7 +48,7 @@ namespace ClinicBusiness
         }
 
         // 2. Private Constructor (Update Mode)
-        private clsPayment(int PaymentId, int InvoiceId, decimal PaymentAmount, string PaymentMethod,
+        private clsPayment(int PaymentId, int InvoiceId, string DoctorFullName, string PatientFullName, decimal PaymentAmount, string PaymentMethod,
             byte PaymentStatusId, string TransactionReference, DateTime PaymentDate, string Notes,
             DateTime CreatedDate, bool IsActive)
         {
@@ -80,13 +83,16 @@ namespace ClinicBusiness
             DateTime CreatedDate = DateTime.Now;
             bool IsActive = false;
 
+            string DoctorFullName = "";
+            string PatientFullName = "";
+
             bool isFound = clsPaymentsData.GetPaymentInfoByID(
-                PaymentId, ref InvoiceId, ref PaymentAmount, ref PaymentMethod,
+                PaymentId, ref InvoiceId, ref PatientFullName, ref DoctorFullName, ref PaymentAmount, ref PaymentMethod,
                 ref PaymentStatusId, ref TransactionReference, ref PaymentDate,
                 ref Notes, ref CreatedDate, ref IsActive);
 
             if (isFound)
-                return new clsPayment(PaymentId, InvoiceId, PaymentAmount, PaymentMethod,
+                return new clsPayment(PaymentId, InvoiceId, PatientFullName, DoctorFullName, PaymentAmount, PaymentMethod,
                     PaymentStatusId, TransactionReference, PaymentDate, Notes, CreatedDate, IsActive);
             else
                 return null;

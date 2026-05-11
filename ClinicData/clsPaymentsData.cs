@@ -31,7 +31,7 @@ public class clsPaymentsData
     }
 
     // 2. Get Info By ID using SP_Payments_GetByID
-    public static bool GetPaymentInfoByID(int PaymentId, ref int InvoiceId, ref decimal PaymentAmount, ref string PaymentMethod,
+    public static bool GetPaymentInfoByID(int PaymentId, ref int InvoiceId, ref string PatientFullName, ref string DoctorFullName, ref decimal PaymentAmount, ref string PaymentMethod,
         ref byte PaymentStatusId, ref string TransactionReference, ref DateTime PaymentDate,
         ref string Notes, ref DateTime CreatedDate, ref bool IsActive)
     {
@@ -52,7 +52,11 @@ public class clsPaymentsData
                         {
                             isFound = true;
                             InvoiceId = (int)reader["InvoiceId"];
-                            
+
+                            DoctorFullName = (string)reader["DoctorFullName"];
+                            PatientFullName = (string)reader["PatientFullName"];
+
+
                             PaymentAmount = (decimal)reader["PaymentAmount"];
                             
                             PaymentStatusId = (byte)reader["PaymentStatusId"];
@@ -95,7 +99,7 @@ public class clsPaymentsData
                 command.Parameters.AddWithValue("@PaymentAmount", PaymentAmount);
                 command.Parameters.AddWithValue("@PaymentMethod", string.IsNullOrWhiteSpace(PaymentMethod)? DBNull.Value : (object) PaymentMethod);
                 command.Parameters.AddWithValue("@PaymentStatus", PaymentStatusId);
-                command.Parameters.AddWithValue("@TransactionReference", TransactionReference);
+                command.Parameters.AddWithValue("@TransactionReference", string.IsNullOrWhiteSpace(TransactionReference) ? DBNull.Value : (object)TransactionReference);
                 command.Parameters.AddWithValue("@PaymentDate", PaymentDate);
                 command.Parameters.AddWithValue("@Notes", string.IsNullOrWhiteSpace(Notes) ? DBNull.Value : (object)Notes);
                 command.Parameters.AddWithValue("@CreatedDate", CreatedDate);

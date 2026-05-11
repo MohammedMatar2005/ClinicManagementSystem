@@ -14,7 +14,27 @@ namespace ClinicBusiness
         // =========================
         public int InvoiceId { get; set; }
         public int VisitId { get; set; }
-        public string InvoiceNumber { get; set; }
+
+        
+        private string _InvoiceNumber = string.Empty;
+
+        public string InvoiceNumber
+        {
+            get
+            {
+
+                if (string.IsNullOrEmpty(_InvoiceNumber) && Mode == enMode.AddNew)
+                    _InvoiceNumber = GenerateInvoiceNumber();
+
+                return _InvoiceNumber;
+            }
+            set => _InvoiceNumber = value;
+        }
+
+        // تعديل بسيط في الباني لتهيئته
+       
+
+
         public DateTime InvoiceDate { get; set; }
         public decimal ConsultationFee { get; set; }
         public decimal LabTestFee { get; set; }
@@ -31,7 +51,10 @@ namespace ClinicBusiness
         public decimal SubTotal { get; set; }
         public decimal FinalAmount { get; set; }
 
-      
+        public string PatientFullName { get; set; }
+        public string DoctorFullName { get; set; }
+
+
 
         // =========================
         // Constructor (AddNew)
@@ -40,22 +63,24 @@ namespace ClinicBusiness
         {
             this.InvoiceId = -1;
             this.VisitId = 0;
-            this.InvoiceNumber = string.Empty;
+            this.InvoiceNumber = GenerateInvoiceNumber();
             this.InvoiceDate = DateTime.Now;
             this.ConsultationFee = 0.0M;
             this.LabTestFee = 0.0M;
             this.ProcedureFee = 0.0M;
             this.OtherCharges = 0.0M;
-            this.TaxPercentage = 0.0M;
+            this.TaxPercentage = 0.0M;  
             this.TaxAmount = 0.0M;
             this.DiscountPercentage = 0.0M;
             this.DiscountAmount = 0.0M;
             this.StatusId = 0;
             this.DueDate = null;
             this.CreatedDate = DateTime.Now;
-            this.IsActive = false;
+            this.IsActive = true;
             this.SubTotal = 0.0M;
             this.FinalAmount = 0.0M;
+            this.PatientFullName = "";
+            this.DoctorFullName = "";
 
             Mode = enMode.AddNew;
         }
@@ -63,9 +88,9 @@ namespace ClinicBusiness
         // =========================
         // Constructor (Update)
         // =========================
-        private clsInvoice(int InvoiceId, int VisitId, string InvoiceNumber, DateTime InvoiceDate, decimal ConsultationFee, decimal LabTestFee, decimal ProcedureFee, decimal OtherCharges, decimal TaxPercentage, decimal TaxAmount, decimal DiscountPercentage, decimal DiscountAmount, byte StatusId, DateTime DueDate, DateTime CreatedDate, bool IsActive, decimal SubTotal, decimal FinalAmount)
+        private clsInvoice(int InvoiceId, int VisitId, string PatientFullName, string DoctorFullName, string InvoiceNumber, DateTime InvoiceDate, decimal ConsultationFee, decimal LabTestFee, decimal ProcedureFee, decimal OtherCharges, decimal TaxPercentage, decimal TaxAmount, decimal DiscountPercentage, decimal DiscountAmount, byte StatusId, DateTime? DueDate, DateTime CreatedDate, bool IsActive, decimal SubTotal, decimal FinalAmount)
         {
-            this.InvoiceId = InvoiceId;
+            this.InvoiceId = InvoiceId; 
             this.VisitId = VisitId;
             this.InvoiceNumber = InvoiceNumber;
             this.InvoiceDate = InvoiceDate;
@@ -83,6 +108,8 @@ namespace ClinicBusiness
             this.IsActive = IsActive;
             this.SubTotal = SubTotal;
             this.FinalAmount = FinalAmount;
+            this.PatientFullName = PatientFullName;
+            this.DoctorFullName = DoctorFullName;
 
             Mode = enMode.Update;
         }
@@ -115,10 +142,13 @@ namespace ClinicBusiness
             DateTime CreatedDate = DateTime.Now;
             bool IsActive = false;
 
+            string  PatientFullName = string.Empty;
+            string DoctorFullName   = string.Empty;
+
             // استدعاء دالة الـ DAL
             bool found = clsInvoicesData.GetInvoiceInfoByID(
                 InvoiceId,
-                ref VisitId, ref InvoiceNumber, ref InvoiceDate, ref ConsultationFee,
+                ref VisitId, ref PatientFullName, ref DoctorFullName, ref InvoiceNumber, ref InvoiceDate, ref ConsultationFee,
                 ref LabTestFee, ref ProcedureFee, ref OtherCharges,
                 ref TaxPercentage, ref TaxAmount, ref DiscountPercentage, ref DiscountAmount,
                 ref SubTotal, ref FinalAmount, // تمرير القيم المسترجعة من الـ DB
@@ -130,6 +160,8 @@ namespace ClinicBusiness
                 return new clsInvoice(
                     InvoiceId,
                     VisitId,
+                    PatientFullName,
+                    DoctorFullName,
                     InvoiceNumber,
                     InvoiceDate,
                     ConsultationFee,
@@ -241,53 +273,7 @@ namespace ClinicBusiness
         // =========================
         // Is Exist
         // =========================
-        public static bool IsExist(int InvoiceId)
-        {
-            // تعريف المتغيرات المحلية لتطابق بارامترات الـ DAL
-            int VisitId = -1;
-            string InvoiceNumber = "";
-            DateTime InvoiceDate = DateTime.Now;
-            decimal ConsultationFee = 0, LabTestFee = 0, ProcedureFee = 0, OtherCharges = 0;
-
-            // ملاحظة: يجب أن تكون الأنواع Nullable لتتوافق مع الـ ref في الـ DAL
-            decimal? TaxPercentage = 0;
-            decimal? TaxAmount = 0;
-            decimal? DiscountPercentage = 0;
-            decimal? DiscountAmount = 0;
-
-            decimal SubTotal = 0;
-            decimal FinalAmount = 0;
-            byte StatusId = 0;
-            DateTime? DueDate = null; // تاريخ قابل للقيمة الفارغة
-            DateTime CreatedDate = DateTime.Now;
-            bool IsActive = false;
-
-            // استدعاء الدالة مع مراعاة ترتيب الـ ref كما هو في الـ DAL
-            bool isFound = clsInvoicesData.GetInvoiceInfoByID(
-                InvoiceId,
-                ref VisitId,
-                ref InvoiceNumber,
-                ref InvoiceDate,
-                ref ConsultationFee,
-                ref LabTestFee,
-                ref ProcedureFee,
-                ref OtherCharges,
-                ref TaxPercentage,
-                ref TaxAmount,
-                ref DiscountPercentage,
-                ref DiscountAmount,
-                ref SubTotal,
-                ref FinalAmount,
-                ref StatusId,
-                ref DueDate,
-                ref CreatedDate,
-                ref IsActive
-            );
-
-            return isFound;
-        }
-
-        public string GenerateInvoiceNumber()
+        public static string GenerateInvoiceNumber()
         {
             
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -301,6 +287,11 @@ namespace ClinicBusiness
             }
         
             return new string(result);
+        }
+
+        public static bool IsExist(int InvoiceId)
+        {
+            return clsInvoicesData.IsInvoiceExistById(InvoiceId);
         }
     }
 

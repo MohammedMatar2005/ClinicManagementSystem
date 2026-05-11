@@ -24,6 +24,9 @@ namespace ClinicBusiness
         public DateTime? EndDate { get; set; } // تم التعديل ليكون Nullable
         public DateTime CreatedDate { get; set; }
 
+        public string PatientFullName { get; } // تم إضافة خاصية لاسم المريض الكامل
+        public string DoctorFullName { get; } // تم إضافة خاصية لاسم الطبيب الكامل
+
         // =========================
         // Constructors
         // =========================
@@ -42,12 +45,14 @@ namespace ClinicBusiness
             this.StartDate = null;
             this.EndDate = null;
             this.CreatedDate = DateTime.Now;
+            this.PatientFullName = string.Empty;
+            this.DoctorFullName = string.Empty;
 
             Mode = enMode.AddNew;
         }
 
         // 2. Private Constructor (Update Mode)
-        private clsPrescription(int PrescriptionId, int VisitId, string MedicineName, string Dosage,
+        private clsPrescription(int PrescriptionId, int VisitId, string PatientFullName, string DoctorFullName, string MedicineName, string Dosage,
             string Frequency, int? Duration, string Instructions, int? Quantity,
             DateTime? StartDate, DateTime? EndDate, DateTime CreatedDate)
         {
@@ -62,6 +67,8 @@ namespace ClinicBusiness
             this.StartDate = StartDate;
             this.EndDate = EndDate;
             this.CreatedDate = CreatedDate;
+            this.PatientFullName = PatientFullName;
+            this.DoctorFullName = DoctorFullName;
 
             Mode = enMode.Update;
         }
@@ -83,13 +90,15 @@ namespace ClinicBusiness
             DateTime? StartDate = null;
             DateTime? EndDate = null;
             DateTime CreatedDate = DateTime.Now;
+            string PatientFullName = "";
+            string DoctorFullName = "";
 
             bool isFound = clsPrescriptionsData.GetPrescriptionInfoByID(
-                PrescriptionId, ref VisitId, ref MedicineName, ref Dosage, ref Frequency,
+                PrescriptionId, ref VisitId, ref PatientFullName, ref DoctorFullName, ref MedicineName, ref Dosage, ref Frequency,
                 ref Duration, ref Instructions, ref Quantity, ref StartDate, ref EndDate, ref CreatedDate);
 
             if (isFound)
-                return new clsPrescription(PrescriptionId, VisitId, MedicineName, Dosage,
+                return new clsPrescription(PrescriptionId, VisitId, PatientFullName, DoctorFullName, MedicineName, Dosage,
                     Frequency, Duration, Instructions, Quantity, StartDate, EndDate, CreatedDate);
             else
                 return null;

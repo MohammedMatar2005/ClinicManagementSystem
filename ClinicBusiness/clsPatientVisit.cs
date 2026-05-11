@@ -30,6 +30,9 @@ namespace ClinicBusiness
         public string Notes { get; set; }
         public DateTime CreatedDate { get; set; }
 
+        public string PatientFullName { get; set; }
+        public string DoctorFullName { get; set; }
+
         // =========================
         // Constructors
         // =========================
@@ -56,12 +59,14 @@ namespace ClinicBusiness
         }
 
         // Constructor for Update (Internal/Private)
-        private clsPatientVisit(int VisitId, int AppointmentId, DateTime VisitDate, string Symptoms,
+        private clsPatientVisit(int VisitId, int AppointmentId, string PatientFullName, string DoctorFullName, DateTime VisitDate, string Symptoms,
             string Diagnosis, string TreatmentPlan, string BloodPressure, decimal? Temperature,
             int? HeartRate, int? RespiratoryRate, decimal? Weight, decimal? Height, string Notes, DateTime CreatedDate)
         {
             this.VisitId = VisitId;
             this.AppointmentId = AppointmentId;
+            this.PatientFullName = PatientFullName;
+            this.DoctorFullName = DoctorFullName;
             this.VisitDate = VisitDate;
             this.Symptoms = Symptoms;
             this.Diagnosis = Diagnosis;
@@ -90,15 +95,16 @@ namespace ClinicBusiness
             decimal? Temperature = null, Weight = null, Height = null;
             int? HeartRate = null, RespiratoryRate = null;
             DateTime CreatedDate = DateTime.Now;
+            string PatientFullName = "", DoctorFullName = "";
 
             bool found = clsPatientVisitsData.GetPatientVisitInfoByID(
-                VisitId, ref AppointmentId, ref VisitDate, ref Symptoms, ref Diagnosis,
+                VisitId, ref AppointmentId, ref PatientFullName, ref DoctorFullName, ref VisitDate, ref Symptoms, ref Diagnosis,
                 ref TreatmentPlan, ref BloodPressure, ref Temperature, ref HeartRate,
                 ref RespiratoryRate, ref Weight, ref Height, ref Notes, ref CreatedDate
             );
 
             if (found)
-                return new clsPatientVisit(VisitId, AppointmentId, VisitDate, Symptoms, Diagnosis,
+                return new clsPatientVisit(VisitId, AppointmentId, PatientFullName, DoctorFullName, VisitDate, Symptoms, Diagnosis,
                     TreatmentPlan, BloodPressure, Temperature, HeartRate, RespiratoryRate,
                     Weight, Height, Notes, CreatedDate);
             else
@@ -156,6 +162,11 @@ namespace ClinicBusiness
         public static bool IsExist(int VisitId)
         {
             return clsPatientVisitsData.IsPatientVisitExist(VisitId);
+        }
+
+        public static DataTable GetPatientHistory(int PatientId)
+        {
+            return clsPatientVisitsData.GetPatientHistory(PatientId);
         }
     }
 }

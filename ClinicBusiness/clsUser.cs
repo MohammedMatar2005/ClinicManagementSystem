@@ -18,6 +18,8 @@ namespace ClinicBusiness
         public DateTime CreatedDate { get; set; }
         public DateTime? LastLoginDate { get; set; } // Nullable لأن المستخدم الجديد لم يدخل بعد
 
+        public string FullName { get; }
+
         // كائن الشخص المرتبط بالمستخدم
         public clsPeople PersonInfo { get; set; }
 
@@ -32,16 +34,18 @@ namespace ClinicBusiness
             this.IsActive = true;
             this.CreatedDate = DateTime.Now;
             this.LastLoginDate = null;
+            this.FullName ="";
 
             Mode = enMode.AddNew;
         }
 
         // 2. Constructor خاص للـ Update (يستخدم داخلياً عند البحث)
-        private clsUser(int UserId, int PersonId, string Username, string PasswordHash,
+        private clsUser(int UserId, int PersonId, string FullName, string Username, string PasswordHash,
             int RoleId, bool IsActive, DateTime CreatedDate, DateTime? LastLoginDate)
         {
             this.UserId = UserId;
             this.PersonId = PersonId;
+            this.FullName = FullName;
             this.Username = Username;
             this.PasswordHash = PasswordHash;
             this.RoleId = RoleId;
@@ -64,12 +68,13 @@ namespace ClinicBusiness
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
             DateTime? LastLoginDate = null;
+            string FullName = "";
 
-            bool isFound = clsUsersData.GetUserById(UserId, ref PersonId, ref Username,
+            bool isFound = clsUsersData.GetUserById(UserId, ref PersonId, ref FullName, ref Username,
                 ref PasswordHash, ref RoleId, ref IsActive, ref CreatedDate, ref LastLoginDate);
 
             if (isFound)
-                return new clsUser(UserId, PersonId, Username, PasswordHash, RoleId, IsActive, CreatedDate, LastLoginDate);
+                return new clsUser(UserId, PersonId, FullName, Username, PasswordHash, RoleId, IsActive, CreatedDate, LastLoginDate);
             else
                 return null;
         }

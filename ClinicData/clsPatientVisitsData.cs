@@ -2,6 +2,7 @@ using ClinicDataAccess;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net.NetworkInformation;
 
 public class clsPatientVisitsData
 {
@@ -32,7 +33,7 @@ public class clsPatientVisitsData
     }
 
     // 2. Get Info By ID
-    public static bool GetPatientVisitInfoByID(int VisitId, ref int AppointmentId, ref DateTime VisitDate,
+    public static bool GetPatientVisitInfoByID(int VisitId, ref int AppointmentId, ref string PatientFullName, ref string DoctorFullName, ref DateTime VisitDate,
         ref string Symptoms, ref string Diagnosis, ref string TreatmentPlan, ref string BloodPressure,
         ref decimal? Temperature, ref int? HeartRate, ref int? RespiratoryRate,
         ref decimal? Weight, ref decimal? Height, ref string Notes, ref DateTime CreatedDate)
@@ -56,6 +57,9 @@ public class clsPatientVisitsData
 
                             AppointmentId = (int)reader["AppointmentId"];
                             VisitDate = (DateTime)reader["VisitDate"];
+
+                            PatientFullName = (string)reader["PatientFullName"];
+                            DoctorFullName = (string)reader["DoctorFullName"];
 
                             // معالجة النصوص التي تقبل NULL
                             Symptoms = reader["Symptoms"] != DBNull.Value ? (string)reader["Symptoms"] : string.Empty;
@@ -204,7 +208,7 @@ public class clsPatientVisitsData
         bool isFound = false;
         using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command = new SqlCommand("Sp_PatientVisits_GetById", connection)) // نستخدم GetById للتحقق
+            using (SqlCommand command = new SqlCommand("Sp_PatientVisits_IsExistById", connection)) // نستخدم GetById للتحقق
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@VisitId", VisitId);
@@ -222,4 +226,31 @@ public class clsPatientVisitsData
         }
         return isFound;
     }
+
+    public static DataTable GetPatientHistory(int PatientId)
+    {
+        DataTable dt = new DataTable();
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command = new SqlCommand("Sp_PatientVisits_GetHistoryByPatientId", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@PatientId", PatientId);
+                try
+                {
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows) dt.Load(reader);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
+                }
+            }
+        }
+        return dt;
+    }
 }
+    

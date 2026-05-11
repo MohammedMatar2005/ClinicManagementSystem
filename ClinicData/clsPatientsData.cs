@@ -46,6 +46,7 @@ public class clsPatientsData
     // =========================================
     public static bool GetPatientById(
         int patientId,
+        ref string PatientFullName,
         ref int personId,
         ref string emergencyContact,
         ref string emergencyPhone,
@@ -78,6 +79,9 @@ public class clsPatientsData
                             isFound = true;
 
                             personId = (int)reader["PersonId"];
+
+                            PatientFullName =
+                                (string)reader["PatientFullName"];
 
                             emergencyContact =
                                 reader["EmergencyContact"] != DBNull.Value
@@ -348,4 +352,40 @@ public class clsPatientsData
 
         return isFound;
     }
+
+    public static bool IsPatientExistById(int patientId)
+    {
+        bool isFound = false;
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Patients_IsExistById", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@PatientId", patientId);
+
+                try
+                {
+                    connection.Open();
+
+                    object result = command.ExecuteScalar();
+
+                    isFound = (result != null);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
+            }
+        }
+
+        return isFound;
+    }
+
 }

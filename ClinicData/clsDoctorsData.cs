@@ -388,4 +388,43 @@ public class clsDoctorsData
 
         return isFound;
     }
+
+
+    public static bool IsDoctorExistByDoctorId(int doctorId)
+    {
+        bool isFound = false;
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Doctors_IsExist_ByDoctorId", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                try
+                {
+                    connection.Open();
+
+                    object result = command.ExecuteScalar();
+
+                    isFound = (result != null);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
+            }
+        }
+
+        return isFound;
+    }
+
+
+
 }

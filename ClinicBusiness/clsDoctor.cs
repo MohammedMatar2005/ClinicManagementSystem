@@ -23,13 +23,7 @@ namespace ClinicBusiness
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        //public string FullName => GetFullName(); // خاصية إضافية اختيارية
-
-        //private string GetFullName()
-        //{
-        //    // يمكنك تخصيص هذا الجزء حسب أعمدة الاسم لديك
-        //    return "";
-        //}
+        public string DoctorFullName { get; private set; }
 
         // =========================
         // Constructor (AddNew)
@@ -52,7 +46,7 @@ namespace ClinicBusiness
         // =========================
         // Constructor (Update)
         // =========================
-        private clsDoctor(int DoctorId, int UserId, string Specialization, string LicenseNumber, decimal Salary, string OfficeLocation, int ExperienceYears, bool IsActive, DateTime CreatedDate)
+        private clsDoctor(int DoctorId, string DoctorFullName, int UserId, string Specialization, string LicenseNumber, decimal Salary, string OfficeLocation, int ExperienceYears, bool IsActive, DateTime CreatedDate)
         {
             this.DoctorId = DoctorId;
             this.UserId = UserId;
@@ -63,6 +57,7 @@ namespace ClinicBusiness
             this.ExperienceYears = ExperienceYears;
             this.IsActive = IsActive;
             this.CreatedDate = CreatedDate;
+            this.DoctorFullName = DoctorFullName;
 
             Mode = enMode.Update;
         }
@@ -93,6 +88,7 @@ namespace ClinicBusiness
 
             return new clsDoctor(
                 DoctorId,
+                DoctorFullName,
                 UserId, Specialization, LicenseNumber, Salary ?? 0, OfficeLocation, ExperienceYears ?? 0, IsActive, CreatedDate
             );
         }
@@ -160,22 +156,31 @@ namespace ClinicBusiness
         // =========================
         public static bool IsExist(int DoctorId)
         {
-            int UserId = -1;
-            string Specialization = "";
-            string LicenseNumber = "";
-            decimal? Salary = 0;
-            string OfficeLocation = "";
-            int? ExperienceYears = -1;
-            bool IsActive = false;
-            DateTime CreatedDate = DateTime.Now;
-            string DoctorFullName = "";
+            
 
-            bool isFound = clsDoctorsData.GetDoctorById(
-                DoctorId, ref DoctorFullName,
-                ref UserId, ref Specialization, ref LicenseNumber, ref Salary, ref OfficeLocation, ref ExperienceYears, ref IsActive, ref CreatedDate
-            );
+            bool isFound = clsDoctorsData.IsDoctorExistByDoctorId(DoctorId);
 
             return isFound;
         }
+
+        public static bool IsExistByLicense(string licenseNumber)
+        {
+
+
+            bool isFound = clsDoctorsData.IsDoctorExistByLicenseNumber(licenseNumber);
+
+            return isFound;
+        }
+
+        public static bool IsExistByUserId(int userId)
+        {
+
+
+            bool isFound = clsDoctorsData.IsDoctorExistByUserId(userId);
+
+            return isFound;
+        }
+
+
     }
 }

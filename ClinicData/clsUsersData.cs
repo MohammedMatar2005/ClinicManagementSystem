@@ -48,6 +48,7 @@ public class clsUsersData
     public static bool GetUserById(
         int userId,
         ref int personId,
+        ref string FullName,
         ref string username,
         ref string passwordHash,
         ref int roleId,
@@ -78,6 +79,7 @@ public class clsUsersData
                             isFound = true;
 
                             personId = (int)reader["PersonId"];
+                            FullName = (string)reader["FullName"];
                             username = (string)reader["Username"];
                             passwordHash = (string)reader["PasswordHash"];
                             roleId = (int)reader["RoleId"];

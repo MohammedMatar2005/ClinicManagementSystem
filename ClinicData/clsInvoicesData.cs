@@ -83,6 +83,8 @@ public class clsInvoicesData
     public static bool GetInvoiceInfoByID(
        int InvoiceId,
        ref int VisitId,
+       ref string PatientFullName,
+       ref string DoctorFullName,
        ref string InvoiceNumber,
        ref DateTime InvoiceDate,
        ref decimal ConsultationFee,
@@ -125,6 +127,9 @@ public class clsInvoicesData
                             VisitId = (int)reader["VisitId"];
                             InvoiceNumber = (string)reader["InvoiceNumber"];
                             InvoiceDate = (DateTime)reader["InvoiceDate"];
+
+                            PatientFullName = (string)reader["PatientFullName"];
+                            DoctorFullName = (string)reader["DoctorFullName"];
 
                             ConsultationFee = (decimal)reader["ConsultationFee"];
                             LabTestFee = (decimal)reader["LabTestFee"];
@@ -402,4 +407,40 @@ public class clsInvoicesData
 
         return dt;
     }
+
+    public static bool IsInvoiceExistById(int invoiceId)
+    {
+        bool isFound = false;
+
+        using (SqlConnection connection =
+               new SqlConnection(DataAccessSettings.ConnectionString))
+        {
+            using (SqlCommand command =
+                   new SqlCommand("Sp_Invoices_IsExistById", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@InvoiceId", invoiceId);
+
+                try
+                {
+                    connection.Open();
+
+                    object result = command.ExecuteScalar();
+
+                    isFound = (result != null);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Log(ex.ToString(),
+                        System.Diagnostics.EventLogEntryType.Error);
+
+                    isFound = false;
+                }
+            }
+        }
+
+        return isFound;
+    }
+
 }

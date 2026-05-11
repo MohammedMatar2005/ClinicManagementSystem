@@ -22,13 +22,7 @@ namespace ClinicBusiness
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public string FullName => GetFullName(); // خاصية إضافية اختيارية
-
-        private string GetFullName()
-        {
-            string fullname = clsPeople.Find(PersonId).FullName;
-            return fullname;
-        }
+        public string PatientFullName { get; set; }
 
         // =========================
         // Constructor (AddNew)
@@ -44,6 +38,7 @@ namespace ClinicBusiness
             this.MedicalHistory = string.Empty;
             this.IsActive = false;
             this.CreatedDate = DateTime.Now;
+            this.PatientFullName = string.Empty;
 
             Mode = enMode.AddNew;
         }
@@ -51,7 +46,7 @@ namespace ClinicBusiness
         // =========================
         // Constructor (Update)
         // =========================
-        private clsPatient(int PatientId, int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate)
+        private clsPatient(int PatientId, string PatientFullName, int PersonId, string EmergencyContact, string EmergencyPhone, string BloodType, string Allergies, string MedicalHistory, bool IsActive, DateTime CreatedDate)
         {
             this.PatientId = PatientId;
             this.PersonId = PersonId;
@@ -62,6 +57,7 @@ namespace ClinicBusiness
             this.MedicalHistory = MedicalHistory;
             this.IsActive = IsActive;
             this.CreatedDate = CreatedDate;
+            this.PatientFullName = PatientFullName;
 
             Mode = enMode.Update;
         }
@@ -79,9 +75,10 @@ namespace ClinicBusiness
             string MedicalHistory = "";
             bool IsActive = false;
             DateTime CreatedDate = DateTime.Now;
+            string PatientFullName = "";
 
             bool found = clsPatientsData.GetPatientById(
-                PatientId,
+                PatientId, ref PatientFullName,
                 ref PersonId, ref EmergencyContact, ref EmergencyPhone, ref BloodType, ref Allergies, ref MedicalHistory, ref IsActive, ref CreatedDate
             );
 
@@ -89,7 +86,7 @@ namespace ClinicBusiness
                 return null;
 
             return new clsPatient(
-                PatientId,
+                PatientId, PatientFullName,
                 PersonId, EmergencyContact, EmergencyPhone, BloodType, Allergies, MedicalHistory, IsActive, CreatedDate
             );
         }
@@ -155,9 +152,14 @@ namespace ClinicBusiness
         // =========================
         // Is Exist
         // =========================
-        public static bool IsExist(int PatientId)
+        public static bool IsExistByPersonId(int PersonId)
         {
-            return clsPatientsData.IsPatientExistByPersonId(PatientId);         
+            return clsPatientsData.IsPatientExistByPersonId(PersonId);         
+        }
+
+        public static bool IsExistById(int PatientId)
+        {
+            return clsPatientsData.IsPatientExistById(PatientId);
         }
     }
 }

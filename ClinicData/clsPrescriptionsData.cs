@@ -39,6 +39,8 @@ public class clsPrescriptionsData
     public static bool GetPrescriptionInfoByID(
         int PrescriptionId,
         ref int VisitId,
+        ref string PatientFullName,
+        ref string DoctorFullName,
         ref string MedicineName,
         ref string Dosage,
         ref string Frequency,
@@ -71,6 +73,8 @@ public class clsPrescriptionsData
                             MedicineName = (string)reader["MedicineName"];
                             Dosage = (string)reader["Dosage"];
                             Frequency = (string)reader["Frequency"];
+                            PatientFullName = (string)reader["PatientFullName"];
+                            DoctorFullName = (string)reader["DoctorFullName"];
 
                             Duration = reader["Duration"] != DBNull.Value ? (int?)reader["Duration"] : null;
                             Instructions = reader["Instructions"] != DBNull.Value ? (string)reader["Instructions"] : null;
