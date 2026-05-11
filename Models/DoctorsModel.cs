@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WpfApp3.Models
 {
-    public
-        class DoctorsModel
+    public class DoctorsModel
     {
         public int DoctorId { get; set; }
         public int UserId { get; set; }
@@ -18,5 +13,8 @@ namespace WpfApp3.Models
         public int ExperienceYears { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
+
+        
+        public string DoctorFullName { get; set; }
     }
 }
