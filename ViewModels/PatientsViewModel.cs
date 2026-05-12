@@ -56,8 +56,8 @@ namespace ClinicManagementApplication.ViewModels
         private void ResetSelectedPatient()
         {
             SelectedPatient = new clsPatient();
-            if (SelectedPatient.PersonInfo == null)
-                SelectedPatient.PersonInfo = new clsPeople();
+            //if (SelectedPatient.PersonInfo == null)
+            //    SelectedPatient.PersonInfo = new clsPeople();
         }
 
         private async Task LoadPatients()
@@ -65,7 +65,7 @@ namespace ClinicManagementApplication.ViewModels
             IsLoading = true;
             try
             {
-                Patients = await Task.Run(() => clsPatient.GetAllPatients());
+                Patients = await Task.Run(() => clsPatient.GetAll().ToObservableCollection<clsPatient>());
             }
             catch (Exception ex)
             {
@@ -80,7 +80,7 @@ namespace ClinicManagementApplication.ViewModels
 
         private async Task SavePatient()
         {
-            if (string.IsNullOrWhiteSpace(SelectedPatient.FullName))
+            if (string.IsNullOrWhiteSpace(SelectedPatient.PatientFullName))
             {
                 MessageBox.Show("يرجى إدخال اسم المريض",
                     "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);

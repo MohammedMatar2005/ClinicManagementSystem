@@ -1,229 +1,354 @@
 ﻿using ClinicBusiness;
+//using ClinicManagementApplication.Converters;
 using ClinicManagementApplication.Infrastructure;
+using ClinicProject.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ClinicManagementApplication.ViewModels
+namespace ClinicProject.ViewModels
 {
     public class AppointmentsViewModel : BaseViewModel
     {
-        private clsAppointment _appointment = new clsAppointment();
+        #region Private Members
 
-        // ====== Properties ======
+        private ObservableCollection<AppointmentModel> _appointments;
+        private AppointmentModel _selectedAppointment;
+        private AppointmentModel _currentAppointment;
 
-        public ObservableCollection<clsPatient> Patients { get; }
-            = new ObservableCollection<clsPatient>();
+        private ObservableCollection<clsPatient> _patients;
+        private clsPatient _selectedPatient;
 
-        public ObservableCollection<clsDoctor> Doctors { get; set; }
-            = new ObservableCollection<clsDoctor>();
+        private ObservableCollection<clsDoctor> _doctors;
+        private clsDoctor _selectedDoctor;
 
-        private ObservableCollection<clsAppointment> _appointments
-            = new ObservableCollection<clsAppointment>();
-        public ObservableCollection<clsAppointment> Appointments
+        private bool _isActive = true;
+
+        #endregion
+
+        #region Properties
+
+        public ObservableCollection<AppointmentModel> Appointments
         {
             get => _appointments;
-            set { _appointments = value; OnPropertyChanged(); }
+            set => SetProperty(ref _appointments, value);
         }
 
-        private clsPatient _selectedPatient;
+        public AppointmentModel SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set
+            {
+                if (SetProperty(ref _selectedAppointment, value))
+                {
+                    PrepareForUpdate();
+                }
+            }
+        }
+
+        public AppointmentModel CurrentAppointment
+        {
+            get => _currentAppointment;
+            set => SetProperty(ref _currentAppointment, value);
+        }
+
+        public ObservableCollection<clsPatient> Patients
+        {
+            get => _patients;
+            set => SetProperty(ref _patients, value);
+        }
+
         public clsPatient SelectedPatient
         {
             get => _selectedPatient;
             set
             {
-                _selectedPatient = value;
-                OnPropertyChanged();
-                PatientId = _selectedPatient?.PatientId ?? -1;
+                if (SetProperty(ref _selectedPatient, value))
+                {
+                    if (CurrentAppointment != null && value != null)
+                    {
+                        CurrentAppointment.PatientId = value.PatientId;
+                        OnPropertyChanged(nameof(CurrentAppointment));
+                    }
+                }
             }
         }
 
-        private clsDoctor _selectedDoctor;
+        public ObservableCollection<clsDoctor> Doctors
+        {
+            get => _doctors;
+            set => SetProperty(ref _doctors, value);
+        }
+
         public clsDoctor SelectedDoctor
         {
             get => _selectedDoctor;
             set
             {
-                _selectedDoctor = value;
-                OnPropertyChanged();
-                DoctorId = _selectedDoctor?.DoctorId ?? -1;
+                if (SetProperty(ref _selectedDoctor, value))
+                {
+                    if (CurrentAppointment != null && value != null)
+                    {
+                        CurrentAppointment.DoctorId = value.DoctorId;
+                        OnPropertyChanged(nameof(CurrentAppointment));
+                    }
+                }
             }
         }
 
-        private int _patientId = -1;
-        public int PatientId
-        {
-            get => _patientId;
-            set { _patientId = value; OnPropertyChanged(); }
-        }
-
-        private int _doctorId = -1;
-        public int DoctorId
-        {
-            get => _doctorId;
-            set { _doctorId = value; OnPropertyChanged(); }
-        }
-
-        private int _statusId = 1;
-        public int StatusId
-        {
-            get => _statusId;
-            set { _statusId = value; OnPropertyChanged(); }
-        }
-
-        private string _appointmentTime = DateTime.Now.ToString("HH:mm");
-        public string AppointmentTime
-        {
-            get => _appointmentTime;
-            set { _appointmentTime = value; OnPropertyChanged(); }
-        }
-
-        private bool _isActive = true;
         public bool IsActive
         {
             get => _isActive;
-            set { _isActive = value; OnPropertyChanged(); }
+            set
+            {
+                if (SetProperty(ref _isActive, value))
+                {
+                    FilterAppointments();
+                }
+            }
         }
 
-        public DateTime AppointmentDate
-        {
-            get => _appointment.AppointmentDate;
-            set { _appointment.AppointmentDate = value; OnPropertyChanged(); }
-        }
+        #endregion
 
-        public DateTime UpdatedDate
-        {
-            get => _appointment.UpdatedDate;
-            set { _appointment.UpdatedDate = value; OnPropertyChanged(); }
-        }
-
-        public string PatientFullName
-        {
-            get => _appointment.PatientFullName;
-            set { _appointment.PatientFullName = value; OnPropertyChanged(); }
-        }
-
-        public string DoctorFullName
-        {
-            get => _appointment.DoctorFullName;
-            set { _appointment.DoctorFullName = value; OnPropertyChanged(); }
-        }
-
-        public string StatusName
-        {
-            get => _appointment.StatusName;
-            set { _appointment.StatusName = value; OnPropertyChanged(); }
-        }
-
-        public string PatientPhone
-        {
-            get => _appointment.PatientPhone;
-            set { _appointment.PatientPhone = value; OnPropertyChanged(); }
-        }
-
-        public string Notes
-        {
-            get => _appointment.Notes;
-            set { _appointment.Notes = value; OnPropertyChanged(); }
-        }
-
-        public string ReasonForVisit
-        {
-            get => _appointment.ReasonForVisit;
-            set { _appointment.ReasonForVisit = value; OnPropertyChanged(); }
-        }
-
-        // ====== Commands ======
+        #region Commands
 
         public ICommand SaveCommand { get; }
-        public ICommand LoadDataCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand ClearCommand { get; }
         public ICommand RefreshCommand { get; }
+     
 
-        // ====== Constructor ======
+        #endregion
 
         public AppointmentsViewModel()
         {
-            if (System.ComponentModel.DesignerProperties
-                    .GetIsInDesignMode(new DependencyObject())) return;
+            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
+            DeleteCommand = new RelayCommand(ExecuteDelete, CanExecuteDelete);
+            ClearCommand = new RelayCommand(ExecuteClear);
+            RefreshCommand = new RelayCommand(p => LoadAppointments());
 
-            // الصح: نلف async Task في RelayCommand بشكل صحيح
-            SaveCommand = new RelayCommand(async _ => await SaveAppointmentAsync());
-            LoadDataCommand = new RelayCommand(async _ => await LoadInitialDataAsync());
-            RefreshCommand = new RelayCommand(async _ => await LoadInitialDataAsync());
-
-            AppointmentDate = DateTime.Now;
+            LoadData();
+            ExecuteClear(null);
         }
 
-        // ====== Methods ======
+        #region Load Methods
 
-        private async Task LoadInitialDataAsync()
+        private void LoadData()
         {
-            IsLoading = true;
-            try
+            LoadPatients();
+            LoadDoctors();
+            LoadAppointments();
+        }
+
+        private void LoadAppointments()
+        {
+            DataTable dt = clsAppointment.GetAll();
+           
+            Appointments = dt.ToObservableCollection<AppointmentModel>();
+
+            FilterAppointments();
+        }
+
+        private void FilterAppointments()
+        {
+            if (Appointments == null)
+                return;
+
+            if (!IsActive)
             {
-                // قبل
-                // var dtApps = await Task.Run(() => clsAppointment.GetAllAppointments());
-                // Appointments = DataTableConverter.ToObservableCollection<clsAppointment>(dtApps);
+                Appointments = clsAppointment
+                    .GetAll().ToObservableCollection<AppointmentModel>();
 
-                // بعد ✅
-                Appointments = await Task.Run(() => clsAppointment.GetAllAppointments());
-
-                // قبل
-                // var dtPts = await Task.Run(() => clsPatient.GetAllPatients());
-                // var pts = DataTableConverter.ToObservableCollection<clsPatient>(dtPts);
-
-                // بعد ✅
-                var pts = await Task.Run(() => clsPatient.GetAllPatients());
-                Patients.Clear();
-                foreach (var p in pts) Patients.Add(p);
-
-                // قبل
-                // var dtDrs = await Task.Run(() => clsDoctor.GetAllDoctors());
-                // var drs = DataTableConverter.ToObservableCollection<clsDoctor>(dtDrs);
-
-                // بعد ✅
-                var drs = await Task.Run(() => clsDoctor.GetAllDoctors());
-                Doctors.Clear();
-                foreach (var d in drs) Doctors.Add(d);
+                return;
             }
-            catch (Exception ex)
+
+            ObservableCollection<AppointmentModel> filtered =
+                new ObservableCollection<AppointmentModel>();
+
+            foreach (var item in clsAppointment
+                         .GetAll()
+                         .ToObservableCollection<AppointmentModel>())
             {
-                MessageBox.Show($"خطأ في تحميل البيانات: {ex.Message}",
-                    "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (item.IsActive)
+                    filtered.Add(item);
             }
-            finally
+
+            Appointments = filtered;
+        }
+
+        private void LoadPatients()
+        {
+            DataTable dt = clsPatient.GetAll();
+
+            Patients = dt.ToObservableCollection<clsPatient>();
+        }
+
+        private void LoadDoctors()
+        {
+            DataTable dt = clsDoctor.GetAll();
+
+            Doctors = dt.ToObservableCollection<clsDoctor>();
+        }
+
+        #endregion
+
+        #region CRUD Operations
+
+        private void ExecuteSave(object parameter)
+        {
+            if (!IsValid())
             {
-                IsLoading = false;
+                MessageBox.Show(
+                    "الرجاء تعبئة جميع الحقول المطلوبة",
+                    "تنبيه",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            clsAppointment appointmentBL =
+                CurrentAppointment.AppointmentId == -1
+                ? new clsAppointment()
+                : clsAppointment.Find(CurrentAppointment.AppointmentId);
+
+            if (appointmentBL == null)
+                return;
+
+            appointmentBL.PatientId = CurrentAppointment.PatientId;
+            appointmentBL.DoctorId = CurrentAppointment.DoctorId;
+            appointmentBL.AppointmentDate = CurrentAppointment.AppointmentDate;
+            appointmentBL.StatusId = CurrentAppointment.StatusId;
+            appointmentBL.ReasonForVisit = CurrentAppointment.ReasonForVisit;
+            appointmentBL.Notes = CurrentAppointment.Notes;
+            appointmentBL.IsActive = CurrentAppointment.IsActive;
+            appointmentBL.CreatedDate = DateTime.Now;
+            appointmentBL.UpdatedDate = DateTime.Now;
+
+            if (appointmentBL.Save())
+            {
+                MessageBox.Show(
+                    "تم حفظ الموعد بنجاح",
+                    "نجاح",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                LoadAppointments();
+                ExecuteClear(null);
+            }
+            else
+            {
+                MessageBox.Show(
+                    "فشل في عملية الحفظ",
+                    "خطأ",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
-        private async Task SaveAppointmentAsync()
+
+        private bool CanExecuteSave(object parameter)
         {
-            clsAppointment newAppointment = new clsAppointment
+            return CurrentAppointment != null;
+        }
+
+        private void ExecuteDelete(object parameter)
+        {
+            if (SelectedAppointment == null)
+                return;
+
+            MessageBoxResult result = MessageBox.Show(
+                "هل أنت متأكد من حذف هذا الموعد؟",
+                "تأكيد",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            if (clsAppointment.Delete(SelectedAppointment.AppointmentId))
             {
-                PatientId = PatientId,
-                DoctorId = DoctorId,
-                AppointmentDate = AppointmentDate,
-                //AppointmentTime = AppointmentTime,
-                StatusId = StatusId,
-                Notes = Notes,
-                ReasonForVisit = ReasonForVisit
+                MessageBox.Show(
+                    "تم حذف الموعد بنجاح",
+                    "نجاح",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                LoadAppointments();
+                ExecuteClear(null);
+            }
+        }
+
+        private bool CanExecuteDelete(object parameter)
+        {
+            return SelectedAppointment != null;
+        }
+
+        private void ExecuteClear(object parameter)
+        {
+            CurrentAppointment = new AppointmentModel
+            {
+                AppointmentId = -1,
+                AppointmentDate = DateTime.Now,
+                IsActive = true,
+                StatusId = 1
             };
+
+            SelectedAppointment = null;
+            SelectedPatient = null;
+            SelectedDoctor = null;
         }
 
-        private void ClearFields()
+        private void PrepareForUpdate()
         {
-            SelectedPatient = null;  // يصفّر ComboBox تلقائياً
-            DoctorId = -1;
-            AppointmentDate = DateTime.Now;
-            AppointmentTime = DateTime.Now.ToString("HH:mm");
-            StatusId = 1;
-            Notes = "";
-            _appointment = new clsAppointment();
+            if (SelectedAppointment == null)
+                return;
+
+            CurrentAppointment = new AppointmentModel
+            {
+                AppointmentId = SelectedAppointment.AppointmentId,
+                PatientId = SelectedAppointment.PatientId,
+                DoctorId = SelectedAppointment.DoctorId,
+                AppointmentDate = SelectedAppointment.AppointmentDate,
+                StatusId = SelectedAppointment.StatusId,
+                ReasonForVisit = SelectedAppointment.ReasonForVisit,
+                Notes = SelectedAppointment.Notes,
+                IsActive = SelectedAppointment.IsActive
+            };
+
+            foreach (var patient in Patients)
+            {
+                if (patient.PatientId == CurrentAppointment.PatientId)
+                {
+                    SelectedPatient = patient;
+                    break;
+                }
+            }
+
+            foreach (var doctor in Doctors)
+            {
+                if (doctor.DoctorId == CurrentAppointment.DoctorId)
+                {
+                    SelectedDoctor = doctor;
+                    break;
+                }
+            }
         }
+
+        #endregion
+
+        #region Validation
+
+        private bool IsValid()
+        {
+            return CurrentAppointment != null
+                   && CurrentAppointment.PatientId > 0
+                   && CurrentAppointment.DoctorId > 0
+                   && !string.IsNullOrWhiteSpace(CurrentAppointment.ReasonForVisit)
+                   && CurrentAppointment.AppointmentDate >= DateTime.Today;
+        }
+
+        #endregion
     }
 }

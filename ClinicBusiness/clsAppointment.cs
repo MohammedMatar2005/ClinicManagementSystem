@@ -22,7 +22,7 @@
 
             public string PatientFullName { get; private set; }
             public string DoctorFullName { get; private set; }
-            public string StatusName { get; private set; }
+            public string StatusName { get; set; }
 
         // =========================
         // Constructor (AddNew)

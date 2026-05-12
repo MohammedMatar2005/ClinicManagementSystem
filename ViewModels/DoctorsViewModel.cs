@@ -53,10 +53,9 @@ namespace ClinicManagementApplication.ViewModels
         public string LastName { get => SelectedPerson.LastName; set { SelectedPerson.LastName = value; OnPropertyChanged(); } }
         public DateTime DateOfBirth { get => SelectedPerson.DateOfBirth; set { SelectedPerson.DateOfBirth = value; OnPropertyChanged(); } }
         public string PhoneNumber { get => SelectedPerson.Phone; set { SelectedPerson.Phone = value; OnPropertyChanged(); } }
-        public byte Gender { get => SelectedPerson.Gender; set { SelectedPerson.Gender = value; OnPropertyChanged(); } }
+        public bool Gender { get => SelectedPerson.Gender; set { SelectedPerson.Gender = value; OnPropertyChanged(); } }
         public string Email { get => SelectedPerson.Email; set { SelectedPerson.Email = value; OnPropertyChanged(); } }
         public string Address { get => SelectedPerson.Address; set { SelectedPerson.Address = value; OnPropertyChanged(); } }
-        public string ImagePath { get => SelectedPerson.ImagePath; set { SelectedPerson.ImagePath = ""; OnPropertyChanged(); } }
 
         #endregion
 
@@ -147,9 +146,9 @@ namespace ClinicManagementApplication.ViewModels
             IsLoading = true;
             try
             {
-                Doctors = await Task.Run(() => clsDoctor.GetAllDoctors());
+                Doctors = await Task.Run(() => clsDoctor.GetAll().ToObservableCollection<clsDoctor>());
                 // تحميل القوائم للـ ComboBoxes إذا لزم الأمر
-                var people = await Task.Run(() => clsPeople.GetAllPeople());
+                var people = await Task.Run(() => clsPeople.GetAll().ToObservableCollection<clsPeople>());
                 PeopleList = new ObservableCollection<clsPeople>(people);
                 OnPropertyChanged(nameof(PeopleList));
             }
@@ -201,27 +200,31 @@ namespace ClinicManagementApplication.ViewModels
                 return;
             }
 
-            var result = await Task.Run(() => SelectedDoctor.Save());
+        //    var result = await Task.Run(() => SelectedDoctor.Save());
 
-            switch (result)
-            {
-                case clsDoctor.enMode.AddNew:
-                    MessageBox.Show("تم إضافة الطبيب بنجاح");
-                    await LoadDoctors();
-                    ResetAllData();
-                    break;
+        //    switch (result)
+        //    {
+        //        case true:
+        //            {
+        //                if(clsDoctor. == clsDoctor.enMode.AddNew)
+        //               MessageBox.Show("تم إضافة الطبيب بنجاح");
+        //               await LoadDoctors();
+        //               ResetAllData();
+        //               break;
+        //            }
+                    
 
-                case clsDoctor.enMode.Update:
-                    MessageBox.Show("تم تحديث بيانات الطبيب بنجاح");
-                    await LoadDoctors();
-                    ResetAllData();
-                    break;
+        //        case clsDoctor.enMode.Update:
+        //            MessageBox.Show("تم تحديث بيانات الطبيب بنجاح");
+        //            await LoadDoctors();
+        //            ResetAllData();
+        //            break;
 
-                case clsDoctor.enMode.Failed:
-                    MessageBox.Show("فشل حفظ بيانات الطبيب");
-                    break;
-            }
-        }
+        //        case clsDoctor.enMode.Failed:
+        //            MessageBox.Show("فشل حفظ بيانات الطبيب");
+        //            break;
+        //    }
+        //}
         //private async Task SaveDoctor()
         //{
         //    if (!IsPasswordMatch)
@@ -242,7 +245,7 @@ namespace ClinicManagementApplication.ViewModels
         //    {
         //        MessageBox.Show("فشل حفظ بيانات الطبيب");
         //    }
-        //}
+        }
         private void ExecuteNext(object p) => CurrentTabIndex++;
         private bool CanExecuteNext(object p) => CurrentTabIndex < 2;
         private void ExecuteBack(object p) => CurrentTabIndex--;

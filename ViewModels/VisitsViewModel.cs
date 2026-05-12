@@ -62,7 +62,7 @@ namespace ClinicManagementApplication.ViewModels
             try
             {
                 // تأكد من اختيار المريض والطبيب أولاً
-                if (SelectedVisit.PatientId == 0 || SelectedVisit.DoctorId == 0)
+                if (string.IsNullOrWhiteSpace(SelectedVisit.PatientFullName) || string.IsNullOrWhiteSpace(SelectedVisit.DoctorFullName))
                 {
                     MessageBox.Show("يرجى اختيار المريض والطبيب أولاً.");
                     return;

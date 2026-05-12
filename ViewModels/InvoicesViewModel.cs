@@ -201,7 +201,7 @@ namespace ClinicManagementApplication.ViewModels
             try
             {
                 //  محاكاة// تحميل البيانات من قاعدة البيانات
-                Invoices = new ObservableCollection<clsInvoice>(await Task.Run(() => clsInvoice.GetAllInvoices()));
+                Invoices = new ObservableCollection<clsInvoice>(await Task.Run(() => clsInvoice.GetAll().ToObservableCollection<clsInvoice>()));
                 //    Patients = new ObservableCollection<clsInvoice>(await Task.Run(() => clsPatient.GetAllPatients()));
             }
             finally { IsLoading = false; }
