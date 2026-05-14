@@ -60,7 +60,7 @@ namespace ClinicManagementApplication
         {
             DoctorsUC DoctorsPage = new DoctorsUC();
 
-            DoctorsPage.DataContext = new DoctorsViewModel(); // اسم الكلاس الخاص بك
+           // DoctorsPage.DataContext = new DoctorsViewModel(); // اسم الكلاس الخاص بك
 
             // 2. وضع الصفحة داخل الحاوية (ContentControl) التي سميناها PagesContainer
             PagesContainer.Content = DoctorsPage;

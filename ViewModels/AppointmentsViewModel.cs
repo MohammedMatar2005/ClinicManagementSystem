@@ -8,7 +8,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ClinicProject.ViewModels
+namespace ClinicManagementApplication.ViewModels
 {
     public class AppointmentsViewModel : BaseViewModel
     {

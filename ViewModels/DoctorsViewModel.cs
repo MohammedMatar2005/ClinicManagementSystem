@@ -1,4 +1,7 @@
 ﻿using ClinicBusiness;
+using ClinicDataAccess;
+using ClinicManagementApplication.Infrastructure;
+using ClinicProject.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -6,139 +9,207 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using ClinicManagementApplication.Infrastructure;
-using System.Windows.Controls;
+using WpfApp3.Models;
 
 namespace ClinicManagementApplication.ViewModels
 {
     public class DoctorsViewModel : BaseViewModel
     {
-        private ObservableCollection<clsDoctor> _doctors = new ObservableCollection<clsDoctor>();
-        public ObservableCollection<clsDoctor> Doctors
-        {
-            get => _doctors;
-            set { _doctors = value; OnPropertyChanged(); }
-        }
+        #region Private Members
 
-        // قوائم للـ ComboBoxes في الواجهة
-        public ObservableCollection<clsPeople> PeopleList { get; set; } = new ObservableCollection<clsPeople>();
-        public ObservableCollection<clsUser> UsersList { get; set; } = new ObservableCollection<clsUser>();
+        private ObservableCollection<DoctorsModel> _doctors;
+        private DoctorsModel _selectedDoctor;
+        private DoctorsModel _currentDoctor;
 
-        private clsDoctor _selectedDoctor;
-        public clsDoctor SelectedDoctor
-        {
-            get => _selectedDoctor;
-            set { _selectedDoctor = value; OnPropertyChanged(); }
-        }
+        private ObservableCollection<PersonsModel> _people;
+        private PersonsModel _selectedPerson;
 
-        private clsPeople _selectedPerson; // تم تصحيح الخطأ الإملائي هنا Perosn -> Person
-        public clsPeople SelectedPerson
-        {
-            get => _selectedPerson;
-            set { _selectedPerson = value; OnPropertyChanged(); }
-        }
+        private ObservableCollection<UsersModel> _users;
+        private UsersModel _selectedUser;
 
-        private clsUser _selectedUser;
-        public clsUser SelectedUser
-        {
-            get => _selectedUser;
-            set { _selectedUser = value; OnPropertyChanged(); }
-        }
-
-        #region PersonProperties
-        // ملاحظة هامة: الـ View الآن سيبحث عن هذه الخصائص مباشرة
-        public string FirstName { get => SelectedPerson.FirstName; set { SelectedPerson.FirstName = value; OnPropertyChanged(); } }
-        public string SecondName { get => SelectedPerson.SecondName; set { SelectedPerson.SecondName = value; OnPropertyChanged(); } }
-        public string ThirdName { get => SelectedPerson.ThirdName; set { SelectedPerson.ThirdName = value; OnPropertyChanged(); } }
-        public string LastName { get => SelectedPerson.LastName; set { SelectedPerson.LastName = value; OnPropertyChanged(); } }
-        public DateTime DateOfBirth { get => SelectedPerson.DateOfBirth; set { SelectedPerson.DateOfBirth = value; OnPropertyChanged(); } }
-        public string PhoneNumber { get => SelectedPerson.Phone; set { SelectedPerson.Phone = value; OnPropertyChanged(); } }
-        public bool Gender { get => SelectedPerson.Gender; set { SelectedPerson.Gender = value; OnPropertyChanged(); } }
-        public string Email { get => SelectedPerson.Email; set { SelectedPerson.Email = value; OnPropertyChanged(); } }
-        public string Address { get => SelectedPerson.Address; set { SelectedPerson.Address = value; OnPropertyChanged(); } }
+        private string _confirmPassword;
+        private bool _isActive = true;
+        private int _mainTabIndex = 0;
+        private int _registrationStepIndex = 0;
 
         #endregion
 
-        #region UserProperties
-        public string Username { get => SelectedUser.Username; set { SelectedUser.Username = value; OnPropertyChanged(); } }
-        public string Password { get => SelectedUser.PasswordHash; set { SelectedUser.PasswordHash = value; OnPropertyChanged(); } }
-        public int RoleId { get => SelectedUser.RoleId; set { SelectedUser.RoleId = value; OnPropertyChanged(); } }
-        public bool IsActive { get => SelectedUser.IsActive; set { SelectedUser.IsActive = value; OnPropertyChanged(); } }
+        #region Properties
 
-        private string _confirmPassword;
+        public ObservableCollection<DoctorsModel> Doctors
+        {
+            get => _doctors;
+            set => SetProperty(ref _doctors, value);
+        }
+
+        public DoctorsModel SelectedDoctor
+        {
+            get => _selectedDoctor;
+            set
+            {
+                if (SetProperty(ref _selectedDoctor, value))
+                {
+                    PrepareForUpdate();
+                }
+            }
+        }
+
+        public DoctorsModel CurrentDoctor
+        {
+            get => _currentDoctor;
+            set => SetProperty(ref _currentDoctor, value);
+        }
+
+        public ObservableCollection<PersonsModel> PeopleList
+        {
+            get => _people;
+            set => SetProperty(ref _people, value);
+        }
+
+        public PersonsModel SelectedPerson
+        {
+            get => _selectedPerson;
+            set => SetProperty(ref _selectedPerson, value);
+        }
+
+        public ObservableCollection<UsersModel> UsersList
+        {
+            get => _users;
+            set => SetProperty(ref _users, value);
+        }
+
+        public UsersModel SelectedUser
+        {
+            get => _selectedUser;
+            set => SetProperty(ref _selectedUser, value);
+        }
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set => SetProperty(ref _isActive, value);
+        }
+
+        #region UI Logic Properties
+
+        public int MainTabIndex
+        {
+            get => _mainTabIndex;
+            set
+            {
+                if (SetProperty(ref _mainTabIndex, value))
+                {
+                    OnPropertyChanged(nameof(IsRegistrationTabSelected));
+                    OnPropertyChanged(nameof(IsListTabSelected));
+                }
+            }
+        }
+
+        public bool IsRegistrationTabSelected
+        {
+            get => MainTabIndex == 0;
+            set { if (value) MainTabIndex = 0; }
+        }
+
+        public bool IsListTabSelected
+        {
+            get => MainTabIndex == 1;
+            set { if (value) MainTabIndex = 1; }
+        }
+
+        public string RegistrationStepTitle
+        {
+            get
+            {
+                switch (RegistrationStepIndex)
+                {
+                    case 0:
+                        return "بيانات الشخص الأساسية";
+                    case 1:
+                        return "إعدادات حساب المستخدم";
+                    case 2:
+                        return "البيانات المهنية والراتب";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        // رقم المرحلة للعرض (1، 2، 3)
+        public int CurrentRegistrationStep => RegistrationStepIndex + 1;
+
+        public int RegistrationStepIndex
+        {
+            get => _registrationStepIndex;
+            set
+            {
+                if (SetProperty(ref _registrationStepIndex, value))
+                {
+                    // تحديث رؤية الأزرار وعناوين المراحل
+                    OnPropertyChanged(nameof(NextBtnVisible));
+                    OnPropertyChanged(nameof(BackBtnVisible));
+                    OnPropertyChanged(nameof(SaveBtnVisible));
+                    OnPropertyChanged(nameof(RegistrationStepTitle));
+                    OnPropertyChanged(nameof(CurrentRegistrationStep));
+                }
+            }
+        }
+        public Visibility NextBtnVisible => (RegistrationStepIndex < 2) ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility BackBtnVisible => (RegistrationStepIndex > 0) ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility SaveBtnVisible => (RegistrationStepIndex == 2) ? Visibility.Visible : Visibility.Collapsed;
+
         public string ConfirmPassword
         {
             get => _confirmPassword;
             set
             {
-                _confirmPassword = value;
-                OnPropertyChanged();
-                // بمجرد تغيير التأكيد، نبلغ الواجهة أن حالة التطابق قد تغيرت
-                OnPropertyChanged(nameof(IsPasswordMatch));
+                if (SetProperty(ref _confirmPassword, value))
+                {
+                    OnPropertyChanged(nameof(IsPasswordMatch));
+                }
             }
         }
 
-        // هذه الخاصية لا تحتاج متغير private لأنها تعتمد على خصائص أخرى
-        public bool IsPasswordMatch
-        {
-            get
-            {
-                // نتحقق من أن كلمة المرور ليست فارغة وأنها تطابق التأكيد
-                if (string.IsNullOrEmpty(SelectedUser?.PasswordHash) || string.IsNullOrEmpty(ConfirmPassword))
-                    return false;
-
-                return SelectedUser.PasswordHash == ConfirmPassword;
-            }
-        }
+        public bool IsPasswordMatch =>
+            !string.IsNullOrEmpty(SelectedUser?.PasswordHash) &&
+            SelectedUser.PasswordHash == ConfirmPassword;
         #endregion
 
+        #endregion
 
-        private int _currentTabIndex = 0;
-        public int CurrentTabIndex
-        {
-            get => _currentTabIndex;
-            set
-            {
-                _currentTabIndex = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(NextBtnVisible));
-                OnPropertyChanged(nameof(BackBtnVisible));
-                OnPropertyChanged(nameof(SaveBtnVisible));
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
+        #region Commands
 
-        public Visibility NextBtnVisible => (CurrentTabIndex < 2) ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility BackBtnVisible => (CurrentTabIndex > 0) ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility SaveBtnVisible => (CurrentTabIndex == 2) ? Visibility.Visible : Visibility.Collapsed;
-
-        public ICommand SaveDoctorCommand { get; }
-        public ICommand ClearCommand { get; }
         public ICommand SavePersonCommand { get; }
         public ICommand SaveUserCommand { get; }
+        public ICommand SaveDoctorCommand { get; }
+        public ICommand ClearCommand { get; }
         public ICommand NextCommand { get; }
         public ICommand BackCommand { get; }
+        public ICommand RefreshCommand { get; }
+
+        #endregion
 
         public DoctorsViewModel()
         {
-            ResetAllData();
+            SavePersonCommand = new RelayCommand(async (p) => await ExecuteSavePerson(), (p) => CanSavePerson());
+            SaveUserCommand = new RelayCommand(async (p) => await ExecuteSaveUser(), (p) => CanSaveUser());
+            SaveDoctorCommand = new RelayCommand(async (p) => await ExecuteSaveDoctor(), (p) => CanSaveDoctor());
 
-            SaveDoctorCommand = new RelayCommand(async (p) => await SaveDoctor());
-            ClearCommand = new RelayCommand((p) => ResetAllData());
-            SavePersonCommand = new RelayCommand(async (p) => await SavePerson());
-            SaveUserCommand = new RelayCommand(async (p) => await SaveUser());
-            NextCommand = new RelayCommand(ExecuteNext, CanExecuteNext);
-            BackCommand = new RelayCommand(ExecuteBack, CanExecuteBack);
+            ClearCommand = new RelayCommand((p) => ExecuteClear());
+            NextCommand = new RelayCommand((p) => RegistrationStepIndex++, (p) => RegistrationStepIndex < 2);
+            BackCommand = new RelayCommand((p) => RegistrationStepIndex--, (p) => RegistrationStepIndex > 0);
+            RefreshCommand = new RelayCommand(async (p) => await LoadDoctors());
 
-            _ = LoadDoctors();
+            LoadData();
+            ExecuteClear();
         }
 
-        private void ResetAllData()
+        #region Load Methods
+
+        private void LoadData()
         {
-            SelectedDoctor = new clsDoctor();
-            SelectedPerson = new clsPeople();
-            SelectedUser = new clsUser();
-            CurrentTabIndex = 0;
+            _ = LoadDoctors();
+            _ = LoadPeople();
         }
 
         private async Task LoadDoctors()
@@ -146,109 +217,179 @@ namespace ClinicManagementApplication.ViewModels
             IsLoading = true;
             try
             {
-                Doctors = await Task.Run(() => clsDoctor.GetAll().ToObservableCollection<clsDoctor>());
-                // تحميل القوائم للـ ComboBoxes إذا لزم الأمر
-                var people = await Task.Run(() => clsPeople.GetAll().ToObservableCollection<clsPeople>());
-                PeopleList = new ObservableCollection<clsPeople>(people);
-                OnPropertyChanged(nameof(PeopleList));
+                DataTable dt = await Task.Run(() => clsDoctor.GetAll());
+                Doctors = dt.ToObservableCollection<DoctorsModel>();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"خطأ في تحميل البيانات: {ex.Message}");
-            }
+            catch (Exception ex) { MessageBox.Show($"خطأ في تحميل الأطباء: {ex.Message}"); }
             finally { IsLoading = false; }
         }
 
-        private async Task SavePerson()
+        private async Task LoadPeople()
         {
-            bool success = await Task.Run(() => SelectedPerson.Save());
-            if (success)
+            try
             {
-                MessageBox.Show("تم حفظ بيانات الشخص بنجاح");
-
-                PeopleList.Add(SelectedPerson);
-                SelectedUser.PersonId = SelectedPerson.PersonId; // ربط تلقائي
-                CurrentTabIndex = 1; // انتقال تلقائي للتاب التالي
+                DataTable dt = await Task.Run(() => clsPeople.GetAll());
+                PeopleList = dt.ToObservableCollection<PersonsModel>();
             }
-            else { MessageBox.Show("فشل حفظ بيانات الشخص"); }
+            catch { /* Error Handling */ }
         }
 
-        private async Task SaveUser()
+        #endregion
+
+        #region CRUD Operations
+
+        private async Task ExecuteSavePerson()
         {
-            SelectedUser.PersonInfo = SelectedPerson;
-            bool success = await Task.Run(() => SelectedUser.Save());
-            if (success)
+            IsLoading = true;
+            try
             {
-                MessageBox.Show("تم حفظ بيانات المستخدم بنجاح");
-                SelectedDoctor.UserId = SelectedUser.UserId; // ربط تلقائي
-                CurrentTabIndex = 2; // انتقال للتاب الأخير
+                // تحويل الموديل إلى فئة البزنس للحفظ
+                clsPeople personBL = (SelectedPerson.PersonId == -1) ? new clsPeople() : clsPeople.Find(SelectedPerson.PersonId);
+
+                personBL.FirstName = SelectedPerson.FirstName;
+                personBL.SecondName = SelectedPerson.SecondName;
+                personBL.ThirdName = SelectedPerson.ThirdName;
+
+                personBL.LastName = SelectedPerson.LastName;
+                personBL.Email = SelectedPerson.Email;
+                personBL.Phone = SelectedPerson.Phone;
+                personBL.Address = SelectedPerson.Address;
+                personBL.DateOfBirth = SelectedPerson.DateOfBirth;
+                personBL.Gender = SelectedPerson.Gender;
+                personBL.NationalNumber = SelectedPerson.NationalNumber;
+
+                if (await Task.Run(() => personBL.Save()))
+                {
+                    SelectedPerson.PersonId = personBL.PersonId; // تحديث الـ ID بعد الحفظ
+                    MessageBox.Show("تم حفظ البيانات الشخصية بنجاح.");
+                    RegistrationStepIndex = 1;
+                }
             }
-            else { MessageBox.Show("فشل حفظ بيانات المستخدم"); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error); }
+            finally { IsLoading = false; }
         }
 
-        private bool CanSaveUser(object p)
+        private async Task ExecuteSaveUser()
         {
-            return IsPasswordMatch && !string.IsNullOrEmpty(ConfirmPassword);
-        }
+            if (!IsPasswordMatch) { MessageBox.Show("كلمات المرور غير متطابقة!"); return; }
 
-        private async Task SaveDoctor()
-        {
-            if (!IsPasswordMatch)
+            IsLoading = true;
+            try
             {
-                MessageBox.Show("كلمة المرور غير متطابقة، يرجى التأكد قبل الحفظ النهائي");
-                CurrentTabIndex = 1;
-                return;
+                clsUser userBL = (SelectedUser.UserId == -1) ? new clsUser() : clsUser.Find(SelectedUser.UserId);
+
+                userBL.PersonId = SelectedPerson.PersonId;
+                userBL.Username = SelectedUser.Username;
+                userBL.PasswordHash = SelectedUser.PasswordHash;
+                userBL.RoleId = SelectedUser.RoleId;
+                userBL.IsActive = SelectedUser.IsActive;
+                userBL.CreatedDate = DateTime.Now;
+                
+
+                if (await Task.Run(() => userBL.Save()))
+                {
+                    SelectedUser.UserId = userBL.UserId;
+                    MessageBox.Show("تم إنشاء الحساب بنجاح.");
+                    RegistrationStepIndex = 2;
+                }
             }
-
-        //    var result = await Task.Run(() => SelectedDoctor.Save());
-
-        //    switch (result)
-        //    {
-        //        case true:
-        //            {
-        //                if(clsDoctor. == clsDoctor.enMode.AddNew)
-        //               MessageBox.Show("تم إضافة الطبيب بنجاح");
-        //               await LoadDoctors();
-        //               ResetAllData();
-        //               break;
-        //            }
-                    
-
-        //        case clsDoctor.enMode.Update:
-        //            MessageBox.Show("تم تحديث بيانات الطبيب بنجاح");
-        //            await LoadDoctors();
-        //            ResetAllData();
-        //            break;
-
-        //        case clsDoctor.enMode.Failed:
-        //            MessageBox.Show("فشل حفظ بيانات الطبيب");
-        //            break;
-        //    }
-        //}
-        //private async Task SaveDoctor()
-        //{
-        //    if (!IsPasswordMatch)
-        //    {
-        //        MessageBox.Show("كلمة المرور غير متطابقة، يرجى التأكد قبل الحفظ النهائي");
-        //        CurrentTabIndex = 1; // إرجاع المستخدم لتبويب الحساب لتصحيح الخطأ
-        //        return;
-        //    }
-
-        //    bool success = await Task.Run(() => SelectedDoctor.Save());
-        //    if (success)
-        //    {
-        //        MessageBox.Show("تم حفظ الطبيب بنجاح");
-        //        await LoadDoctors();
-        //        ResetAllData();
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("فشل حفظ بيانات الطبيب");
-        //    }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            finally { IsLoading = false; }
         }
-        private void ExecuteNext(object p) => CurrentTabIndex++;
-        private bool CanExecuteNext(object p) => CurrentTabIndex < 2;
-        private void ExecuteBack(object p) => CurrentTabIndex--;
-        private bool CanExecuteBack(object p) => CurrentTabIndex > 0;
+
+        private async Task ExecuteSaveDoctor()
+        {
+            IsLoading = true;
+            try
+            {
+                clsDoctor doctorBL = (CurrentDoctor.DoctorId == -1) ? new clsDoctor() : clsDoctor.Find(CurrentDoctor.DoctorId);
+
+                doctorBL.UserId = SelectedUser.UserId;
+                doctorBL.Specialization = CurrentDoctor.Specialization;
+                doctorBL.LicenseNumber = CurrentDoctor.LicenseNumber;
+                doctorBL.Salary = CurrentDoctor.Salary;
+                doctorBL.ExperienceYears = CurrentDoctor.ExperienceYears;
+                doctorBL.OfficeLocation = CurrentDoctor.OfficeLocation;
+                doctorBL.IsActive = true;
+
+                if (await Task.Run(() => doctorBL.Save()))
+                {
+                    MessageBox.Show("تم تسجيل الطبيب بنجاح!");
+                    await LoadDoctors();
+                    ExecuteClear();
+                    MainTabIndex = 1; // الانتقال لقائمة الأطباء
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            finally { IsLoading = false; }
+        }
+
+        #endregion
+
+        private bool CanSavePerson() =>  SelectedPerson != null && !string.IsNullOrEmpty(SelectedPerson.FirstName);
+        private bool CanSaveUser() =>
+            SelectedUser != null &&
+            !string.IsNullOrEmpty(SelectedUser.Username) &&
+            SelectedUser.RoleId > 0 && 
+            SelectedPerson?.PersonId != -1;
+
+        private bool CanSaveDoctor() => CurrentDoctor != null && SelectedUser?.UserId != -1;
+
+        private void ExecuteClear()
+        {
+            CurrentDoctor = new DoctorsModel { DoctorId = -1 };
+            SelectedPerson = new PersonsModel { PersonId = -1 };
+            SelectedUser = new UsersModel { UserId = -1, IsActive = true };
+            ConfirmPassword = string.Empty;
+            RegistrationStepIndex = 0;
+            SelectedDoctor = null;
+        }
+
+        private void PrepareForUpdate()
+        {
+            if (SelectedDoctor == null) return;
+
+            clsDoctor doctorBL = clsDoctor.Find(SelectedDoctor.DoctorId);
+            if (doctorBL != null)
+            {
+                // تعبئة بيانات الطبيب
+                CurrentDoctor = SelectedDoctor;
+
+                // جلب وتحويل بيانات المستخدم
+                clsUser userBL = clsUser.Find(doctorBL.UserId);
+                if (userBL != null)
+                {
+                    SelectedUser = new UsersModel
+                    {
+                        UserId = userBL.UserId,
+                        Username = userBL.Username,
+                        PasswordHash = userBL.PasswordHash,
+                        PersonId = userBL.PersonId,
+                        IsActive = userBL.IsActive
+                    };
+
+                    // جلب وتحويل بيانات الشخص
+                    clsPeople personBL = clsPeople.Find(userBL.PersonId);
+                    if (personBL != null)
+                    {
+                        SelectedPerson = new PersonsModel
+                        {
+                            PersonId = personBL.PersonId,
+                            FirstName = personBL.FirstName,
+                            LastName = personBL.LastName,
+                            Email = personBL.Email,
+                            Phone = personBL.Phone,
+                            Address = personBL.Address,
+                            Gender = personBL.Gender,
+                            DateOfBirth = personBL.DateOfBirth
+                        };
+                    }
+                }
+
+                ConfirmPassword = SelectedUser?.PasswordHash;
+                MainTabIndex = 0; // الانتقال لتبويب التعديل
+                RegistrationStepIndex = 0;
+            }
+        }
     }
 }

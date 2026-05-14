@@ -13,20 +13,24 @@ namespace WpfApp3.Models
         public string ThirdName { get; set; }
         public string LastName { get; set; }
 
-        // خاصية إضافية للعرض (ReadOnly) - تسهل الربط في الواجهات جداً
+        // خاصية إضافية للعرض (ReadOnly)
         public string FullName => $"{FirstName} {SecondName} {ThirdName} {LastName}".Replace("  ", " ").Trim();
 
         // البيانات الشخصية
         public DateTime DateOfBirth { get; set; }
-        public byte Gender { get; set; } // 1: Male, 2: Female (أو حسب نظامك)
 
-        // خاصية عرض الجنس كنص
-        public string GenderText => Gender == 1 ? "Male" : "Female";
+        // التعديل هنا: استخدام bool بدلاً من byte
+        public bool Gender { get; set; } // true: Male, false: Female 
+
+        // خاصية عرض الجنس كنص بناءً على القيمة البولينية
+        public string GenderText => Gender ? "Male" : "Female";
 
         // بيانات التواصل
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+
+        public string NationalNumber { get; set; }
 
         // الوسائط
         public string ImagePath { get; set; }

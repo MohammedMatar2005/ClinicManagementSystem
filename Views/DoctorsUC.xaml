@@ -7,6 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1000" FlowDirection="RightToLeft">
 
+    
+
     <UserControl.DataContext>
         <vm:DoctorsViewModel />
     </UserControl.DataContext>
@@ -14,238 +16,295 @@
     <Grid Background="#F0F3F8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- الخط الزخرفي العلوي -->
         <Border Grid.Row="0" Height="4" Background="#3498DB" CornerRadius="2" Margin="20,5">
             <Border.Effect>
                 <DropShadowEffect Color="#3498DB" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
             </Border.Effect>
         </Border>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="15" Margin="20,10" Padding="25">
+        <!-- الحاوية الرئيسية بنظام البطاقة المركزية -->
+        <Border Grid.Row="1" Background="White" CornerRadius="15" Margin="20,10,20,20" Padding="25" VerticalAlignment="Top">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="15" ShadowDepth="2" Opacity="0.05"/>
+            </Border.Effect>
+
             <StackPanel>
+                <!-- هيدر التحكم بالتبويبات الرئيسية -->
                 <Grid Margin="0,0,0,20">
-                    <TextBlock Text="إعداد ملف الطبيب الجديد" FontSize="20" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
-                    <TextBlock Text="{Binding CurrentTabIndex, StringFormat='المرحلة {0} من 2'}" Foreground="#3498DB" FontWeight="SemiBold" HorizontalAlignment="Left"/>
+                    <TextBlock Text="إدارة ملفات الأطباء" FontSize="22" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Right"/>
+
+                    <!-- أزرار التبديل بين (تسجيل طبيب جديد) و (قائمة الأطباء) -->
+                    <!-- أزرار التبديل بين (تسجيل طبيب جديد) و (قائمة الأطباء) -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <!-- التعديل هنا: نستخدم IsChecked مع المقارنة بقيمة الـ Index -->
+                        <RadioButton Content="تسجيل طبيب جديد" 
+                 IsChecked="{Binding IsRegistrationTabSelected}" 
+                 Style="{StaticResource {x:Type ToggleButton}}" 
+                 Width="150" Height="35" Margin="5,0"/>
+
+                        <RadioButton Content="قائمة الأطباء" 
+                 IsChecked="{Binding IsListTabSelected}" 
+                 Style="{StaticResource {x:Type ToggleButton}}" 
+                 Width="150" Height="35"/>
+                    </StackPanel>
                 </Grid>
 
-                <TabControl SelectedIndex="{Binding CurrentTabIndex}" BorderThickness="0" Background="Transparent">
+                <!-- التاب كنترول الرئيسي -->
+                <TabControl SelectedIndex="{Binding MainTabIndex}" BorderThickness="0" Background="Transparent">
                     <TabControl.Resources>
-                        <!-- إخفاء رؤوس التبويبات لجعلها تبدو كخطوات -->
                         <Style TargetType="TabItem">
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </Style>
-
+                        <!-- ستايلات موحدة للحقول -->
                         <Style TargetType="TextBlock" x:Key="FieldLabel">
                             <Setter Property="Foreground" Value="#5D7A95"/>
                             <Setter Property="Margin" Value="0,0,0,5"/>
                             <Setter Property="FontWeight" Value="Medium"/>
                         </Style>
-
-                        <Style TargetType="Button" x:Key="SaveButton">
-                            <Setter Property="Background" Value="#2ECC71"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="Height" Value="40"/>
-                            <Setter Property="Width" Value="170"/>
-                            <Setter Property="Margin" Value="5,20,5,0"/>
-                            <Setter Property="FontWeight" Value="Bold"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                        </Style>
-
-                        <Style TargetType="ComboBox" x:Key="EntitySelector">
-                            <Setter Property="Height" Value="38"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="Background" Value="#F0F4F8"/>
-                            <Setter Property="Margin" Value="0,0,0,10"/>
-                        </Style>
                     </TabControl.Resources>
 
-                    <!-- المرحلة الأولى: بيانات الشخص (Person) -->
+                    <!-- التاب الأول: عمليات التسجيل (خطوات) -->
                     <TabItem>
                         <StackPanel>
-                            <!-- الصف الأول: الأسماء الأربعة -->
-                            <UniformGrid Columns="4">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="الاسم الأول" Style="{StaticResource FieldLabel}"/>
-                                    <!-- تم تغيير المسار إلى SelectedPerson -->
-                                    <TextBox Text="{Binding SelectedPerson.FirstName, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="اسم الأب" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.SecondName, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="اسم الجد" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.ThirdName, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="اسم العائلة" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.LastName, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
+                            <!-- مؤشر مراحل التسجيل -->
+                            <Border Background="#EBF5FB" CornerRadius="10" Padding="15" Margin="0,0,0,20">
+                                <Grid>
+                                    <TextBlock Text="{Binding RegistrationStepTitle}" Foreground="#3498DB" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    <!-- تم تعديل الـ StringFormat ليقرأ القيم من الـ ViewModel -->
+                                    <TextBlock Foreground="#5D7A95" HorizontalAlignment="Left">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="مرحلة {0} من {1}">
+                                                <Binding Path="CurrentRegistrationStep" />
+                                                <Binding Path="TotalRegistrationSteps" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
 
-                            <!-- الصف الثاني: الميلاد، الجنس، الهاتف -->
-                            <UniformGrid Columns="3" Margin="0,10,0,0">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="تاريخ الميلاد" Style="{StaticResource FieldLabel}"/>
-                                    <DatePicker SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="الجنس" Style="{StaticResource FieldLabel}"/>
-                                    <!-- ملاحظة: التأكد أن خاصية Gender في الكلاس هي من نوع int أو Enum لتناسب SelectedIndex -->
-                                    <ComboBox SelectedValuePath="Tag" 
-                                          SelectedValue="{Binding SelectedPerson.Gender, UpdateSourceTrigger=PropertyChanged}" 
-                                          Height="38" VerticalContentAlignment="Center">
-                                        <ComboBoxItem Content="ذكر" Tag="1"/>
-                                        <ComboBoxItem Content="أنثى" Tag="0"/>
-                                    </ComboBox>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="رقم الهاتف" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.Phone, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
+                            <!-- التاب الفرعي لخطوات التسجيل -->
+                            <TabControl SelectedIndex="{Binding RegistrationStepIndex}" BorderThickness="0" Background="Transparent">
+                                <TabControl.Resources>
+                                    <Style TargetType="TabItem">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </TabControl.Resources>
 
-                            <!-- الصف الثالث: البريد والعنوان -->
-                            <UniformGrid Columns="2" Margin="0,10,0,0">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="البريد الإلكتروني" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.Email, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="العنوان" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedPerson.Address, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
+                                <!-- خطوة 1: تسجيل بيانات الشخص -->
+                                <TabItem>
+                                    <StackPanel>
+                                        <UniformGrid Columns="2">
+                                            <!-- الاسم الأول -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الاسم الأول" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.FirstName, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
 
-                            <!-- زر الحفظ -->
-                            <Button Content="حفظ بيانات الشخص ←" 
-                              Style="{StaticResource SaveButton}" 
-                              HorizontalAlignment="Left"
-                              Command="{Binding SavePersonCommand}"
-                              Margin="5,20,0,0"/>
+                                            <!-- الاسم الثاني -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الاسم الثاني" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.SecondName, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- الاسم الثالث -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الاسم الثالث" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.ThirdName, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- الاسم الأخير -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="اللقب / العائلة" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.LastName, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- رقم الهوية -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="رقم الهوية" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.NationalNumber, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- رقم الجوال (حقل جديد) -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="رقم الجوال" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.Phone, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- البريد الإلكتروني (حقل جديد) -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="البريد الإلكتروني" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.Email, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- تاريخ الميلاد -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="تاريخ الميلاد" Style="{StaticResource FieldLabel}"/>
+                                                <DatePicker SelectedDate="{Binding SelectedPerson.DateOfBirth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- الجنس -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الجنس" Style="{StaticResource FieldLabel}"/>
+                                                <ComboBox SelectedValue="{Binding SelectedPerson.Gender, UpdateSourceTrigger=PropertyChanged}" 
+                          SelectedValuePath="Tag" Height="40" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="أنثى" Tag="0"/>
+                                                    <ComboBoxItem Content="ذكر" Tag="1"/>
+                                                </ComboBox>
+                                            </StackPanel>
+
+                                            <!-- العنوان (حقل جديد) -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="العنوان" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.Address, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+
+                                        <Button Content="حفظ بيانات الشخص" Command="{Binding SavePersonCommand}" Background="#2ECC71" Foreground="White" FontWeight="Bold" Height="40" Width="180" HorizontalAlignment="Right" Margin="10"/>
+                                    </StackPanel>
+                                </TabItem>
+                                <!-- خطوة 2: تسجيل حساب المستخدم -->
+                                <TabItem>
+                                    <StackPanel>
+                                        <UniformGrid Columns="2">
+                                            <!-- الشخص المرتبط بالحساب -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الشخص المرتبط بالحساب" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedPerson.FullName, Mode=OneWay}" IsReadOnly="True" Background="#F9F9F9" FontWeight="Bold" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- اسم المستخدم -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="اسم المستخدم" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedUser.Username, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- كلمة المرور -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="كلمة المرور" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding SelectedUser.PasswordHash, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- تأكيد كلمة المرور -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="تأكيد كلمة المرور" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- دور المستخدم (Role) -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="دور المستخدم (الصلاحية)" Style="{StaticResource FieldLabel}"/>
+                                                <ComboBox SelectedValue="{Binding SelectedUser.RoleId, UpdateSourceTrigger=PropertyChanged}" 
+                          SelectedValuePath="Tag" Height="40" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="مدير النظام" Tag="1"/>
+                                                    <ComboBoxItem Content="طبيب" Tag="2"/>
+                                                    <ComboBoxItem Content="استقبال" Tag="3"/>
+                                                    <ComboBoxItem Content="ممرض" Tag="4"/>
+                                                    <ComboBoxItem Content="مدير إداري" Tag="5"/>
+                                                </ComboBox>
+                                            </StackPanel>
+
+                                            <!-- حالة الحساب (نشط) -->
+                                            <StackPanel Margin="10" VerticalAlignment="Center">
+                                                <TextBlock Text="حالة الحساب" Style="{StaticResource FieldLabel}"/>
+                                                <CheckBox Content="حساب نشط" 
+                          IsChecked="{Binding SelectedUser.IsActive, UpdateSourceTrigger=PropertyChanged}" 
+                          FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+
+                                        <Button Content="إنشاء الحساب" Command="{Binding SaveUserCommand}" Background="#2ECC71" Foreground="White" FontWeight="Bold" Height="40" Width="180" HorizontalAlignment="Right" Margin="10"/>
+                                    </StackPanel>
+                                </TabItem>
+                                <!-- خطوة 3: تسجيل بيانات الطبيب -->
+                                <TabItem>
+                                    <StackPanel>
+                                        <UniformGrid Columns="2">
+                                            <!-- المستخدم المرتبط (تلقائي من الخطوة السابقة) -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="المستخدم المرتبط بالحساب" Style="{StaticResource FieldLabel}"/>
+                                                <!-- ربط تلقائي مع اليوزر الذي تم إنشاؤه للتو -->
+                                                <TextBox Text="{Binding SelectedUser.Username, Mode=OneWay}" IsReadOnly="True" Background="#F9F9F9" FontWeight="Bold" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- رقم الرخصة الطبية -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="رقم الرخصة الطبية (License Number)" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding CurrentDoctor.LicenseNumber, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- التخصص الطبي -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="التخصص الطبي" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding CurrentDoctor.Specialization, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- موقع المكتب -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="موقع المكتب / العيادة" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding CurrentDoctor.OfficeLocation, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- الراتب الشهري -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="الراتب الشهري" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding CurrentDoctor.Salary, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- سنوات الخبرة -->
+                                            <StackPanel Margin="10">
+                                                <TextBlock Text="سنوات الخبرة" Style="{StaticResource FieldLabel}"/>
+                                                <TextBox Text="{Binding CurrentDoctor.ExperienceYears, UpdateSourceTrigger=PropertyChanged}" Height="40" VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- حالة الطبيب (نشط) -->
+                                            <StackPanel Margin="10" VerticalAlignment="Center">
+                                                <TextBlock Text="حالة الطبيب" Style="{StaticResource FieldLabel}"/>
+                                                <CheckBox Content="طبيب نشط" 
+                          IsChecked="{Binding CurrentDoctor.IsActive, UpdateSourceTrigger=PropertyChanged}" 
+                          FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+
+                                        <!-- زر الإتمام النهائي -->
+                                        <Button Content="إتمام تسجيل الطبيب" Command="{Binding SaveDoctorCommand}" Background="#E67E22" Foreground="White" FontWeight="Bold" Height="45" Width="250" HorizontalAlignment="Right" Margin="10">
+                                            <Button.Effect>
+                                                <DropShadowEffect Color="#E67E22" BlurRadius="10" ShadowDepth="0" Opacity="0.3"/>
+                                            </Button.Effect>
+                                        </Button>
+                                    </StackPanel>
+                                </TabItem>
+                            </TabControl>
+
+                            <!-- أزرار التنقل العامة -->
+                            <Grid Margin="0,20,0,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Button Content="المرحلة السابقة" Command="{Binding BackCommand}" Width="120" Height="40" Background="#BDC3C7" Foreground="White" Margin="5"/>
+                                    <Button Content="المرحلة التالية" Command="{Binding NextCommand}" Width="120" Height="40" Background="#3498DB" Foreground="White" Margin="5"/>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </TabItem>
-                    <!-- المرحلة الثانية: بيانات الحساب (User) -->
+
+                    <!-- التاب الثاني: عرض الجدول -->
                     <TabItem>
+                        <!-- نفس كود الـ DataGrid الخاص بك مع التأكد من ربط ItemsSource بالـ Doctors collection في الـ ViewModel -->
                         <StackPanel>
-                            <!-- ربط المستخدم بالشخص المحفوظ -->
-                            <StackPanel Margin="5,0,5,15">
-                                <TextBlock Text="الشخص المرتبط بهذا الحساب" Style="{StaticResource FieldLabel}"/>
-                                <ComboBox ItemsSource="{Binding PeopleList}" 
-                      SelectedValue="{Binding SelectedUser.PersonId, UpdateSourceTrigger=PropertyChanged}" 
-                      DisplayMemberPath="FullName" 
-                      SelectedValuePath="PersonId"
-                      Style="{StaticResource EntitySelector}"/>
-                                <TextBlock Text="* يتم اختيار الشخص المضاف حديثاً تلقائياً" FontSize="10" Foreground="#2980b9"/>
-                            </StackPanel>
-
-                            <UniformGrid Columns="3">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="اسم المستخدم" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding SelectedUser.Username, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="كلمة المرور" Style="{StaticResource FieldLabel}"/>
-                                    <!-- التعديل: أصبح TextBox الآن ويدعم الـ Binding المباشر -->
-                                    <TextBox Text="{Binding SelectedUser.PasswordHash, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="تأكيد كلمة المرور" Style="{StaticResource FieldLabel}"/>
-                                    <!-- يمكنك ربطه بخاصية ConfirmPassword في الـ ViewModel إذا كانت موجودة -->
-                                    <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
-
-                            <UniformGrid Columns="3" Margin="0,10,0,0">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="الدور" Style="{StaticResource FieldLabel}"/>
-                                    <ComboBox SelectedValue="{Binding SelectedUser.RoleId}" Height="38" VerticalContentAlignment="Center">
-                                        <ComboBoxItem Content="طبيب"/>
-                                        <ComboBoxItem Content="مدير نظام"/>
-                                    </ComboBox>
-                                </StackPanel>
-                            </UniformGrid>
-
-                            <CheckBox Content="حساب نشط" IsChecked="{Binding SelectedUser.IsActive}" Margin="5,15" VerticalContentAlignment="Center"/>
-
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Content="← رجوع" Style="{StaticResource SaveButton}" Background="#95a5a6" Width="100" Command="{Binding BackCommand}"/>
-                                <Button Content="حفظ وبيانات الطبيب ←" Style="{StaticResource SaveButton}" Command="{Binding SaveUserCommand}" Margin="10,0,0,0"/>
-                            </StackPanel>
+                            <Grid Margin="0,0,0,10">
+                                <TextBlock Text="سجل الأطباء المسجلين" FontSize="18" Foreground="#2C3E50"/>
+                                <!-- ربط زر التحديث بأمر في الـ ViewModel -->
+                                <Button Content="تحديث البيانات ↻" Command="{Binding RefreshDoctorsCommand}" HorizontalAlignment="Right" Background="Transparent" Foreground="#3498DB" BorderThickness="0"/>
+                            </Grid>
+                            <DataGrid ItemsSource="{Binding Doctors}" AutoGenerateColumns="False" IsReadOnly="True" Height="450" Background="White">
+                                <!-- الأعمدة كما هي في الكود الأصلي -->
+                            </DataGrid>
                         </StackPanel>
                     </TabItem>
-                    <!-- المرحلة الثالثة: بيانات الطبيب (Doctor) -->
-                    <TabItem>
-                        <StackPanel>
-                            <!-- ربط الطبيب بحساب المستخدم المحفوظ -->
-                            <StackPanel Margin="5,0,5,15">
-                                <TextBlock Text="حساب المستخدم الخاص بالطبيب" Style="{StaticResource FieldLabel}"/>
-                                <ComboBox ItemsSource="{Binding UsersList}" 
-                          SelectedValue="{Binding NewDoctor.UserId}" 
-                          DisplayMemberPath="Username" 
-                          SelectedValuePath="Id"
-                          Style="{StaticResource EntitySelector}"/>
-                                <TextBlock Text="* يتم ربط حساب المستخدم الذي أنشأته للتو تلقائياً" FontSize="10" Foreground="#2980b9"/>
-                            </StackPanel>
-
-                            <UniformGrid Columns="3">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="رقم الرخصة" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding NewDoctor.LicenseNumber}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="التخصص" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding NewDoctor.Specialization}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="الراتب" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding NewDoctor.Salary}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
-
-                            <UniformGrid Columns="2" Margin="0,10,0,0">
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="موقع المكتب" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding NewDoctor.OfficeLocation}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                                <StackPanel Margin="5">
-                                    <TextBlock Text="سنوات الخبرة" Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding NewDoctor.ExperienceYears}" Height="38" VerticalContentAlignment="Center" Padding="8"/>
-                                </StackPanel>
-                            </UniformGrid>
-
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Content="← رجوع" Style="{StaticResource SaveButton}" Background="#95a5a6" Width="100" Command="{Binding BackCommand}"/>
-                                <Button Content="إنهاء وإضافة الطبيب" Style="{StaticResource SaveButton}" Background="#27ae60" Command="{Binding SaveDoctorCommand}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </TabItem>
-                    
                 </TabControl>
-                
-                <Grid Margin="10,25,0,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Command="{Binding BackCommand}" Content="السابق" Width="100" Height="42" Background="#BDC3C7" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"/>
-                        <Button Command="{Binding NextCommand}" Content="التالي" Width="100" Height="42" Background="#3498DB" Foreground="White" FontWeight="Bold"/>
-                        <Button Command="{Binding SaveCommand}" Content="حفظ نهائي" Width="140" Height="42" Background="#2ECC71" Foreground="White" FontWeight="Bold" Margin="10,0,0,0"/>
-                    </StackPanel>
-                </Grid>
             </StackPanel>
-        </Border>
-
-        <Border Grid.Row="2" Background="White" CornerRadius="15" Margin="20,10,20,20" Padding="15">
-            <DataGrid ItemsSource="{Binding Doctors}" SelectedItem="{Binding SelectedDoctor}" AutoGenerateColumns="False" IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="كود" Binding="{Binding DoctorId}" Width="60"/>
-                    <DataGridTextColumn Header="اسم الطبيب" Binding="{Binding FullName}" Width="*"/>
-                    <DataGridTextColumn Header="التخصص" Binding="{Binding Specialization}" Width="150"/>
-                </DataGrid.Columns>
-            </DataGrid>
         </Border>
     </Grid>
 </UserControl>

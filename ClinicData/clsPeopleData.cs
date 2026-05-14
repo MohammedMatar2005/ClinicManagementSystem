@@ -142,70 +142,42 @@ public class clsPeopleData
     // ==============================
 
     public static int AddNewPerson(
-        string firstName,
-        string secondName,
-        string thirdName,
-        string lastName,
-        DateTime dateOfBirth,
-        bool gender,
-        string phone,
-        string email,
-        string address,
-        string nationalNumber)
+      string firstName, string secondName, string thirdName, string lastName,
+      DateTime dateOfBirth, bool gender, string phone, string email,
+      string address, string nationalNumber)
     {
         int newPersonId = -1;
 
-        using (SqlConnection connection =
-               new SqlConnection(DataAccessSettings.ConnectionString))
+        using (SqlConnection connection = new SqlConnection(DataAccessSettings.ConnectionString))
         {
-            using (SqlCommand command =
-                   new SqlCommand("Sp_People_Insert", connection))
+            using (SqlCommand command = new SqlCommand("Sp_People_Insert", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@FirstName", firstName);
-
-                command.Parameters.AddWithValue("@SecondName",
-                    string.IsNullOrWhiteSpace(secondName)
-                    ? DBNull.Value
-                    : (object)secondName);
-
+                command.Parameters.AddWithValue("@SecondName", string.IsNullOrWhiteSpace(secondName) ? DBNull.Value : (object)secondName);
                 command.Parameters.AddWithValue("@ThirdName", string.IsNullOrWhiteSpace(thirdName) ? DBNull.Value : (object)thirdName);
-
                 command.Parameters.AddWithValue("@LastName", lastName);
-
                 command.Parameters.AddWithValue("@DateOfBirth", dateOfBirth);
-
                 command.Parameters.AddWithValue("@Gender", gender);
-
                 command.Parameters.AddWithValue("@Phone", phone);
-
                 command.Parameters.AddWithValue("@NationalNumber", nationalNumber);
-
-                command.Parameters.AddWithValue("@Email",
-                    string.IsNullOrWhiteSpace(email)
-                    ? DBNull.Value
-                    : (object)email);
-
-                command.Parameters.AddWithValue("@Address",
-                    string.IsNullOrWhiteSpace(address)
-                    ? DBNull.Value
-                    : (object)address);
-
-                
-
-               
+                command.Parameters.AddWithValue("@Email", string.IsNullOrWhiteSpace(email) ? DBNull.Value : (object)email);
+                command.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(address) ? DBNull.Value : (object)address);
 
                 try
                 {
                     connection.Open();
+                    object result = command.ExecuteScalar();
 
-                    newPersonId = (int)command.ExecuteScalar(); 
+                    if (result != null && int.TryParse(result.ToString(), out int id))
+                    {
+                        newPersonId = id;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Log(ex.ToString(),
-                    System.Diagnostics.EventLogEntryType.Error);
+                    EventLogger.Log(ex.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 }
             }
         }
