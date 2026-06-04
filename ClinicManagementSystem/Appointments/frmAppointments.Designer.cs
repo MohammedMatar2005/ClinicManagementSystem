@@ -19,6 +19,7 @@ namespace ClinicManagementSystem
 
         private void InitializeComponent()
         {
+            components = new Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             mainGridPanel = new Panel();
@@ -31,10 +32,8 @@ namespace ClinicManagementSystem
             lblFormTitle = new Label();
             tlpRow1Uniform = new TableLayoutPanel();
             pnlPatientField = new Panel();
-            btnExecuteSearch = new Button();
-            txtSearchPatientInput = new TextBox();
-            cmbSearchTypeFields = new ComboBox();
-            lblPatient = new Label(); 
+            txtPatinetId = new TextBox();
+            lblPatient = new Label();
             pnlReasonField = new Panel();
             txtReason = new TextBox();
             lblReason = new Label();
@@ -61,14 +60,21 @@ namespace ClinicManagementSystem
             lblHistoryTitle = new Label();
             flpFilters = new FlowLayoutPanel();
             lblSearch = new Label();
+            cmbSearchType = new ComboBox();
             txtSearchValue = new TextBox();
-            btnSearch = new Button();
             dgvAppointments = new DataGridView();
             colAppointmentId = new DataGridViewTextBoxColumn();
+            PatientNationalNumber = new DataGridViewTextBoxColumn();
             colPatientName = new DataGridViewTextBoxColumn();
             colDoctorName = new DataGridViewTextBoxColumn();
             colAppointmentDate = new DataGridViewTextBoxColumn();
             colStatusName = new DataGridViewTextBoxColumn();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            ShowInfoMenuItem = new ToolStripMenuItem();
+            UpdateAppointmentMenuItem = new ToolStripMenuItem();
+            DeleteAppointmentMenuItem = new ToolStripMenuItem();
+            AddNewAppointmentMenuItem = new ToolStripMenuItem();
+            errorProvider1 = new ErrorProvider(components);
             mainGridPanel.SuspendLayout();
             tabControl.SuspendLayout();
             tabBookAppointment.SuspendLayout();
@@ -89,19 +95,9 @@ namespace ClinicManagementSystem
             tlpHistoryLayout.SuspendLayout();
             flpFilters.SuspendLayout();
             ((ISupportInitialize)dgvAppointments).BeginInit();
+            contextMenuStrip1.SuspendLayout();
+            ((ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
-            // 
-            // cmbSearchTypeFields
-            // 
-            cmbSearchTypeFields = new ComboBox();
-            // 
-            // txtSearchPatientInput
-            // 
-            txtSearchPatientInput = new TextBox();
-            // 
-            // btnExecuteSearch
-            // 
-            btnExecuteSearch = new Button();
             // 
             // mainGridPanel
             // 
@@ -228,9 +224,7 @@ namespace ClinicManagementSystem
             // 
             // pnlPatientField
             // 
-            pnlPatientField.Controls.Add(btnExecuteSearch);
-            pnlPatientField.Controls.Add(txtSearchPatientInput);
-            pnlPatientField.Controls.Add(cmbSearchTypeFields);
+            pnlPatientField.Controls.Add(txtPatinetId);
             pnlPatientField.Controls.Add(lblPatient);
             pnlPatientField.Dock = DockStyle.Fill;
             pnlPatientField.Location = new Point(453, 10);
@@ -238,6 +232,16 @@ namespace ClinicManagementSystem
             pnlPatientField.Name = "pnlPatientField";
             pnlPatientField.Size = new Size(423, 75);
             pnlPatientField.TabIndex = 0;
+            // 
+            // txtPatinetId
+            // 
+            txtPatinetId.BorderStyle = BorderStyle.FixedSingle;
+            txtPatinetId.Dock = DockStyle.Bottom;
+            txtPatinetId.Font = new Font("Segoe UI", 12F);
+            txtPatinetId.Location = new Point(0, 46);
+            txtPatinetId.Name = "txtPatinetId";
+            txtPatinetId.Size = new Size(423, 29);
+            txtPatinetId.TabIndex = 2;
             // 
             // lblPatient
             // 
@@ -248,41 +252,8 @@ namespace ClinicManagementSystem
             lblPatient.Name = "lblPatient";
             lblPatient.Size = new Size(423, 22);
             lblPatient.TabIndex = 0;
-            lblPatient.Text = "البحث عن مريض واختياره";
+            lblPatient.Text = "ادخل معرف المريض";
             lblPatient.TextAlign = ContentAlignment.TopRight;
-            // 
-            // cmbSearchTypeFields
-            // 
-            cmbSearchTypeFields.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbSearchTypeFields.Font = new Font("Segoe UI", 11F);
-            cmbSearchTypeFields.FormattingEnabled = true;
-            cmbSearchTypeFields.Items.AddRange(new object[] { "بإسم المريض", "برقم الهوية" });
-            cmbSearchTypeFields.Location = new Point(313, 46);
-            cmbSearchTypeFields.Name = "cmbSearchTypeFields";
-            cmbSearchTypeFields.Size = new Size(110, 28);
-            cmbSearchTypeFields.TabIndex = 1;
-            // 
-            // txtSearchPatientInput
-            // 
-            txtSearchPatientInput.BorderStyle = BorderStyle.FixedSingle;
-            txtSearchPatientInput.Font = new Font("Segoe UI", 12F);
-            txtSearchPatientInput.Location = new Point(65, 46);
-            txtSearchPatientInput.Name = "txtSearchPatientInput";
-            txtSearchPatientInput.Size = new Size(242, 29);
-            txtSearchPatientInput.TabIndex = 2;
-            // 
-            // btnExecuteSearch
-            // 
-            btnExecuteSearch.BackColor = Color.FromArgb(52, 152, 219);
-            btnExecuteSearch.FlatStyle = FlatStyle.Flat;
-            btnExecuteSearch.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnExecuteSearch.ForeColor = Color.White;
-            btnExecuteSearch.Location = new Point(0, 46);
-            btnExecuteSearch.Name = "btnExecuteSearch";
-            btnExecuteSearch.Size = new Size(59, 29);
-            btnExecuteSearch.TabIndex = 3;
-            btnExecuteSearch.Text = "بحث";
-            btnExecuteSearch.UseVisualStyleBackColor = false;
             // 
             // pnlReasonField
             // 
@@ -300,9 +271,10 @@ namespace ClinicManagementSystem
             txtReason.BorderStyle = BorderStyle.FixedSingle;
             txtReason.Dock = DockStyle.Bottom;
             txtReason.Font = new Font("Segoe UI", 12F);
-            txtReason.Location = new Point(0, 46);
+            txtReason.Location = new Point(0, 28);
+            txtReason.Multiline = true;
             txtReason.Name = "txtReason";
-            txtReason.Size = new Size(423, 29);
+            txtReason.Size = new Size(423, 47);
             txtReason.TabIndex = 1;
             // 
             // lblReason
@@ -386,6 +358,8 @@ namespace ClinicManagementSystem
             dtpAppointmentDate.Font = new Font("Segoe UI", 12F);
             dtpAppointmentDate.Format = DateTimePickerFormat.Short;
             dtpAppointmentDate.Location = new Point(0, 46);
+            dtpAppointmentDate.MaxDate = new DateTime(2100, 12, 31, 0, 0, 0, 0);
+            dtpAppointmentDate.MinDate = new DateTime(1900, 1, 1, 0, 0, 0, 0);
             dtpAppointmentDate.Name = "dtpAppointmentDate";
             dtpAppointmentDate.Size = new Size(275, 29);
             dtpAppointmentDate.TabIndex = 1;
@@ -511,6 +485,7 @@ namespace ClinicManagementSystem
             btnClear.TabIndex = 1;
             btnClear.Text = "جديد";
             btnClear.UseVisualStyleBackColor = false;
+            btnClear.Click += btnClear_Click;
             // 
             // btnDelete
             // 
@@ -523,7 +498,7 @@ namespace ClinicManagementSystem
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(120, 42);
             btnDelete.TabIndex = 2;
-            btnDelete.Text = "حذف الموعد";
+            btnDelete.Text = "حذف موعد";
             btnDelete.UseVisualStyleBackColor = false;
             // 
             // tabAppointmentHistory
@@ -582,8 +557,8 @@ namespace ClinicManagementSystem
             // flpFilters
             // 
             flpFilters.Controls.Add(lblSearch);
+            flpFilters.Controls.Add(cmbSearchType);
             flpFilters.Controls.Add(txtSearchValue);
-            flpFilters.Controls.Add(btnSearch);
             flpFilters.Dock = DockStyle.Fill;
             flpFilters.Location = new Point(0, 62);
             flpFilters.Margin = new Padding(0, 0, 0, 15);
@@ -602,29 +577,25 @@ namespace ClinicManagementSystem
             lblSearch.TabIndex = 0;
             lblSearch.Text = "البحث بواسطة:";
             // 
+            // cmbSearchType
+            // 
+            cmbSearchType.FormattingEnabled = true;
+            cmbSearchType.Items.AddRange(new object[] { "المعرف", "الرقم الوطني" });
+            cmbSearchType.Location = new Point(684, 3);
+            cmbSearchType.Name = "cmbSearchType";
+            cmbSearchType.Size = new Size(121, 25);
+            cmbSearchType.TabIndex = 3;
+            // 
             // txtSearchValue
             // 
             txtSearchValue.BorderStyle = BorderStyle.FixedSingle;
             txtSearchValue.Font = new Font("Segoe UI", 10F);
-            txtSearchValue.Location = new Point(603, 3);
+            txtSearchValue.Location = new Point(476, 3);
             txtSearchValue.Margin = new Padding(5, 3, 10, 3);
             txtSearchValue.Name = "txtSearchValue";
             txtSearchValue.Size = new Size(200, 25);
             txtSearchValue.TabIndex = 2;
-            // 
-            // btnSearch
-            // 
-            btnSearch.BackColor = Color.FromArgb(52, 152, 219);
-            btnSearch.FlatStyle = FlatStyle.Flat;
-            btnSearch.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnSearch.ForeColor = Color.White;
-            btnSearch.Location = new Point(498, 1);
-            btnSearch.Margin = new Padding(5, 1, 5, 3);
-            btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(90, 30);
-            btnSearch.TabIndex = 2;
-            btnSearch.Text = "🔍 بحث";
-            btnSearch.UseVisualStyleBackColor = false;
+            txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             // 
             // dgvAppointments
             // 
@@ -643,7 +614,8 @@ namespace ClinicManagementSystem
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvAppointments.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvAppointments.ColumnHeadersHeight = 40;
-            dgvAppointments.Columns.AddRange(new DataGridViewColumn[] { colAppointmentId, colPatientName, colDoctorName, colAppointmentDate, colStatusName });
+            dgvAppointments.Columns.AddRange(new DataGridViewColumn[] { colAppointmentId, PatientNationalNumber, colPatientName, colDoctorName, colAppointmentDate, colStatusName });
+            dgvAppointments.ContextMenuStrip = contextMenuStrip1;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
@@ -671,6 +643,12 @@ namespace ClinicManagementSystem
             colAppointmentId.Name = "colAppointmentId";
             colAppointmentId.ReadOnly = true;
             colAppointmentId.Width = 87;
+            // 
+            // PatientNationalNumber
+            // 
+            PatientNationalNumber.HeaderText = "رقم المريض الوطني";
+            PatientNationalNumber.Name = "PatientNationalNumber";
+            PatientNationalNumber.ReadOnly = true;
             // 
             // colPatientName
             // 
@@ -703,6 +681,50 @@ namespace ClinicManagementSystem
             colStatusName.Name = "colStatusName";
             colStatusName.ReadOnly = true;
             // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.BackColor = Color.White;
+            contextMenuStrip1.Font = new Font("Segoe UI", 10F);
+            contextMenuStrip1.ForeColor = Color.FromArgb(17, 24, 39);
+            contextMenuStrip1.ImageScalingSize = new Size(20, 20);
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowInfoMenuItem, UpdateAppointmentMenuItem, DeleteAppointmentMenuItem, AddNewAppointmentMenuItem });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.RenderMode = ToolStripRenderMode.Professional;
+            contextMenuStrip1.RightToLeft = RightToLeft.Yes;
+            contextMenuStrip1.Size = new Size(210, 122);
+            // 
+            // ShowInfoMenuItem
+            // 
+            ShowInfoMenuItem.Name = "ShowInfoMenuItem";
+            ShowInfoMenuItem.Size = new Size(209, 24);
+            ShowInfoMenuItem.Text = "  عرض تفاصيل الموعد";
+            ShowInfoMenuItem.Click += ShowInfoMenuItem_Click;
+            // 
+            // UpdateAppointmentMenuItem
+            // 
+            UpdateAppointmentMenuItem.Name = "UpdateAppointmentMenuItem";
+            UpdateAppointmentMenuItem.Size = new Size(209, 24);
+            UpdateAppointmentMenuItem.Text = "  تعديل بيانات الموعد";
+            // 
+            // DeleteAppointmentMenuItem
+            // 
+            DeleteAppointmentMenuItem.ForeColor = Color.FromArgb(220, 38, 38);
+            DeleteAppointmentMenuItem.Name = "DeleteAppointmentMenuItem";
+            DeleteAppointmentMenuItem.Size = new Size(209, 24);
+            DeleteAppointmentMenuItem.Text = "  إلغاء / حذف الموعد";
+            DeleteAppointmentMenuItem.Click += DeleteAppointmentMenuItem_Click;
+            // 
+            // AddNewAppointmentMenuItem
+            // 
+            AddNewAppointmentMenuItem.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            AddNewAppointmentMenuItem.Name = "AddNewAppointmentMenuItem";
+            AddNewAppointmentMenuItem.Size = new Size(209, 24);
+            AddNewAppointmentMenuItem.Text = "  حجز موعد جديد...";
+            // 
+            // errorProvider1
+            // 
+            errorProvider1.ContainerControl = this;
+            // 
             // frmAppointments
             // 
             ClientSize = new Size(984, 661);
@@ -720,6 +742,7 @@ namespace ClinicManagementSystem
             tlpFormLayout.PerformLayout();
             tlpRow1Uniform.ResumeLayout(false);
             pnlPatientField.ResumeLayout(false);
+            pnlPatientField.PerformLayout();
             pnlReasonField.ResumeLayout(false);
             pnlReasonField.PerformLayout();
             tlpRow2Uniform.ResumeLayout(false);
@@ -736,6 +759,8 @@ namespace ClinicManagementSystem
             flpFilters.ResumeLayout(false);
             flpFilters.PerformLayout();
             ((ISupportInitialize)dgvAppointments).EndInit();
+            contextMenuStrip1.ResumeLayout(false);
+            ((ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
         }
 
@@ -777,18 +802,23 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.FlowLayoutPanel flpFilters;
         private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.TextBox txtSearchValue;
-        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.DataGridView dgvAppointments;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colAppointmentId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPatientName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDoctorName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colAppointmentDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colStatusName;
         private System.Windows.Forms.Panel pnlPatientField;
-
-        private System.Windows.Forms.ComboBox cmbSearchTypeFields;
+        private ErrorProvider errorProvider1;
+        private ComboBox cmbSearchType;
+        private DataGridViewTextBoxColumn colPatientNationalNumber;
+        private DataGridViewTextBoxColumn colAppointmentId;
+        private DataGridViewTextBoxColumn PatientNationalNumber;
+        private DataGridViewTextBoxColumn colPatientName;
+        private DataGridViewTextBoxColumn colDoctorName;
+        private DataGridViewTextBoxColumn colAppointmentDate;
+        private DataGridViewTextBoxColumn colStatusName;
+        private TextBox txtPatinetId;
         private Label lblPatient;
-        private System.Windows.Forms.TextBox txtSearchPatientInput;
-        private System.Windows.Forms.Button btnExecuteSearch;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem ShowInfoMenuItem;
+        private ToolStripMenuItem DeleteAppointmentMenuItem;
+        private ToolStripMenuItem UpdateAppointmentMenuItem;
+        private ToolStripMenuItem AddNewAppointmentMenuItem;
     }
 }
