@@ -1,3 +1,5 @@
+using ClinicManagementSystem.Appointments;
+
 namespace ClinicManagementSystem
 {
     internal static class Program

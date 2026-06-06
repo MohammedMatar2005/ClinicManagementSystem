@@ -31,15 +31,17 @@ namespace ClinicManagementSystem
             tlpFormLayout = new TableLayoutPanel();
             lblFormTitle = new Label();
             tlpRow1Uniform = new TableLayoutPanel();
-            pnlPatientField = new Panel();
-            txtPatinetId = new TextBox();
-            lblPatient = new Label();
             pnlReasonField = new Panel();
             txtReason = new TextBox();
             lblReason = new Label();
+            pnlPatientField = new Panel();
+            btnChoosePatient = new Button();
+            txtPatinetId = new TextBox();
+            lblPatient = new Label();
             tlpRow2Uniform = new TableLayoutPanel();
             pnlDoctorField = new Panel();
-            cmbDoctors = new ComboBox();
+            btnChooseDoctor = new Button();
+            txtDoctorId = new TextBox();
             lblDoctor = new Label();
             pnlDateField = new Panel();
             dtpAppointmentDate = new DateTimePicker();
@@ -53,7 +55,6 @@ namespace ClinicManagementSystem
             flpButtonsContainer = new FlowLayoutPanel();
             btnSave = new Button();
             btnClear = new Button();
-            btnDelete = new Button();
             tabAppointmentHistory = new TabPage();
             pnlHistoryCard = new Panel();
             tlpHistoryLayout = new TableLayoutPanel();
@@ -82,8 +83,8 @@ namespace ClinicManagementSystem
             pnlFormCard.SuspendLayout();
             tlpFormLayout.SuspendLayout();
             tlpRow1Uniform.SuspendLayout();
-            pnlPatientField.SuspendLayout();
             pnlReasonField.SuspendLayout();
+            pnlPatientField.SuspendLayout();
             tlpRow2Uniform.SuspendLayout();
             pnlDoctorField.SuspendLayout();
             pnlDateField.SuspendLayout();
@@ -211,8 +212,8 @@ namespace ClinicManagementSystem
             tlpRow1Uniform.ColumnCount = 2;
             tlpRow1Uniform.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tlpRow1Uniform.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tlpRow1Uniform.Controls.Add(pnlPatientField, 0, 0);
             tlpRow1Uniform.Controls.Add(pnlReasonField, 1, 0);
+            tlpRow1Uniform.Controls.Add(pnlPatientField, 0, 0);
             tlpRow1Uniform.Dock = DockStyle.Fill;
             tlpRow1Uniform.Location = new Point(0, 45);
             tlpRow1Uniform.Margin = new Padding(0);
@@ -221,39 +222,6 @@ namespace ClinicManagementSystem
             tlpRow1Uniform.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlpRow1Uniform.Size = new Size(886, 95);
             tlpRow1Uniform.TabIndex = 1;
-            // 
-            // pnlPatientField
-            // 
-            pnlPatientField.Controls.Add(txtPatinetId);
-            pnlPatientField.Controls.Add(lblPatient);
-            pnlPatientField.Dock = DockStyle.Fill;
-            pnlPatientField.Location = new Point(453, 10);
-            pnlPatientField.Margin = new Padding(10);
-            pnlPatientField.Name = "pnlPatientField";
-            pnlPatientField.Size = new Size(423, 75);
-            pnlPatientField.TabIndex = 0;
-            // 
-            // txtPatinetId
-            // 
-            txtPatinetId.BorderStyle = BorderStyle.FixedSingle;
-            txtPatinetId.Dock = DockStyle.Bottom;
-            txtPatinetId.Font = new Font("Segoe UI", 12F);
-            txtPatinetId.Location = new Point(0, 46);
-            txtPatinetId.Name = "txtPatinetId";
-            txtPatinetId.Size = new Size(423, 29);
-            txtPatinetId.TabIndex = 2;
-            // 
-            // lblPatient
-            // 
-            lblPatient.Dock = DockStyle.Top;
-            lblPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblPatient.ForeColor = Color.FromArgb(93, 122, 149);
-            lblPatient.Location = new Point(0, 0);
-            lblPatient.Name = "lblPatient";
-            lblPatient.Size = new Size(423, 22);
-            lblPatient.TabIndex = 0;
-            lblPatient.Text = "ادخل معرف المريض";
-            lblPatient.TextAlign = ContentAlignment.TopRight;
             // 
             // pnlReasonField
             // 
@@ -268,13 +236,13 @@ namespace ClinicManagementSystem
             // 
             // txtReason
             // 
+            txtReason.Anchor = AnchorStyles.Left;
             txtReason.BorderStyle = BorderStyle.FixedSingle;
-            txtReason.Dock = DockStyle.Bottom;
             txtReason.Font = new Font("Segoe UI", 12F);
-            txtReason.Location = new Point(0, 28);
+            txtReason.Location = new Point(0, 46);
             txtReason.Multiline = true;
             txtReason.Name = "txtReason";
-            txtReason.Size = new Size(423, 47);
+            txtReason.Size = new Size(423, 29);
             txtReason.TabIndex = 1;
             // 
             // lblReason
@@ -284,10 +252,60 @@ namespace ClinicManagementSystem
             lblReason.ForeColor = Color.FromArgb(93, 122, 149);
             lblReason.Location = new Point(0, 0);
             lblReason.Name = "lblReason";
-            lblReason.Size = new Size(423, 25);
+            lblReason.Size = new Size(423, 22);
             lblReason.TabIndex = 0;
             lblReason.Text = "سبب الزيارة";
             lblReason.TextAlign = ContentAlignment.TopRight;
+            // 
+            // pnlPatientField
+            // 
+            pnlPatientField.Anchor = AnchorStyles.None;
+            pnlPatientField.Controls.Add(btnChoosePatient);
+            pnlPatientField.Controls.Add(txtPatinetId);
+            pnlPatientField.Controls.Add(lblPatient);
+            pnlPatientField.Location = new Point(453, 10);
+            pnlPatientField.Margin = new Padding(10);
+            pnlPatientField.Name = "pnlPatientField";
+            pnlPatientField.Size = new Size(423, 75);
+            pnlPatientField.TabIndex = 0;
+            // 
+            // btnChoosePatient
+            // 
+            btnChoosePatient.BackColor = Color.FromArgb(46, 204, 113);
+            btnChoosePatient.FlatStyle = FlatStyle.Flat;
+            btnChoosePatient.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChoosePatient.ForeColor = Color.White;
+            btnChoosePatient.Location = new Point(178, 0);
+            btnChoosePatient.Margin = new Padding(5, 30, 5, 5);
+            btnChoosePatient.Name = "btnChoosePatient";
+            btnChoosePatient.Size = new Size(120, 38);
+            btnChoosePatient.TabIndex = 3;
+            btnChoosePatient.Text = "اختر مريض";
+            btnChoosePatient.UseVisualStyleBackColor = false;
+            btnChoosePatient.Click += btnChoosePatient_Click;
+            // 
+            // txtPatinetId
+            // 
+            txtPatinetId.Anchor = AnchorStyles.Top;
+            txtPatinetId.BorderStyle = BorderStyle.FixedSingle;
+            txtPatinetId.Font = new Font("Segoe UI", 12F);
+            txtPatinetId.Location = new Point(148, 46);
+            txtPatinetId.Name = "txtPatinetId";
+            txtPatinetId.Size = new Size(275, 29);
+            txtPatinetId.TabIndex = 2;
+            // 
+            // lblPatient
+            // 
+            lblPatient.Dock = DockStyle.Top;
+            lblPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblPatient.ForeColor = Color.FromArgb(93, 122, 149);
+            lblPatient.Location = new Point(0, 0);
+            lblPatient.Name = "lblPatient";
+            lblPatient.RightToLeft = RightToLeft.No;
+            lblPatient.Size = new Size(423, 22);
+            lblPatient.TabIndex = 0;
+            lblPatient.Text = "اختر معرف المريض";
+            lblPatient.TextAlign = ContentAlignment.TopRight;
             // 
             // tlpRow2Uniform
             // 
@@ -309,36 +327,52 @@ namespace ClinicManagementSystem
             // 
             // pnlDoctorField
             // 
-            pnlDoctorField.Controls.Add(cmbDoctors);
+            pnlDoctorField.Anchor = AnchorStyles.None;
+            pnlDoctorField.Controls.Add(btnChooseDoctor);
+            pnlDoctorField.Controls.Add(txtDoctorId);
             pnlDoctorField.Controls.Add(lblDoctor);
-            pnlDoctorField.Dock = DockStyle.Fill;
             pnlDoctorField.Location = new Point(601, 10);
             pnlDoctorField.Margin = new Padding(10);
             pnlDoctorField.Name = "pnlDoctorField";
             pnlDoctorField.Size = new Size(275, 75);
             pnlDoctorField.TabIndex = 0;
             // 
-            // cmbDoctors
+            // btnChooseDoctor
             // 
-            cmbDoctors.Dock = DockStyle.Bottom;
-            cmbDoctors.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbDoctors.Font = new Font("Segoe UI", 12F);
-            cmbDoctors.Location = new Point(0, 46);
-            cmbDoctors.Name = "cmbDoctors";
-            cmbDoctors.Size = new Size(275, 29);
-            cmbDoctors.TabIndex = 1;
+            btnChooseDoctor.BackColor = Color.FromArgb(46, 204, 113);
+            btnChooseDoctor.FlatStyle = FlatStyle.Flat;
+            btnChooseDoctor.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChooseDoctor.ForeColor = Color.White;
+            btnChooseDoctor.Location = new Point(40, 0);
+            btnChooseDoctor.Margin = new Padding(5, 30, 5, 5);
+            btnChooseDoctor.Name = "btnChooseDoctor";
+            btnChooseDoctor.Size = new Size(110, 38);
+            btnChooseDoctor.TabIndex = 3;
+            btnChooseDoctor.Text = "اختر طبيب";
+            btnChooseDoctor.UseVisualStyleBackColor = false;
+            btnChooseDoctor.Click += btnChooseDoctor_Click;
+            // 
+            // txtDoctorId
+            // 
+            txtDoctorId.BorderStyle = BorderStyle.FixedSingle;
+            txtDoctorId.Dock = DockStyle.Bottom;
+            txtDoctorId.Font = new Font("Segoe UI", 12F);
+            txtDoctorId.Location = new Point(0, 46);
+            txtDoctorId.Name = "txtDoctorId";
+            txtDoctorId.Size = new Size(275, 29);
+            txtDoctorId.TabIndex = 2;
             // 
             // lblDoctor
             // 
             lblDoctor.Dock = DockStyle.Top;
             lblDoctor.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblDoctor.ForeColor = Color.FromArgb(93, 122, 149);
+            lblDoctor.ImageAlign = ContentAlignment.BottomRight;
             lblDoctor.Location = new Point(0, 0);
             lblDoctor.Name = "lblDoctor";
-            lblDoctor.Size = new Size(275, 25);
+            lblDoctor.Size = new Size(275, 22);
             lblDoctor.TabIndex = 0;
-            lblDoctor.Text = "الطبيب";
-            lblDoctor.TextAlign = ContentAlignment.TopRight;
+            lblDoctor.Text = "اختر معرف الطبيب";
             // 
             // pnlDateField
             // 
@@ -450,7 +484,6 @@ namespace ClinicManagementSystem
             // 
             flpButtonsContainer.Controls.Add(btnSave);
             flpButtonsContainer.Controls.Add(btnClear);
-            flpButtonsContainer.Controls.Add(btnDelete);
             flpButtonsContainer.Dock = DockStyle.Fill;
             flpButtonsContainer.Location = new Point(10, 370);
             flpButtonsContainer.Margin = new Padding(0, 0, 10, 0);
@@ -471,6 +504,7 @@ namespace ClinicManagementSystem
             btnSave.TabIndex = 0;
             btnSave.Text = "حفظ البيانات";
             btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += btnSave_Click;
             // 
             // btnClear
             // 
@@ -486,20 +520,6 @@ namespace ClinicManagementSystem
             btnClear.Text = "جديد";
             btnClear.UseVisualStyleBackColor = false;
             btnClear.Click += btnClear_Click;
-            // 
-            // btnDelete
-            // 
-            btnDelete.BackColor = Color.FromArgb(231, 76, 60);
-            btnDelete.FlatStyle = FlatStyle.Flat;
-            btnDelete.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            btnDelete.ForeColor = Color.White;
-            btnDelete.Location = new Point(491, 30);
-            btnDelete.Margin = new Padding(5, 30, 5, 5);
-            btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(120, 42);
-            btnDelete.TabIndex = 2;
-            btnDelete.Text = "حذف موعد";
-            btnDelete.UseVisualStyleBackColor = false;
             // 
             // tabAppointmentHistory
             // 
@@ -691,7 +711,7 @@ namespace ClinicManagementSystem
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RenderMode = ToolStripRenderMode.Professional;
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(210, 122);
+            contextMenuStrip1.Size = new Size(210, 100);
             // 
             // ShowInfoMenuItem
             // 
@@ -720,6 +740,7 @@ namespace ClinicManagementSystem
             AddNewAppointmentMenuItem.Name = "AddNewAppointmentMenuItem";
             AddNewAppointmentMenuItem.Size = new Size(209, 24);
             AddNewAppointmentMenuItem.Text = "  حجز موعد جديد...";
+            AddNewAppointmentMenuItem.Click += AddNewAppointmentMenuItem_Click;
             // 
             // errorProvider1
             // 
@@ -727,11 +748,13 @@ namespace ClinicManagementSystem
             // 
             // frmAppointments
             // 
+            BackColor = Color.White;
             ClientSize = new Size(984, 661);
             Controls.Add(mainGridPanel);
             Name = "frmAppointments";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
+            WindowState = FormWindowState.Maximized;
             Load += frmAppointments_Load;
             mainGridPanel.ResumeLayout(false);
             tabControl.ResumeLayout(false);
@@ -741,12 +764,13 @@ namespace ClinicManagementSystem
             tlpFormLayout.ResumeLayout(false);
             tlpFormLayout.PerformLayout();
             tlpRow1Uniform.ResumeLayout(false);
-            pnlPatientField.ResumeLayout(false);
-            pnlPatientField.PerformLayout();
             pnlReasonField.ResumeLayout(false);
             pnlReasonField.PerformLayout();
+            pnlPatientField.ResumeLayout(false);
+            pnlPatientField.PerformLayout();
             tlpRow2Uniform.ResumeLayout(false);
             pnlDoctorField.ResumeLayout(false);
+            pnlDoctorField.PerformLayout();
             pnlDateField.ResumeLayout(false);
             pnlStatusField.ResumeLayout(false);
             pnlNotesField.ResumeLayout(false);
@@ -779,9 +803,12 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Label lblReason;
         private System.Windows.Forms.TextBox txtReason;
         private System.Windows.Forms.TableLayoutPanel tlpRow2Uniform;
+        // --- Doctor field: TextBox + Button بدلاً من ComboBox ---
         private System.Windows.Forms.Panel pnlDoctorField;
         private System.Windows.Forms.Label lblDoctor;
-        private System.Windows.Forms.ComboBox cmbDoctors;
+        private System.Windows.Forms.TextBox txtDoctorId;
+        private System.Windows.Forms.Button btnChooseDoctor;
+        // --------------------------------------------------------
         private System.Windows.Forms.Panel pnlDateField;
         private System.Windows.Forms.Label lblDate;
         private System.Windows.Forms.DateTimePicker dtpAppointmentDate;
@@ -794,7 +821,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.FlowLayoutPanel flpButtonsContainer;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.TabPage tabAppointmentHistory;
         private System.Windows.Forms.Panel pnlHistoryCard;
         private System.Windows.Forms.TableLayoutPanel tlpHistoryLayout;
@@ -806,7 +832,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Panel pnlPatientField;
         private ErrorProvider errorProvider1;
         private ComboBox cmbSearchType;
-        private DataGridViewTextBoxColumn colPatientNationalNumber;
         private DataGridViewTextBoxColumn colAppointmentId;
         private DataGridViewTextBoxColumn PatientNationalNumber;
         private DataGridViewTextBoxColumn colPatientName;
@@ -820,5 +845,6 @@ namespace ClinicManagementSystem
         private ToolStripMenuItem DeleteAppointmentMenuItem;
         private ToolStripMenuItem UpdateAppointmentMenuItem;
         private ToolStripMenuItem AddNewAppointmentMenuItem;
+        private Button btnChoosePatient;
     }
 }

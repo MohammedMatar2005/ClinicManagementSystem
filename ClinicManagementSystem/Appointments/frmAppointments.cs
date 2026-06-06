@@ -17,22 +17,22 @@ namespace ClinicManagementSystem
         private readonly clsAppointment _appointmentService;
         private DataView _appointmentsDataView = new DataView();
 
+        // متغير على مستوى الكلاس للاحتفاظ برقم المريض المختار
+        private int _selectedPatientId = -1;
+        private int _selectedDoctorId;
+
         public frmAppointments()
         {
             InitializeComponent();
 
-            // ملاحظة معمارية: في المشاريع الكبيرة يتم حقن الخدمة عبر الـ DI Container
-            // للتبسيط نقوم بتهيئة الطبقات هنا تتابعاً بناءً على النمط المتبع لديك
+            // تجهيز سياق البيانات وحقن المستودع داخل الخدمة
             var context = new ClinicManagementSystemContext();
             var repo = new AppointmentRepository(context);
             _appointmentService = new clsAppointment(repo);
-
-
         }
 
         private async void frmAppointments_Load(object sender, EventArgs e)
         {
-
             ConfigureGridMapping();
 
             cmbSearchType.Items.Clear();
@@ -40,6 +40,16 @@ namespace ClinicManagementSystem
             cmbSearchType.Items.Add("الرقم الوطني");
             cmbSearchType.SelectedIndex = 0;
 
+
+        
+            dtpAppointmentDate.Format = DateTimePickerFormat.Custom;
+
+        
+            dtpAppointmentDate.CustomFormat = "yyyy/MM/dd   hh:mm tt";
+
+        
+            dtpAppointmentDate.ShowUpDown = false;
+        
 
             await LoadAppointmentsDataAsync();
         }
@@ -60,14 +70,12 @@ namespace ClinicManagementSystem
 
         private async Task LoadAppointmentsDataAsync()
         {
-
-
             try
             {
                 // 1. جلب القائمة كاملة لمرة واحدة من الـ Business Layer
                 List<AppointmentViewDTO> appointmentsList = await _appointmentService.GetAllAppointmentsAsync();
 
-                // 2. بناء الـ DataTable وتحويل البيانات إليها لتفعيل الـ RowFilter
+                // 2. بناء الـ DataTable وتحويل البيانات إليها لتفعيل الـ RowFilter السريع
                 DataTable dt = new DataTable();
                 dt.Columns.Add("AppointmentId", typeof(int));
                 dt.Columns.Add("PatientFullName", typeof(string));
@@ -102,7 +110,6 @@ namespace ClinicManagementSystem
         {
             string searchValue = txtSearchValue.Text.Trim().Replace("'", "''");
 
-            // إذا كان حقل البحث فارغاً، قم بإلغاء الفلترة فوراً لعرض كل المواعيد واخرج
             if (string.IsNullOrEmpty(searchValue))
             {
                 _appointmentsDataView.RowFilter = string.Empty;
@@ -113,19 +120,17 @@ namespace ClinicManagementSystem
             {
                 if (cmbSearchType.SelectedIndex == 0)
                 {
-                    // الفلترة بالـ ID (رقمي): نفحص أولاً أن المدخل رقمي لمنع انهيار البرنامج
                     if (int.TryParse(searchValue, out int id))
                     {
                         _appointmentsDataView.RowFilter = $"AppointmentId = {id}";
                     }
                     else
                     {
-                        _appointmentsDataView.RowFilter = "1 = 0"; // تصفير النتائج إذا كتب حروفاً في خانة الرقم
+                        _appointmentsDataView.RowFilter = "1 = 0";
                     }
                 }
                 else if (cmbSearchType.SelectedIndex == 1)
                 {
-                    // الفلترة بالرقم الوطني (نصي): يبحث عن أي سجل يحتوي على الأرقام المكتوبة
                     _appointmentsDataView.RowFilter = $"PatientNationalNumber LIKE '%{searchValue}%'";
                 }
             }
@@ -134,10 +139,9 @@ namespace ClinicManagementSystem
                 System.Diagnostics.Debug.WriteLine($"خطأ أثناء الفلترة اللحظية: {ex.Message}");
             }
         }
-        f
+
         private void txtSearchValue_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // بما أن الـ ID والرقم الوطني يعتمدان على الأرقام فقط، نمنع إدخال الحروف نهائياً لحماية النظام
             e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
         }
 
@@ -145,43 +149,39 @@ namespace ClinicManagementSystem
         {
             txtSearchValue.Clear();
             cmbSearchType.SelectedIndex = 0;
-            _appointmentsDataView.RowFilter = string.Empty; // إلغاء الفلترة لعرض كل المواعيد
+            _appointmentsDataView.RowFilter = string.Empty;
             cmbStatus.SelectedIndex = 0;
             txtReason.Clear();
             txtNotes.Clear();
             txtPatinetId.Clear();
+            _selectedPatientId = -1;
+            txtDoctorId.Clear();
 
-
+            // إذا كان لديك تكست بوكس لاسم المريض قم بتنظيفه هنا أيضاً:
+            // txtPatientName.Clear();
         }
 
         private async void DeleteAppointmentMenuItem_Click(object sender, EventArgs e)
         {
-            // التأكد من وجود صف محدد لمنع الـ NullReferenceException
             if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            // جلب رقم الموعد بناءً على اسم العمود في الـ Designer لديك
             int appointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
             if (appointmentId == 0) return;
 
-            // 1. إظهار مسج بوكس التأكيد قبل الحذف
             DialogResult result = MessageBox.Show(
                 $"هل أنت متأكد من رغبتك في حذف الموعد رقم ({appointmentId}) بشكل نهائي؟",
                 "تأكيد الحذف",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2); // يجعل خيار "لا" هو النشط افتراضياً لحماية البيانات من النقرات السريعة
+                MessageBoxDefaultButton.Button2);
 
-            // 2. إذا ضغط الموظف "نعم" يبدأ الحذف
             if (result == DialogResult.Yes)
             {
-                // استخدام await هنا يضمن بقاء الشاشة مرنة وبدون تعليق (Deadlock)
                 bool isDeleted = await _appointmentService.DeleteAppointmentAsync(appointmentId);
 
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف الموعد بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // تحديث جدول المواعيد تلقائياً بعد الحذف
                     await LoadAppointmentsDataAsync();
                 }
                 else
@@ -198,16 +198,110 @@ namespace ClinicManagementSystem
 
         private void ShowInfoMenuItem_Click(object sender, EventArgs e)
         {
-            // التأكد من وجود صف محدد لمنع الـ NullReferenceException
             if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            // جلب رقم الموعد بناءً على اسم العمود في الـ Designer لديك
             int appointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
             if (appointmentId == 0) return;
 
-            // إنشاء نموذج عرض معلومات الموعد وتمرير رقم الموعد
             var showInfoForm = new frmShowAppointmentInfo(appointmentId);
             showInfoForm.ShowDialog();
+        }
+
+        private void btnChoosePatient_Click(object sender, EventArgs e)
+        {
+            // فتح شاشة الاختيار التي صممناها بشكل منبثق (Using لضمان تدمير الكائن فوراً وتحرير الذاكرة)
+            using (frmChoosePatient frm = new frmChoosePatient())
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    // 🎯 قراءة المعرف والاسم بناءً على الخصائص المحدثة بالريبو باترن
+                    _selectedPatientId = frm.PatientId;
+
+                    // إسناد رقم المريض للتكست بوكس الخاص به لتثبيته في الواجهة
+                    txtPatinetId.Text = _selectedPatientId.ToString();
+
+                    // إذا كان لديك تكست بوكس يعرض اسم المريض لموظف الاستقبال ليتأكد:
+                    // txtPatientName.Text = frm.SelectedPatientName;
+                }
+            }
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            // التحقق من أن الموظف قام باختيار مريض فعلاً قبل الحفظ لحماية قاعدة البيانات
+            if (_selectedPatientId == -1)
+            {
+                MessageBox.Show("الرجاء اختيار مريض للموعد أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (_selectedDoctorId == -1)
+            {
+                MessageBox.Show("الرجاء اختيار طبيب للموعد أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+
+            if(await _appointmentService.IsPatientAvailableAsync(_selectedPatientId, dtpAppointmentDate.Value) == false)
+            {
+                MessageBox.Show("المريض لديه موعد آخر في نفس الوقت. الرجاء اختيار وقت آخر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (await _appointmentService.IsDoctorAvailableAsync(_selectedDoctorId, dtpAppointmentDate.Value) == false)
+            {
+                MessageBox.Show("الطبيب لديه موعد آخر في نفس الوقت. الرجاء اختيار وقت آخر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var appointment = new AppointmentSaveDto
+            {
+                
+                
+                AppointmentDate = dtpAppointmentDate.Value,
+                DoctorId = _selectedDoctorId, // طبيب افتراضي أو يتم جلب معرّفه من ComboBox الأطباء
+                PatientId = _selectedPatientId, // 🎯 تم الإسناد الصحيح هنا لـ رقم المريض المختار
+                AppointmentStatusId = cmbStatus.SelectedIndex + 1,
+                Notes = txtNotes.Text.Trim()
+            };
+
+            int newAppointmentId = await _appointmentService.AddNewAppointmentAsync(appointment);
+
+            // هنا يمكنك استدعاء دالة الحفظ وإرسال الكائن للـ Service:
+            if (newAppointmentId > 0)
+            {
+                MessageBox.Show("تم حفظ الموعد بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ClearAllFields();
+
+                await LoadAppointmentsDataAsync();
+            }
+            else
+            {
+                MessageBox.Show("حدث خطأ أثناء حفظ الموعد. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnChooseDoctor_Click(object sender, EventArgs e)
+        {
+            using (frmChooseDoctor frm = new frmChooseDoctor())
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    // 🎯 قراءة المعرف والاسم بناءً على الخصائص المحدثة بالريبو باترن
+                    _selectedDoctorId = frm.DoctorId;
+
+                    // إسناد رقم الطبيب للتكست بوكس الخاص به لتثبيته في الواجهة
+                    txtDoctorId.Text = _selectedDoctorId.ToString();
+
+                    // إذا كان لديك تكست بوكس يعرض اسم المريض لموظف الاستقبال ليتأكد:
+                    // txtPatientName.Text = frm.SelectedPatientName;
+                }
+            }
+        }
+
+        private void AddNewAppointmentMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl.SelectedIndex = 0;
         }
     }
 }
