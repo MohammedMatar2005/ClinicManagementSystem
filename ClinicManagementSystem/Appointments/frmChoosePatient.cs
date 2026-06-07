@@ -204,7 +204,7 @@ namespace ClinicManagementSystem.Appointments
 
         private void btnAddNewPatient_Click(object sender, EventArgs e)
         {
-            // كود إضافة مريض جديد
+            
         }
 
         private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)

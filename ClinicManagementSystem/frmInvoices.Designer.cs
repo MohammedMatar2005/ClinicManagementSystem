@@ -32,8 +32,9 @@ namespace ClinicManagementSystem
             flpMetaFieldsLeft = new FlowLayoutPanel();
             lblMetaTitle = new Label();
             pnlPatientField = new Panel();
-            lblPatientTitle = new Label();
-            cmbPatient = new ComboBox();
+            txtPatientId = new TextBox();
+            btnChoosePatient = new Button();
+            lblPatient = new Label();
             pnlVisitField = new Panel();
             lblVisitTitle = new Label();
             cmbVisit = new ComboBox();
@@ -90,12 +91,16 @@ namespace ClinicManagementSystem
             flpHistoryHeader = new FlowLayoutPanel();
             lblHistoryTitle = new Label();
             btnExportPdf = new Button();
+            txtSearchValue = new TextBox();
             dgvInvoices = new DataGridView();
-            colInvoiceNumber = new DataGridViewTextBoxColumn();
+            colInvoiceId = new DataGridViewTextBoxColumn();
             colPatientName = new DataGridViewTextBoxColumn();
-            colDueDate = new DataGridViewTextBoxColumn();
             colFinalAmount = new DataGridViewTextBoxColumn();
-            colActions = new DataGridViewButtonColumn();
+            colInvoiceDate = new DataGridViewTextBoxColumn();
+            colInvoiceNumber = new DataGridViewTextBoxColumn();
+            colDueDate = new DataGridViewTextBoxColumn();
+            colVisitId = new DataGridViewTextBoxColumn();
+            btnExportThisInvoice = new Button();
             mainPanel.SuspendLayout();
             tabControl.SuspendLayout();
             tabNewInvoice.SuspendLayout();
@@ -196,9 +201,9 @@ namespace ClinicManagementSystem
             // 
             // pnlInvoiceMetaCard
             // 
+            pnlInvoiceMetaCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlInvoiceMetaCard.BackColor = Color.White;
             pnlInvoiceMetaCard.Controls.Add(tlpMetaCardLayout);
-            pnlInvoiceMetaCard.Dock = DockStyle.Fill;
             pnlInvoiceMetaCard.Location = new Point(10, 10);
             pnlInvoiceMetaCard.Margin = new Padding(10);
             pnlInvoiceMetaCard.Name = "pnlInvoiceMetaCard";
@@ -223,11 +228,11 @@ namespace ClinicManagementSystem
             // 
             // flpMetaFieldsLeft
             // 
+            flpMetaFieldsLeft.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             flpMetaFieldsLeft.Controls.Add(lblMetaTitle);
             flpMetaFieldsLeft.Controls.Add(pnlPatientField);
             flpMetaFieldsLeft.Controls.Add(pnlVisitField);
             flpMetaFieldsLeft.Controls.Add(pnlInvoiceNumField);
-            flpMetaFieldsLeft.Dock = DockStyle.Fill;
             flpMetaFieldsLeft.FlowDirection = FlowDirection.RightToLeft;
             flpMetaFieldsLeft.Location = new Point(183, 3);
             flpMetaFieldsLeft.Name = "flpMetaFieldsLeft";
@@ -247,44 +252,59 @@ namespace ClinicManagementSystem
             // 
             // pnlPatientField
             // 
-            pnlPatientField.Controls.Add(lblPatientTitle);
-            pnlPatientField.Controls.Add(cmbPatient);
+            pnlPatientField.Controls.Add(txtPatientId);
+            pnlPatientField.Controls.Add(btnChoosePatient);
+            pnlPatientField.Controls.Add(lblPatient);
             pnlPatientField.Location = new Point(20, 30);
             pnlPatientField.Margin = new Padding(0, 0, 20, 0);
             pnlPatientField.Name = "pnlPatientField";
-            pnlPatientField.Size = new Size(233, 50);
+            pnlPatientField.Size = new Size(300, 63);
             pnlPatientField.TabIndex = 1;
             // 
-            // lblPatientTitle
+            // txtPatientId
             // 
-            lblPatientTitle.AutoSize = true;
-            lblPatientTitle.Font = new Font("Segoe UI", 9F);
-            lblPatientTitle.ForeColor = Color.FromArgb(143, 163, 184);
-            lblPatientTitle.Location = new Point(159, 2);
-            lblPatientTitle.Name = "lblPatientTitle";
-            lblPatientTitle.Size = new Size(70, 15);
-            lblPatientTitle.TabIndex = 0;
-            lblPatientTitle.Text = "اسم المريض";
+            txtPatientId.Location = new Point(197, 31);
+            txtPatientId.Name = "txtPatientId";
+            txtPatientId.Size = new Size(100, 29);
+            txtPatientId.TabIndex = 7;
             // 
-            // cmbPatient
+            // btnChoosePatient
             // 
-            cmbPatient.Dock = DockStyle.Bottom;
-            cmbPatient.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbPatient.Font = new Font("Segoe UI", 11.25F);
-            cmbPatient.FormattingEnabled = true;
-            cmbPatient.Location = new Point(0, 22);
-            cmbPatient.Name = "cmbPatient";
-            cmbPatient.Size = new Size(233, 28);
-            cmbPatient.TabIndex = 1;
+            btnChoosePatient.BackColor = Color.FromArgb(46, 204, 113);
+            btnChoosePatient.FlatStyle = FlatStyle.Flat;
+            btnChoosePatient.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChoosePatient.ForeColor = Color.White;
+            btnChoosePatient.Location = new Point(5, 0);
+            btnChoosePatient.Margin = new Padding(5, 30, 5, 5);
+            btnChoosePatient.Name = "btnChoosePatient";
+            btnChoosePatient.Size = new Size(120, 38);
+            btnChoosePatient.TabIndex = 6;
+            btnChoosePatient.Text = "اختر مريض";
+            btnChoosePatient.UseVisualStyleBackColor = false;
+            btnChoosePatient.Click += btnChoosePatient_Click;
+            // 
+            // lblPatient
+            // 
+            lblPatient.Dock = DockStyle.Top;
+            lblPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblPatient.ForeColor = Color.FromArgb(93, 122, 149);
+            lblPatient.Location = new Point(0, 0);
+            lblPatient.Name = "lblPatient";
+            lblPatient.RightToLeft = RightToLeft.No;
+            lblPatient.Size = new Size(300, 22);
+            lblPatient.TabIndex = 4;
+            lblPatient.Text = "اختر معرف المريض";
+            lblPatient.TextAlign = ContentAlignment.TopRight;
             // 
             // pnlVisitField
             // 
+            pnlVisitField.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlVisitField.Controls.Add(lblVisitTitle);
             pnlVisitField.Controls.Add(cmbVisit);
-            pnlVisitField.Location = new Point(273, 30);
+            pnlVisitField.Location = new Point(340, 30);
             pnlVisitField.Margin = new Padding(0, 0, 20, 0);
             pnlVisitField.Name = "pnlVisitField";
-            pnlVisitField.Size = new Size(180, 50);
+            pnlVisitField.Size = new Size(325, 50);
             pnlVisitField.TabIndex = 2;
             // 
             // lblVisitTitle
@@ -306,14 +326,15 @@ namespace ClinicManagementSystem
             cmbVisit.FormattingEnabled = true;
             cmbVisit.Location = new Point(0, 22);
             cmbVisit.Name = "cmbVisit";
-            cmbVisit.Size = new Size(180, 28);
+            cmbVisit.Size = new Size(325, 28);
             cmbVisit.TabIndex = 1;
             // 
             // pnlInvoiceNumField
             // 
+            pnlInvoiceNumField.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlInvoiceNumField.Controls.Add(lblInvoiceNumTitle);
             pnlInvoiceNumField.Controls.Add(txtInvoiceNumber);
-            pnlInvoiceNumField.Location = new Point(453, 30);
+            pnlInvoiceNumField.Location = new Point(665, 30);
             pnlInvoiceNumField.Margin = new Padding(0);
             pnlInvoiceNumField.Name = "pnlInvoiceNumField";
             pnlInvoiceNumField.Size = new Size(120, 50);
@@ -344,9 +365,9 @@ namespace ClinicManagementSystem
             // 
             // flpMetaFieldRight
             // 
+            flpMetaFieldRight.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             flpMetaFieldRight.Controls.Add(lblDueDateTitle);
             flpMetaFieldRight.Controls.Add(dtpDueDate);
-            flpMetaFieldRight.Dock = DockStyle.Fill;
             flpMetaFieldRight.FlowDirection = FlowDirection.RightToLeft;
             flpMetaFieldRight.Location = new Point(3, 3);
             flpMetaFieldRight.Name = "flpMetaFieldRight";
@@ -454,6 +475,7 @@ namespace ClinicManagementSystem
             txtConsultationFee.Name = "txtConsultationFee";
             txtConsultationFee.Size = new Size(233, 38);
             txtConsultationFee.TabIndex = 1;
+            txtConsultationFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlLabField
             // 
@@ -486,6 +508,7 @@ namespace ClinicManagementSystem
             txtLabTestFee.Name = "txtLabTestFee";
             txtLabTestFee.Size = new Size(233, 38);
             txtLabTestFee.TabIndex = 1;
+            txtLabTestFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlProcedureField
             // 
@@ -518,6 +541,7 @@ namespace ClinicManagementSystem
             txtProcedureFee.Name = "txtProcedureFee";
             txtProcedureFee.Size = new Size(233, 38);
             txtProcedureFee.TabIndex = 1;
+            txtProcedureFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlOtherField
             // 
@@ -550,6 +574,7 @@ namespace ClinicManagementSystem
             txtOtherCharges.Name = "txtOtherCharges";
             txtOtherCharges.Size = new Size(234, 38);
             txtOtherCharges.TabIndex = 1;
+            txtOtherCharges.KeyPress += preventLetters_KeyPress;
             // 
             // pnlBrandingSplash
             // 
@@ -705,6 +730,7 @@ namespace ClinicManagementSystem
             txtDiscountPercentage.Name = "txtDiscountPercentage";
             txtDiscountPercentage.Size = new Size(285, 35);
             txtDiscountPercentage.TabIndex = 1;
+            txtDiscountPercentage.KeyPress += preventLetters_KeyPress;
             // 
             // pnlTaxField
             // 
@@ -740,6 +766,7 @@ namespace ClinicManagementSystem
             txtTaxPercentage.Name = "txtTaxPercentage";
             txtTaxPercentage.Size = new Size(295, 35);
             txtTaxPercentage.TabIndex = 1;
+            txtTaxPercentage.KeyPress += preventLetters_KeyPress;
             // 
             // flpActionButtons
             // 
@@ -892,7 +919,7 @@ namespace ClinicManagementSystem
             tabInvoiceHistory.Controls.Add(pnlHistoryCard);
             tabInvoiceHistory.Location = new Point(4, 49);
             tabInvoiceHistory.Name = "tabInvoiceHistory";
-            tabInvoiceHistory.Size = new Size(1072, 777);
+            tabInvoiceHistory.Size = new Size(1056, 676);
             tabInvoiceHistory.TabIndex = 1;
             tabInvoiceHistory.Text = "سجل الفواتير السابقة";
             // 
@@ -905,7 +932,7 @@ namespace ClinicManagementSystem
             pnlHistoryCard.Margin = new Padding(10);
             pnlHistoryCard.Name = "pnlHistoryCard";
             pnlHistoryCard.Padding = new Padding(20);
-            pnlHistoryCard.Size = new Size(1072, 777);
+            pnlHistoryCard.Size = new Size(1056, 676);
             pnlHistoryCard.TabIndex = 0;
             // 
             // tlpHistoryLayout
@@ -920,18 +947,20 @@ namespace ClinicManagementSystem
             tlpHistoryLayout.RowCount = 2;
             tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Size = new Size(1032, 737);
+            tlpHistoryLayout.Size = new Size(1016, 636);
             tlpHistoryLayout.TabIndex = 0;
             // 
             // flpHistoryHeader
             // 
             flpHistoryHeader.Controls.Add(lblHistoryTitle);
             flpHistoryHeader.Controls.Add(btnExportPdf);
+            flpHistoryHeader.Controls.Add(btnExportThisInvoice);
+            flpHistoryHeader.Controls.Add(txtSearchValue);
             flpHistoryHeader.Dock = DockStyle.Fill;
             flpHistoryHeader.FlowDirection = FlowDirection.RightToLeft;
             flpHistoryHeader.Location = new Point(3, 3);
             flpHistoryHeader.Name = "flpHistoryHeader";
-            flpHistoryHeader.Size = new Size(1026, 44);
+            flpHistoryHeader.Size = new Size(1010, 44);
             flpHistoryHeader.TabIndex = 0;
             // 
             // lblHistoryTitle
@@ -947,7 +976,7 @@ namespace ClinicManagementSystem
             // 
             // btnExportPdf
             // 
-            btnExportPdf.BackColor = Color.FromArgb(230, 126, 34);
+            btnExportPdf.BackColor = Color.FromArgb(22, 160, 133);
             btnExportPdf.FlatAppearance.BorderSize = 0;
             btnExportPdf.FlatStyle = FlatStyle.Flat;
             btnExportPdf.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
@@ -960,6 +989,19 @@ namespace ClinicManagementSystem
             btnExportPdf.TabIndex = 1;
             btnExportPdf.Text = "📄 تصدير الكل إلى PDF";
             btnExportPdf.UseVisualStyleBackColor = false;
+            btnExportPdf.Click += btnExportPdf_Click;
+            // 
+            // txtSearchValue
+            // 
+            txtSearchValue.Anchor = AnchorStyles.None;
+            txtSearchValue.BorderStyle = BorderStyle.FixedSingle;
+            txtSearchValue.ForeColor = Color.Gray;
+            txtSearchValue.Location = new Point(713, 7);
+            txtSearchValue.Name = "txtSearchValue";
+            txtSearchValue.Size = new Size(260, 29);
+            txtSearchValue.TabIndex = 2;
+            txtSearchValue.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
+            txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             // 
             // dgvInvoices
             // 
@@ -981,7 +1023,7 @@ namespace ClinicManagementSystem
             dgvInvoices.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             dgvInvoices.ColumnHeadersHeight = 45;
             dgvInvoices.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvInvoices.Columns.AddRange(new DataGridViewColumn[] { colInvoiceNumber, colPatientName, colDueDate, colFinalAmount, colActions });
+            dgvInvoices.Columns.AddRange(new DataGridViewColumn[] { colInvoiceId, colPatientName, colFinalAmount, colInvoiceDate, colInvoiceNumber });
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = Color.White;
             dataGridViewCellStyle4.Font = new Font("Segoe UI", 10F);
@@ -1001,8 +1043,40 @@ namespace ClinicManagementSystem
             dgvInvoices.RowHeadersVisible = false;
             dgvInvoices.RowTemplate.Height = 40;
             dgvInvoices.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvInvoices.Size = new Size(1026, 681);
+            dgvInvoices.Size = new Size(1010, 580);
             dgvInvoices.TabIndex = 1;
+            // 
+            // colInvoiceId
+            // 
+            colInvoiceId.DataPropertyName = "InvoiceId";
+            colInvoiceId.HeaderText = "معرف الفاتورة";
+            colInvoiceId.Name = "colInvoiceId";
+            colInvoiceId.ReadOnly = true;
+            colInvoiceId.Width = 150;
+            // 
+            // colPatientName
+            // 
+            colPatientName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colPatientName.DataPropertyName = "PatientFullName";
+            colPatientName.HeaderText = "اسم المريض";
+            colPatientName.Name = "colPatientName";
+            colPatientName.ReadOnly = true;
+            // 
+            // colFinalAmount
+            // 
+            colFinalAmount.DataPropertyName = "TotalAmount";
+            colFinalAmount.HeaderText = "المبلغ";
+            colFinalAmount.Name = "colFinalAmount";
+            colFinalAmount.ReadOnly = true;
+            colFinalAmount.Width = 120;
+            // 
+            // colInvoiceDate
+            // 
+            colInvoiceDate.DataPropertyName = "InvoiceDate";
+            colInvoiceDate.HeaderText = "تاريخ الفاتورة";
+            colInvoiceDate.Name = "colInvoiceDate";
+            colInvoiceDate.ReadOnly = true;
+            colInvoiceDate.Width = 150;
             // 
             // colInvoiceNumber
             // 
@@ -1012,49 +1086,43 @@ namespace ClinicManagementSystem
             colInvoiceNumber.ReadOnly = true;
             colInvoiceNumber.Width = 120;
             // 
-            // colPatientName
-            // 
-            colPatientName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colPatientName.DataPropertyName = "PatientName";
-            colPatientName.HeaderText = "المريض";
-            colPatientName.Name = "colPatientName";
-            colPatientName.ReadOnly = true;
-            // 
             // colDueDate
             // 
-            colDueDate.DataPropertyName = "DueDate";
-            colDueDate.HeaderText = "التاريخ";
             colDueDate.Name = "colDueDate";
-            colDueDate.ReadOnly = true;
-            colDueDate.Width = 150;
             // 
-            // colFinalAmount
+            // colVisitId
             // 
-            colFinalAmount.DataPropertyName = "FinalAmount";
-            colFinalAmount.HeaderText = "المجموع";
-            colFinalAmount.Name = "colFinalAmount";
-            colFinalAmount.ReadOnly = true;
-            colFinalAmount.Width = 150;
+            colVisitId.Name = "colVisitId";
             // 
-            // colActions
+            // btnExportThisInvoice
             // 
-            colActions.FlatStyle = FlatStyle.Flat;
-            colActions.HeaderText = "إجراءات";
-            colActions.Name = "colActions";
-            colActions.ReadOnly = true;
-            colActions.Text = "تحميل PDF";
-            colActions.UseColumnTextForButtonValue = true;
-            colActions.Width = 150;
+            btnExportThisInvoice.BackColor = Color.FromArgb(52, 152, 219);
+            btnExportThisInvoice.FlatAppearance.BorderSize = 0;
+            btnExportThisInvoice.FlatStyle = FlatStyle.Flat;
+            btnExportThisInvoice.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            btnExportThisInvoice.ForeColor = Color.White;
+            btnExportThisInvoice.Location = new Point(513, 3);
+            btnExportThisInvoice.Margin = new Padding(0, 3, 30, 3);
+            btnExportThisInvoice.Name = "btnExportThisInvoice";
+            btnExportThisInvoice.Padding = new Padding(15, 0, 15, 0);
+            btnExportThisInvoice.Size = new Size(197, 38);
+            btnExportThisInvoice.TabIndex = 3;
+            btnExportThisInvoice.Text = "تصدير إلى PDF 📄";
+            btnExportThisInvoice.UseVisualStyleBackColor = false;
+            btnExportThisInvoice.Click += btnExportThisInvoice_Click;
             // 
             // frmInvoices
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             ClientSize = new Size(1084, 749);
             Controls.Add(mainPanel);
             Font = new Font("Segoe UI", 9.75F);
             Name = "frmInvoices";
             RightToLeft = RightToLeft.Yes;
+            WindowState = FormWindowState.Maximized;
+            Load += frmInvoices_Load;
             mainPanel.ResumeLayout(false);
             tabControl.ResumeLayout(false);
             tabNewInvoice.ResumeLayout(false);
@@ -1098,6 +1166,7 @@ namespace ClinicManagementSystem
             pnlHistoryCard.ResumeLayout(false);
             tlpHistoryLayout.ResumeLayout(false);
             flpHistoryHeader.ResumeLayout(false);
+            flpHistoryHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvInvoices).EndInit();
             ResumeLayout(false);
         }
@@ -1114,8 +1183,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.FlowLayoutPanel flpMetaFieldsLeft;
         private System.Windows.Forms.Label lblMetaTitle;
         private System.Windows.Forms.Panel pnlPatientField;
-        private System.Windows.Forms.Label lblPatientTitle;
-        private System.Windows.Forms.ComboBox cmbPatient;
         private System.Windows.Forms.Panel pnlVisitField;
         private System.Windows.Forms.Label lblVisitTitle;
         private System.Windows.Forms.ComboBox cmbVisit;
@@ -1174,9 +1241,19 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Button btnExportPdf;
         private System.Windows.Forms.DataGridView dgvInvoices;
         private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceNumber;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colVisitId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPatientName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDueDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFinalAmount;
-        private System.Windows.Forms.DataGridViewButtonColumn colActions;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPatientNationalNumber;
+
+
+        private TextBox txtPatientId;
+        private Button btnChoosePatient;
+        private Label lblPatient;
+        private TextBox txtSearchValue;
+        private Button btnExportThisInvoice;
     }
 }
