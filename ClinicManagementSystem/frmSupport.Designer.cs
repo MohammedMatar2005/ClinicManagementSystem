@@ -17,7 +17,6 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSupport));
             mainContainerPanel = new TableLayoutPanel();
             pnlCenterCard = new Panel();
             cardContentLayout = new TableLayoutPanel();
@@ -40,7 +39,7 @@
             lblNoticeIcon = new Label();
             lblNoticeText = new Label();
             buttonsUniformGrid = new TableLayoutPanel();
-            btnSendMessage = new Button();
+            btnSendEmail = new Button();
             btnWhatsApp = new Button();
             mainContainerPanel.SuspendLayout();
             pnlCenterCard.SuspendLayout();
@@ -57,6 +56,7 @@
             // 
             // mainContainerPanel
             // 
+            mainContainerPanel.BackColor = Color.White;
             mainContainerPanel.ColumnCount = 3;
             mainContainerPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             mainContainerPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 550F));
@@ -103,8 +103,8 @@
             cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
             cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
-            cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
-            cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 110F));
+            cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 138F));
+            cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 104F));
             cardContentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             cardContentLayout.Size = new Size(410, 553);
             cardContentLayout.TabIndex = 0;
@@ -113,7 +113,6 @@
             // 
             pbProfileImage.Anchor = AnchorStyles.Top;
             pbProfileImage.BackColor = Color.Gainsboro;
-            pbProfileImage.Image = (Image)resources.GetObject("pbProfileImage.Image");
             pbProfileImage.ImageLocation = "C:\\Users\\hp15-DW\\Downloads\\MyImage.png";
             pbProfileImage.Location = new Point(150, 0);
             pbProfileImage.Margin = new Padding(0, 0, 0, 15);
@@ -175,7 +174,7 @@
             infoRowsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
             infoRowsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
             infoRowsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
-            infoRowsLayout.Size = new Size(380, 120);
+            infoRowsLayout.Size = new Size(380, 138);
             infoRowsLayout.TabIndex = 4;
             // 
             // pnlPhoneRow
@@ -191,7 +190,7 @@
             pnlPhoneRow.Name = "pnlPhoneRow";
             pnlPhoneRow.RowCount = 1;
             pnlPhoneRow.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnlPhoneRow.Size = new Size(380, 32);
+            pnlPhoneRow.Size = new Size(380, 38);
             pnlPhoneRow.TabIndex = 0;
             // 
             // lblPhoneHeader
@@ -202,7 +201,7 @@
             lblPhoneHeader.ForeColor = Color.FromArgb(93, 122, 149);
             lblPhoneHeader.Location = new Point(263, 0);
             lblPhoneHeader.Name = "lblPhoneHeader";
-            lblPhoneHeader.Size = new Size(114, 32);
+            lblPhoneHeader.Size = new Size(114, 38);
             lblPhoneHeader.TabIndex = 0;
             lblPhoneHeader.Text = "📞 الهاتف:";
             lblPhoneHeader.TextAlign = ContentAlignment.MiddleLeft;
@@ -230,12 +229,12 @@
             pnlEmailRow.Controls.Add(lblEmailHeader, 0, 0);
             pnlEmailRow.Controls.Add(txtEmailValue, 1, 0);
             pnlEmailRow.Dock = DockStyle.Fill;
-            pnlEmailRow.Location = new Point(0, 44);
+            pnlEmailRow.Location = new Point(0, 50);
             pnlEmailRow.Margin = new Padding(0, 4, 0, 4);
             pnlEmailRow.Name = "pnlEmailRow";
             pnlEmailRow.RowCount = 1;
             pnlEmailRow.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnlEmailRow.Size = new Size(380, 32);
+            pnlEmailRow.Size = new Size(380, 38);
             pnlEmailRow.TabIndex = 1;
             // 
             // lblEmailHeader
@@ -246,7 +245,7 @@
             lblEmailHeader.ForeColor = Color.FromArgb(93, 122, 149);
             lblEmailHeader.Location = new Point(263, 0);
             lblEmailHeader.Name = "lblEmailHeader";
-            lblEmailHeader.Size = new Size(114, 32);
+            lblEmailHeader.Size = new Size(114, 38);
             lblEmailHeader.TabIndex = 0;
             lblEmailHeader.Text = "📧 البريد:";
             lblEmailHeader.TextAlign = ContentAlignment.MiddleLeft;
@@ -274,12 +273,12 @@
             pnlLinkedInRow.Controls.Add(lblLinkedInHeader, 0, 0);
             pnlLinkedInRow.Controls.Add(txtLinkedInValue, 1, 0);
             pnlLinkedInRow.Dock = DockStyle.Fill;
-            pnlLinkedInRow.Location = new Point(0, 84);
+            pnlLinkedInRow.Location = new Point(0, 96);
             pnlLinkedInRow.Margin = new Padding(0, 4, 0, 4);
             pnlLinkedInRow.Name = "pnlLinkedInRow";
             pnlLinkedInRow.RowCount = 1;
             pnlLinkedInRow.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnlLinkedInRow.Size = new Size(380, 32);
+            pnlLinkedInRow.Size = new Size(380, 38);
             pnlLinkedInRow.TabIndex = 2;
             // 
             // lblLinkedInHeader
@@ -290,7 +289,7 @@
             lblLinkedInHeader.ForeColor = Color.FromArgb(93, 122, 149);
             lblLinkedInHeader.Location = new Point(263, 0);
             lblLinkedInHeader.Name = "lblLinkedInHeader";
-            lblLinkedInHeader.Size = new Size(114, 32);
+            lblLinkedInHeader.Size = new Size(114, 38);
             lblLinkedInHeader.TabIndex = 0;
             lblLinkedInHeader.Text = "🔗 LinkedIn:";
             lblLinkedInHeader.TextAlign = ContentAlignment.MiddleLeft;
@@ -307,7 +306,7 @@
             txtLinkedInValue.Multiline = true;
             txtLinkedInValue.Name = "txtLinkedInValue";
             txtLinkedInValue.ReadOnly = true;
-            txtLinkedInValue.Size = new Size(254, 25);
+            txtLinkedInValue.Size = new Size(254, 31);
             txtLinkedInValue.TabIndex = 1;
             txtLinkedInValue.Text = "linkedin.com/in/mohammed-matar-857962336";
             // 
@@ -316,11 +315,11 @@
             pnlSupportNoticeCard.BackColor = Color.FromArgb(240, 249, 255);
             pnlSupportNoticeCard.Controls.Add(noticeLayout);
             pnlSupportNoticeCard.Dock = DockStyle.Fill;
-            pnlSupportNoticeCard.Location = new Point(0, 382);
+            pnlSupportNoticeCard.Location = new Point(0, 400);
             pnlSupportNoticeCard.Margin = new Padding(0, 30, 0, 0);
             pnlSupportNoticeCard.Name = "pnlSupportNoticeCard";
             pnlSupportNoticeCard.Padding = new Padding(20);
-            pnlSupportNoticeCard.Size = new Size(410, 80);
+            pnlSupportNoticeCard.Size = new Size(410, 74);
             pnlSupportNoticeCard.TabIndex = 5;
             // 
             // noticeLayout
@@ -336,7 +335,7 @@
             noticeLayout.Name = "noticeLayout";
             noticeLayout.RowCount = 1;
             noticeLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            noticeLayout.Size = new Size(370, 40);
+            noticeLayout.Size = new Size(370, 34);
             noticeLayout.TabIndex = 0;
             // 
             // lblNoticeIcon
@@ -346,7 +345,7 @@
             lblNoticeIcon.Font = new Font("Segoe UI", 12F);
             lblNoticeIcon.Location = new Point(343, 0);
             lblNoticeIcon.Name = "lblNoticeIcon";
-            lblNoticeIcon.Size = new Size(24, 40);
+            lblNoticeIcon.Size = new Size(24, 34);
             lblNoticeIcon.TabIndex = 0;
             lblNoticeIcon.Text = "ℹ️";
             lblNoticeIcon.TextAlign = ContentAlignment.TopCenter;
@@ -359,7 +358,7 @@
             lblNoticeText.ForeColor = Color.FromArgb(52, 73, 94);
             lblNoticeText.Location = new Point(3, 0);
             lblNoticeText.Name = "lblNoticeText";
-            lblNoticeText.Size = new Size(334, 40);
+            lblNoticeText.Size = new Size(334, 34);
             lblNoticeText.TabIndex = 1;
             lblNoticeText.Text = "الدعم الفني متاح من السبت إلى الخميس\r\nمن الساعة 9:00 صباحاً وحتى 5:00 مساءً";
             lblNoticeText.TextAlign = ContentAlignment.TopRight;
@@ -369,32 +368,33 @@
             buttonsUniformGrid.ColumnCount = 2;
             buttonsUniformGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             buttonsUniformGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            buttonsUniformGrid.Controls.Add(btnSendMessage, 0, 0);
+            buttonsUniformGrid.Controls.Add(btnSendEmail, 0, 0);
             buttonsUniformGrid.Controls.Add(btnWhatsApp, 1, 0);
             buttonsUniformGrid.Dock = DockStyle.Fill;
-            buttonsUniformGrid.Location = new Point(0, 487);
+            buttonsUniformGrid.Location = new Point(0, 499);
             buttonsUniformGrid.Margin = new Padding(0, 25, 0, 0);
             buttonsUniformGrid.Name = "buttonsUniformGrid";
             buttonsUniformGrid.RowCount = 1;
             buttonsUniformGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            buttonsUniformGrid.Size = new Size(410, 66);
+            buttonsUniformGrid.Size = new Size(410, 54);
             buttonsUniformGrid.TabIndex = 6;
             // 
-            // btnSendMessage
+            // btnSendEmail
             // 
-            btnSendMessage.BackColor = Color.FromArgb(26, 37, 51);
-            btnSendMessage.Dock = DockStyle.Top;
-            btnSendMessage.FlatAppearance.BorderSize = 0;
-            btnSendMessage.FlatStyle = FlatStyle.Flat;
-            btnSendMessage.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnSendMessage.ForeColor = Color.White;
-            btnSendMessage.Location = new Point(210, 5);
-            btnSendMessage.Margin = new Padding(5);
-            btnSendMessage.Name = "btnSendMessage";
-            btnSendMessage.Size = new Size(195, 45);
-            btnSendMessage.TabIndex = 0;
-            btnSendMessage.Text = "إرسال رسالة";
-            btnSendMessage.UseVisualStyleBackColor = false;
+            btnSendEmail.BackColor = Color.FromArgb(26, 37, 51);
+            btnSendEmail.Dock = DockStyle.Top;
+            btnSendEmail.FlatAppearance.BorderSize = 0;
+            btnSendEmail.FlatStyle = FlatStyle.Flat;
+            btnSendEmail.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnSendEmail.ForeColor = Color.White;
+            btnSendEmail.Location = new Point(210, 5);
+            btnSendEmail.Margin = new Padding(5);
+            btnSendEmail.Name = "btnSendEmail";
+            btnSendEmail.Size = new Size(195, 44);
+            btnSendEmail.TabIndex = 0;
+            btnSendEmail.Text = "إرسال إيميل";
+            btnSendEmail.UseVisualStyleBackColor = false;
+            btnSendEmail.Click += btnSendEmail_Click;
             // 
             // btnWhatsApp
             // 
@@ -407,10 +407,11 @@
             btnWhatsApp.Location = new Point(5, 5);
             btnWhatsApp.Margin = new Padding(5);
             btnWhatsApp.Name = "btnWhatsApp";
-            btnWhatsApp.Size = new Size(195, 45);
+            btnWhatsApp.Size = new Size(195, 44);
             btnWhatsApp.TabIndex = 1;
             btnWhatsApp.Text = "واتساب";
             btnWhatsApp.UseVisualStyleBackColor = false;
+            btnWhatsApp.Click += btnWhatsApp_Click;
             // 
             // frmSupport
             // 
@@ -465,7 +466,7 @@
         private System.Windows.Forms.Label lblNoticeIcon;
         private System.Windows.Forms.Label lblNoticeText;
         private System.Windows.Forms.TableLayoutPanel buttonsUniformGrid;
-        private System.Windows.Forms.Button btnSendMessage;
+        private System.Windows.Forms.Button btnSendEmail;
         private System.Windows.Forms.Button btnWhatsApp;
     }
 }

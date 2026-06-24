@@ -1,42 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Windows.Forms;
-using System.Threading.Tasks;
+﻿using ClinicBusiness.DTO.InvoicesDTOs;
 using ClinicBusiness.Services;
-using ClinicBusiness.DTO.InvoicesDTOs;
-using ClinicDataAccess.Data;
-using ClinicDataAccess.Repositories;
 using ClinicManagementSystem.Appointments;
-using ClinicBusiness.DTO.PatientVisitsDTOs;
-using ClinicBusiness.DTO.PaitentVisitsDTOs;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ClinicManagementSystem
 {
     public partial class frmInvoices : Form
     {
+        // استخدام الأسماء الصريحة والمباشرة للخدمات المحقونة
         private readonly clsInvoice _invoiceService;
         private readonly clsPatientVisit _patientVisitService;
-        private DataView _invoicesDataView = new DataView();
+
+        // وسيط احترافي وبسيط للتحكم بالفلترة والترتيب داخل الـ Grid مباشرة بدون DataTable
+        private BindingSource _invoicesBindingSource = new BindingSource();
+        private List<InvoiceViewDTO> _originalInvoicesList = new List<InvoiceViewDTO>();
 
         private int _selectedPatientId = -1;
 
-        public frmInvoices()
+        // تمرير الخدمات مباشرة عبر الـ Constructor بناءً على المعمارية الجديدة
+        public frmInvoices(clsInvoice invoiceService, clsPatientVisit patientVisitService)
         {
             InitializeComponent();
-
-            var context = new ClinicManagementSystemContext();
-            var invoiceRepo = new InvoiceRepository(context);
-            var patientVisitRepo = new PatientVisitRepository(context);
-
-            _invoiceService = new clsInvoice(invoiceRepo, patientVisitRepo);
-            _patientVisitService = new clsPatientVisit(patientVisitRepo);
+            _invoiceService = invoiceService;
+            _patientVisitService = patientVisitService;
         }
 
         private async void frmInvoices_Load(object sender, EventArgs e)
         {
             ConfigureGridMapping();
-
             await LoadInvoicesDataAsync();
         }
 
@@ -46,8 +43,7 @@ namespace ClinicManagementSystem
 
             colInvoiceId.DataPropertyName = "InvoiceId";
             colPatientName.DataPropertyName = "PatientFullName";
-       //     colPatientNationalNumber.DataPropertyName = "PatientNationalNumber";
-            colFinalAmount.DataPropertyName = "TotalAmount";
+            colFinalAmount.DataPropertyName = "FinalAmount";
             colInvoiceDate.DataPropertyName = "InvoiceDate";
             colInvoiceNumber.DataPropertyName = "InvoiceNumber";
         }
@@ -56,194 +52,134 @@ namespace ClinicManagementSystem
         {
             try
             {
-                // 1. جلب قائمة الفواتير كاملة لمرة واحدة من الـ Business Layer
-                List<InvoiceViewDTO> invoicesList = await _invoiceService.GetAllInvoicesAsync();
+                this.Cursor = Cursors.WaitCursor;
 
+                // جلب البيانات مباشرة من الـ Service كـ List
+                _originalInvoicesList = await _invoiceService.GetAllInvoicesAsync();
 
-                DataTable dt = new DataTable();
-                dt.Columns.Add("InvoiceId", typeof(int));
-                dt.Columns.Add("VisitId", typeof(int));
-                dt.Columns.Add("PatientFullName", typeof(string));
-              //  dt.Columns.Add("PatientNationalNumber", typeof(string));
-                dt.Columns.Add("InvoiceDate", typeof(DateTime));
-                dt.Columns.Add("DueDate", typeof(DateOnly));
-                dt.Columns.Add("TotalAmount", typeof(decimal));
-                dt.Columns.Add("InvoiceNumber", typeof(string));
-
-                foreach (var item in invoicesList)
-                {
-                    dt.Rows.Add(
-                        item.InvoiceId,
-                        item.VisitId,
-                        item.PatientFullName,
-                        item.InvoiceDate,
-                        item.DueDate,
-                        item.FinalAmount,
-                        item.InvoiceNumber
-                    );
-                }
-
-                // 3. إسناد الـ DefaultView للمتغير العام وربطه بالواجهة
-                _invoicesDataView = dt.DefaultView;
-                dgvInvoices.DataSource = _invoicesDataView;
+                // ربط القائمة بالـ BindingSource ثم بالـ Grid مباشرة دون الحاجة لـ DataTable
+                _invoicesBindingSource.DataSource = _originalInvoicesList;
+                dgvInvoices.DataSource = _invoicesBindingSource;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء جلب الفواتير من السيرفر: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void preventLetters_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // منع إدخال الحروف في خانات الأرقام
-            e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
-        }
-
-        private async void btnChoosePatient_Click(object sender, EventArgs e)
-        {
-            // فتح شاشة الاختيار التي صممتها بشكل منبثق آمن
-            using (frmChoosePatient frm = new frmChoosePatient())
+            finally
             {
-                if (frm.ShowDialog() == DialogResult.OK)
-                {
-                    // 🎯 قراءة المعرف بناءً على الخصائص المحدثة بالريبو باترن
-                    _selectedPatientId = frm.PatientId;
-
-                    // إسناد رقم المريض للتكست بوكس الخاص به لتثبيته في الواجهة
-                    txtPatientId.Text = _selectedPatientId.ToString();
-
-                    await LoadPatientVisitsAsync(_selectedPatientId);
-                }
+                this.Cursor = Cursors.Default;
             }
         }
 
-        private async Task LoadPatientVisitsAsync(int patientId)
+        private void UpdateSummaryAmountsLabels()
         {
-            try
-            {
-                // تنظيف الكومبوبوكس الخاص بالزيارات أولاً قبل التعبئة الجديدة
-                cmbVisit.DataSource = null;
-                cmbVisit.Items.Clear();
+            decimal.TryParse(txtConsultationFee.Text, out decimal consultation);
+            decimal.TryParse(txtLabTestFee.Text, out decimal labTest);
+            decimal.TryParse(txtProcedureFee.Text, out decimal procedure);
+            decimal.TryParse(txtOtherCharges.Text, out decimal other);
 
-                // جلب قائمة الزيارات الخاصة بالمريض من الـ Business Layer
-                // ملاحظة: تأكد من اسم الدالة في الـ Service لديك (مثلاً _visitService أو من خلال الـ _invoiceService)
-                List<ChoosePatientVisitDTO> visitsList = await _patientVisitService.GetAllVisitsByPatientId(patientId);
+            decimal.TryParse(txtDiscountPercentage.Text, out decimal discountPercentage);
+            decimal.TryParse(txtTaxPercentage.Text, out decimal taxPercentage);
 
-                if (visitsList == null || visitsList.Count == 0)
-                {
-                    cmbVisit.Items.Add("لا توجد زيارات سابقة لهذا المريض");
-                    cmbVisit.SelectedIndex = 0;
-                    return;
-                }
+            decimal subTotal = consultation + labTest + procedure + other;
+            decimal discountAmount = subTotal * (discountPercentage / 100);
+            decimal taxAmount = subTotal * (taxPercentage / 100);
+            decimal finalAmount = subTotal - discountAmount + taxAmount;
 
-                // ربط البيانات بالـ ComboBox الذكي
-                // العرض (DisplayMember) يظهر للمستخدم تاريخ الزارة أو المعرف، والقيمة (ValueMember) تحمل الـ VisitId
-                cmbVisit.DataSource = visitsList;
-                cmbVisit.DisplayMember = "VisitDisplayInfo"; // خاصية في الـ DTO تجمع مثلاً (رقم الزيارة - التاريخ)
-                cmbVisit.ValueMember = "VisitId";
-
-                // جعل خيار الاختيار الافتراضي هو أول زيارة
-                if (cmbVisit.Items.Count > 0)
-                    cmbVisit.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"حدث خطأ أثناء جلب زيارات المريض: {ex.Message}", "خطأ في الزيارات", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            lblSubTotalValue.Text = $"{subTotal:N2}$";
+            lblDiscountAmtValue.Text = $"-{discountAmount:N2}$";
+            lblFinalTotalValue.Text = $"{finalAmount:N2}$";
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            //    // التحقق من أن الموظف قام باختيار مريض فعلاً لحماية قاعدة البيانات
-            //    if (_selectedPatientId == -1)
-            //    {
-            //        MessageBox.Show("الرجاء اختيار مريض أولاً لإصدار الفاتورة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //        return;
-            //    }
+            // 1. التحققات الأولية للواجهة
+            if (!IsFormValid()) return;
 
-            //    // التحقق من إدخال المبلغ الإجمالي للفاتورة وتفادي الأخطاء المدخلة
-            //    if (!decimal.TryParse(txtTotalAmount.Text.Trim(), out decimal totalAmount) || totalAmount <= 0)
-            //    {
-            //        MessageBox.Show("الرجاء إدخال مبلغ صحيح للفاتورة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //        return;
-            //    }
+            if (_selectedPatientId == -1)
+            {
+                MessageBox.Show("الرجاء اختيار مريض أولاً لإصدار الفاتورة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-            //    // بناء كائن الحفظ الـ DTO الخاص بالفواتير
-            //    var invoice = new InvoiceSaveDto
-            //    {
-            //        PatientId = _selectedPatientId,
-            //        TotalAmount = totalAmount,
-            //        InvoiceDate = dtpInvoiceDate.Value,
-            //        DueDate = dtpDueDate.Value, // تم تفعيل تاريخ الاستحقاق
-            //        Notes = txtNotes.Text.Trim()
-            //    };
+            int visitId = Convert.ToInt32(txtPatientVisitId.Text.Trim());
 
-            //    // حفظ الفاتورة بشكل غير متزامن لمنع تجمد الـ UI
-            //    int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(invoice);
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
 
-            //    if (newInvoiceId > 0)
-            //    {
-            //        MessageBox.Show("تم حفظ الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //        ClearAllFields();
+                // 2. فحص البزنس: هل توجد فاتورة سابقة لهذه الزيارة؟
+                if (await _invoiceService.IsInvoiceExistByVisitIdAsync(visitId))
+                {
+                    MessageBox.Show("عذراً، هذه الزيارة لديها فاتورة بالفعل ولا يمكن إصدار فاتورة أخرى لها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            //        // تحديث الـ Grid فوراً بسحب البيانات الجديدة
-            //        await LoadInvoicesDataAsync();
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    }
-            //
-        }
+                // 3. بناء كائن الحفظ الـ DTO
+                InvoiceSaveDTO saveDto = new InvoiceSaveDTO
+                {
+                    InvoiceId = 0,
+                    VisitId = visitId,
+                    ConsultationFee = string.IsNullOrEmpty(txtConsultationFee.Text) ? 0 : Convert.ToDecimal(txtConsultationFee.Text.Trim()),
+                    LabTestFee = string.IsNullOrEmpty(txtLabTestFee.Text) ? 0 : Convert.ToDecimal(txtLabTestFee.Text.Trim()),
+                    ProcedureFee = string.IsNullOrEmpty(txtProcedureFee.Text) ? 0 : Convert.ToDecimal(txtProcedureFee.Text.Trim()),
+                    OtherCharges = string.IsNullOrEmpty(txtOtherCharges.Text) ? 0 : Convert.ToDecimal(txtOtherCharges.Text.Trim()),
+                    DiscountPercentage = string.IsNullOrEmpty(txtDiscountPercentage.Text) ? 0 : Convert.ToDecimal(txtDiscountPercentage.Text.Trim()),
+                    TaxPercentage = string.IsNullOrEmpty(txtTaxPercentage.Text) ? 0 : Convert.ToDecimal(txtTaxPercentage.Text.Trim()),
+                    StatusId = 4, // افتراضي غير مدفوعة أو حسب النظام لديك
+                    DueDate = DateOnly.FromDateTime(dtpDueDate.Value),
+                    IsActive = true
+                };
 
-        private void ClearAllFields()
-        {
-            txtSearchValue.Clear();
-            _invoicesDataView.RowFilter = string.Empty;
+                // 4. استدعاء خدمة الحفظ في البزنس
+                int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(saveDto);
 
-            txtPatientId.Clear();
-            _selectedPatientId = -1;
-
-            // إعادة تصفير عناصر التواريخ للوقت الحالي إن وجد
-
-            dtpDueDate.Value = DateTime.Now.AddDays(7); // على سبيل المثال أسبوع كافتراضي للاستحقاق
-        }
-
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            ClearAllFields();
+                if (newInvoiceId > 0)
+                {
+                    MessageBox.Show("تم حفظ الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ClearAllFields();
+                    await LoadInvoicesDataAsync(); // تحديث الجدول
+                }
+                else
+                {
+                    MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ برمي أثناء الحفظ: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void txtSearchValue_TextChanged(object sender, EventArgs e)
         {
-            // تنظيف النص المدخل وحمايته من علامات الاقتباس لمنع الأخطاء في الفلترة المحلية
-            string searchValue = txtSearchValue.Text.Trim().Replace("'", "''");
+            string searchValue = txtSearchValue.Text.Trim();
 
-            // إذا كانت خانة البحث فارغة، قم بإلغاء الفلتر وعرض جميع الفواتير فوراً
             if (string.IsNullOrEmpty(searchValue))
             {
-                _invoicesDataView.RowFilter = string.Empty;
-                return;
+                _invoicesBindingSource.DataSource = _originalInvoicesList;
             }
+            else
+            {
+                // فلترة ذكية وسريعة باستخدام LINQ على القائمة الأصلية المتواجدة في الذاكرة
+                var filtered = _originalInvoicesList
+                    .Where(x => x.PatientFullName != null && x.PatientFullName.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
-            try
-            {
-                // الفلترة اللحظية الذكية بناءً على عمود الرقم الوطني للمريض
-                _invoicesDataView.RowFilter = $"PatientNationalNumber LIKE '%{searchValue}%'";
-            }
-            catch (Exception ex)
-            {
-                // طباعة الخطأ في شاشة الـ Output للمطور في بيئة الـ Debugging دون تعطيل المستخدم
-                System.Diagnostics.Debug.WriteLine($"خطأ أثناء الفلترة بالرقم الوطني: {ex.Message}");
+                _invoicesBindingSource.DataSource = filtered;
             }
         }
 
-        // 1. زر تصدير كافة الفواتير كجدول شامل (كل الفواتير)
         private void btnExportPdf_Click(object sender, EventArgs e)
         {
-            // أمان: التحقق من وجود بيانات في الذاكرة قبل فتح نافذة الحفظ
-            // ملاحظة: استبدل _invoicesList بالمتغير أو المصدر الذي يحتوي على قائمة الـ DTO لديك (مثل الـ List الأصلية)
-            if (_invoicesDataView == null || _invoicesDataView.Count == 0)
+            // الحصول على القائمة الظاهرة حالياً للمستخدم (سواءً كاملة أو مفلترة)
+            var currentList = _invoicesBindingSource.List.Cast<InvoiceViewDTO>().ToList();
+
+            if (currentList == null || currentList.Count == 0)
             {
                 MessageBox.Show("لا توجد بيانات فواتير حالية لتصديرها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -259,41 +195,19 @@ namespace ClinicManagementSystem
                 {
                     try
                     {
-                        // تحويل الـ DataView المفلتر حالياً إلى القائمة الأصلية المتوافقة مع دالة التصدير
-                        // لكي يتم طباعة فقط ما هو ظاهر أمام المستخدم على الشاشة (حتى لو كان مفلتراً بالرقم الوطني)
-                        List<InvoiceViewDTO> filteredList = new List<InvoiceViewDTO>();
-
-                        foreach (DataRowView rowView in _invoicesDataView)
-                        {
-                            DataRow row = rowView.Row;
-                            filteredList.Add(new InvoiceViewDTO
-                            {
-                                InvoiceId = Convert.ToInt32(row["InvoiceId"]),
-                                PatientFullName = row["PatientFullName"].ToString(),
-                               // PatientNationalNumber = row["PatientNationalNumber"].ToString(),
-                                FinalAmount = Convert.ToDecimal(row["TotalAmount"]),
-                                InvoiceDate = Convert.ToDateTime(row["InvoiceDate"]),
-                                InvoiceNumber = row["InvoiceNumber"].ToString()
-                            });
-                        }
-
-                        // استدعاء الدالة الإجمالية من كلاس التصدير وتمرير المسار المختبر
-                        ClinicBusiness.Utils.ExportPDF.GenerateAllInvoicesTablePDF(filteredList, sfd.FileName);
-
-                        MessageBox.Show("تم تصدير التقرير الجدول الشامل بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClinicBusiness.Utils.ExportPDF.GenerateAllInvoicesTablePDF(currentList, sfd.FileName);
+                        MessageBox.Show("تم تصدير التقرير بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"حدث خطأ أثناء حفظ ملف التقرير الشامل: {ex.Message}", "خطأ في التصدير", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"حدث خطأ أثناء حفظ ملف التقرير: {ex.Message}", "خطأ في التصدير", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-        // 2. زر تصدير فاتورة واحدة تفصيلية للمريض المحدد (فاتورة واحدة)
         private void btnExportThisInvoice_Click(object sender, EventArgs e)
         {
-            // أمان: التأكد من أن الموظف قام بتحديد سطر (فاتورة) من الجدول أولاً
             if (dgvInvoices.SelectedRows.Count == 0)
             {
                 MessageBox.Show("الرجاء تحديد الفاتورة المراد تصديرها من الجدول أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -302,24 +216,8 @@ namespace ClinicManagementSystem
 
             try
             {
-                // جلب السطر المحدد حالياً في الـ DataGridView
-                var selectedRow = dgvInvoices.SelectedRows[0];
-
-                // بناء كائن DTO مؤقت سريع من السطر المختار لتمريره مباشرة لدالة الفاتورة الفردية
-                // (إذا كانت بقية تفاصيل الرسوم مثل الكشفية والمختبر غير مربوطة بالجدول، يفضل جلب الـ DTO كامل من الـ Service بواسطة الـ InvoiceId)
-                InvoiceViewDTO selectedInvoice = new InvoiceViewDTO
-                {
-                    InvoiceId = Convert.ToInt32(selectedRow.Cells["colInvoiceId"].Value),
-                    InvoiceNumber = selectedRow.Cells["colInvoiceNumber"].Value?.ToString(),
-                    PatientFullName = selectedRow.Cells["colPatientName"].Value?.ToString(),
-                    //PatientNationalNumber = selectedRow.Cells["colPatientNationalNumber"].Value?.ToString(),
-                    FinalAmount = Convert.ToDecimal(selectedRow.Cells["colFinalAmount"].Value),
-                    InvoiceDate = Convert.ToDateTime(selectedRow.Cells["colInvoiceDate"].Value),
-
-                    // في حال رغبت بملء حقول الرسوم التفصيلية للفاتورة الفردية بدقة كاملة:
-                    // يمكنك فك الحظر عن السطر بالأسفل واستدعاء الـ Service فوراً:
-                    // SelectedInvoice = await _invoiceService.GetInvoiceDetailsForPdfAsync(invoiceId);
-                };
+                // الحصول على الـ DTO المربوط بالسطر المحدد مباشرة وبأمان تام
+                InvoiceViewDTO selectedInvoice = (InvoiceViewDTO)dgvInvoices.SelectedRows[0].DataBoundItem;
 
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
@@ -329,10 +227,8 @@ namespace ClinicManagementSystem
 
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        // استدعاء الدالة الفردية من كلاس التصدير وتمرير المسار
                         ClinicBusiness.Utils.ExportPDF.GenerateSingleInvoicePDF(selectedInvoice, sfd.FileName);
-
-                        MessageBox.Show("تم تصدير الفاتورة التفصيلية للمريض بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("تم تصدير الفاتورة التفصيلية بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -340,6 +236,72 @@ namespace ClinicManagementSystem
             {
                 MessageBox.Show($"حدث خطأ أثناء تصدير الفاتورة الفردية: {ex.Message}", "خطأ في التصدير", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnChooseVisit_Click(object sender, EventArgs e)
+        {
+            using (frmChoosePatientVisit frm = new frmChoosePatientVisit())
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _selectedPatientId = frm.PatientVisitId;
+                    txtPatientVisitId.Text = _selectedPatientId.ToString();
+                }
+            }
+        }
+
+        private void txtUpdateSummaryLables_TextChanged(object sender, EventArgs e)
+        {
+            UpdateSummaryAmountsLabels();
+        }
+
+        private void preventLetters_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // السماح بالأرقام، مفتاح المسح الـ Backspace، والنقطة العشرية
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+
+            // منع تكرار النقطة العشرية
+            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void btnNewInvoice_Click(object sender, EventArgs e)
+        {
+            ClearAllFields();
+        }
+
+        private bool IsFormValid()
+        {
+            if (string.IsNullOrWhiteSpace(txtPatientVisitId.Text))
+            {
+                MessageBox.Show("الرجاء اختيار زيارة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private void ClearAllFields()
+        {
+            txtSearchValue.Clear();
+            _invoicesBindingSource.DataSource = _originalInvoicesList;
+
+            _selectedPatientId = -1;
+            txtPatientVisitId.Clear();
+
+            txtDiscountPercentage.Text = "0";
+            txtTaxPercentage.Text = "0";
+            txtConsultationFee.Text = "0";
+            txtLabTestFee.Text = "0";
+            txtOtherCharges.Text = "0";
+            txtProcedureFee.Text = "0";
+
+            dtpDueDate.Value = DateTime.Now.AddDays(7);
+            UpdateSummaryAmountsLabels();
         }
     }
 }

@@ -1,6 +1,13 @@
-﻿namespace ClinicManagementSystem.Appointments
+﻿using System.Transactions;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Forms;
+using System.Drawing.Drawing2D;
+using System.Drawing;
+
+namespace ClinicManagementSystem.Appointments
 {
-    partial class frmChooseDoctor : Form
+    public partial class frmChoosePatientVisit : Form
     {
         /// <summary>
         /// Required designer variable.
@@ -33,12 +40,11 @@
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
             txtSearch = new TextBox();
-            dgvDoctors = new DataGridView();
+            dgvVisits = new DataGridView();
             btnSelect = new Button();
             btnCancel = new Button();
-            btnAddNewDoctor = new Button();
             pnlTopHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvVisits).BeginInit();
             SuspendLayout();
             // 
             // pnlTopHeader
@@ -54,75 +60,76 @@
             // lblHeaderTitle
             // 
             lblHeaderTitle.AutoSize = true;
-            lblHeaderTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblHeaderTitle.Font = new System.Drawing.Font("Segoe UI", 14F, FontStyle.Bold);
             lblHeaderTitle.ForeColor = Color.White;
             lblHeaderTitle.Location = new Point(10, 13);
             lblHeaderTitle.Name = "lblHeaderTitle";
-            lblHeaderTitle.Size = new Size(174, 25);
+            lblHeaderTitle.Size = new Size(223, 25);
             lblHeaderTitle.TabIndex = 0;
-            lblHeaderTitle.Text = "البحث واختيار الطبيب";
+            lblHeaderTitle.Text = "البحث واختيار زيارة المريض";
             // 
             // txtSearch
             // 
             txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSearch.BorderStyle = BorderStyle.FixedSingle;
-            txtSearch.Font = new Font("Segoe UI", 11F);
+            txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
             txtSearch.ForeColor = Color.Gray;
             txtSearch.Location = new Point(16, 75);
             txtSearch.Name = "txtSearch";
             txtSearch.Size = new Size(818, 27);
             txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
+            txtSearch.Text = "🔍 ابحث بالتاريخ أو اسم الطبيب...";
             txtSearch.TextChanged += txtSearch_TextChanged;
+            txtSearch.KeyPress += txtSearch_KeyPress;
             // 
-            // dgvDoctors
+            // dgvVisits
             // 
-            dgvDoctors.AllowUserToAddRows = false;
-            dgvDoctors.AllowUserToDeleteRows = false;
-            dgvDoctors.AllowUserToResizeRows = false;
-            dgvDoctors.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvDoctors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvDoctors.BackgroundColor = Color.FromArgb(245, 247, 250);
-            dgvDoctors.BorderStyle = BorderStyle.None;
-            dgvDoctors.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvDoctors.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvVisits.AllowUserToAddRows = false;
+            dgvVisits.AllowUserToDeleteRows = false;
+            dgvVisits.AllowUserToResizeRows = false;
+            dgvVisits.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvVisits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvVisits.BackgroundColor = Color.FromArgb(245, 247, 250);
+            dgvVisits.BorderStyle = BorderStyle.None;
+            dgvVisits.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvVisits.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = Color.FromArgb(230, 235, 245);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = Color.FromArgb(45, 52, 71);
             dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(230, 235, 245);
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvDoctors.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvDoctors.ColumnHeadersHeight = 40;
+            dgvVisits.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvVisits.ColumnHeadersHeight = 40;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F);
             dataGridViewCellStyle2.ForeColor = Color.FromArgb(70, 75, 85);
             dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(80, 140, 238);
             dataGridViewCellStyle2.SelectionForeColor = Color.White;
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dgvDoctors.DefaultCellStyle = dataGridViewCellStyle2;
-            dgvDoctors.EnableHeadersVisualStyles = false;
-            dgvDoctors.GridColor = Color.FromArgb(225, 230, 240);
-            dgvDoctors.Location = new Point(16, 120);
-            dgvDoctors.MultiSelect = false;
-            dgvDoctors.Name = "dgvDoctors";
-            dgvDoctors.ReadOnly = true;
-            dgvDoctors.RowHeadersVisible = false;
-            dgvDoctors.RowHeadersWidth = 51;
-            dgvDoctors.RowTemplate.Height = 35;
-            dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDoctors.Size = new Size(818, 350);
-            dgvDoctors.TabIndex = 2;
-            dgvDoctors.CellContentDoubleClick += dgvDoctors_CellDoubleClick;
+            dgvVisits.DefaultCellStyle = dataGridViewCellStyle2;
+            dgvVisits.EnableHeadersVisualStyles = false;
+            dgvVisits.GridColor = Color.FromArgb(225, 230, 240);
+            dgvVisits.Location = new Point(16, 120);
+            dgvVisits.MultiSelect = false;
+            dgvVisits.Name = "dgvVisits";
+            dgvVisits.ReadOnly = true;
+            dgvVisits.RowHeadersVisible = false;
+            dgvVisits.RowHeadersWidth = 51;
+            dgvVisits.RowTemplate.Height = 35;
+            dgvVisits.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvVisits.Size = new Size(818, 350);
+            dgvVisits.TabIndex = 2;
+            dgvVisits.CellContentDoubleClick += dgvVisits_CellDoubleClick;
             // 
             // btnSelect
             // 
             btnSelect.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnSelect.BackColor = Color.FromArgb(40, 167, 69);
             btnSelect.FlatStyle = FlatStyle.Flat;
-            btnSelect.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnSelect.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
             btnSelect.ForeColor = Color.White;
             btnSelect.Location = new Point(720, 490);
             btnSelect.Name = "btnSelect";
@@ -138,7 +145,7 @@
             btnCancel.BackColor = Color.White;
             btnCancel.DialogResult = DialogResult.Cancel;
             btnCancel.FlatStyle = FlatStyle.Flat;
-            btnCancel.Font = new Font("Segoe UI", 10F);
+            btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F);
             btnCancel.ForeColor = Color.FromArgb(108, 117, 125);
             btnCancel.Location = new Point(598, 490);
             btnCancel.Name = "btnCancel";
@@ -148,21 +155,7 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
             // 
-            // btnAddNewDoctor
-            // 
-            btnAddNewDoctor.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnAddNewDoctor.BackColor = Color.FromArgb(0, 123, 255);
-            btnAddNewDoctor.FlatStyle = FlatStyle.Flat;
-            btnAddNewDoctor.Font = new Font("Segoe UI", 10F);
-            btnAddNewDoctor.ForeColor = Color.White;
-            btnAddNewDoctor.Location = new Point(16, 490);
-            btnAddNewDoctor.Name = "btnAddNewDoctor";
-            btnAddNewDoctor.Size = new Size(158, 39);
-            btnAddNewDoctor.TabIndex = 5;
-            btnAddNewDoctor.Text = "➕ إضافة طبيب جديد";
-            btnAddNewDoctor.UseVisualStyleBackColor = false;
-            // 
-            // frmChooseDoctor
+            // frmChoosePatientVisit
             // 
             AcceptButton = btnSelect;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -170,22 +163,21 @@
             BackColor = Color.White;
             CancelButton = btnCancel;
             ClientSize = new Size(850, 550);
-            Controls.Add(btnAddNewDoctor);
             Controls.Add(btnCancel);
             Controls.Add(btnSelect);
-            Controls.Add(dgvDoctors);
+            Controls.Add(dgvVisits);
             Controls.Add(txtSearch);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
-            Name = "frmChooseDoctor";
+            Name = "frmChoosePatientVisit";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "شاشة اختيار طبيب";
-            Load += frmChooseDoctor_Load;
+            Text = "شاشة اختيار زيارة المريض";
+            Load += frmChoosePatientVisit_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvVisits).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -195,9 +187,8 @@
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
         private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dgvDoctors;
+        private System.Windows.Forms.DataGridView dgvVisits;
         private System.Windows.Forms.Button btnSelect;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnAddNewDoctor;
     }
 }

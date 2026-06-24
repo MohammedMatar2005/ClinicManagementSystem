@@ -38,12 +38,12 @@ namespace ClinicManagementSystem
             txtUserBorder = new Panel();
             txtUserLayout = new TableLayoutPanel();
             lblUserIcon = new Label();
-            txtUser = new TextBox();
+            txtUsername = new TextBox();
             lblPasswordTitle = new Label();
             txtPassBorder = new Panel();
             txtPassLayout = new TableLayoutPanel();
             lblPassIcon = new Label();
-            txtPass = new TextBox();
+            txtPassword = new TextBox();
             btnLogin = new Button();
             windowControlsFlowPanel = new FlowLayoutPanel();
             btnClose = new Button();
@@ -278,7 +278,7 @@ namespace ClinicManagementSystem
             txtUserLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 45F));
             txtUserLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             txtUserLayout.Controls.Add(lblUserIcon, 0, 0);
-            txtUserLayout.Controls.Add(txtUser, 1, 0);
+            txtUserLayout.Controls.Add(txtUsername, 1, 0);
             txtUserLayout.Dock = DockStyle.Fill;
             txtUserLayout.Location = new Point(1, 1);
             txtUserLayout.Name = "txtUserLayout";
@@ -299,16 +299,16 @@ namespace ClinicManagementSystem
             lblUserIcon.Text = "👤";
             lblUserIcon.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // txtUser
+            // txtUsername
             // 
-            txtUser.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            txtUser.BorderStyle = BorderStyle.None;
-            txtUser.Font = new Font("Segoe UI", 14F);
-            txtUser.ForeColor = Color.FromArgb(30, 41, 59);
-            txtUser.Location = new Point(3, 12);
-            txtUser.Name = "txtUser";
-            txtUser.Size = new Size(269, 25);
-            txtUser.TabIndex = 1;
+            txtUsername.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtUsername.BorderStyle = BorderStyle.None;
+            txtUsername.Font = new Font("Segoe UI", 14F);
+            txtUsername.ForeColor = Color.FromArgb(30, 41, 59);
+            txtUsername.Location = new Point(3, 12);
+            txtUsername.Name = "txtUsername";
+            txtUsername.Size = new Size(269, 25);
+            txtUsername.TabIndex = 1;
             // 
             // lblPasswordTitle
             // 
@@ -340,7 +340,7 @@ namespace ClinicManagementSystem
             txtPassLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 45F));
             txtPassLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             txtPassLayout.Controls.Add(lblPassIcon, 0, 0);
-            txtPassLayout.Controls.Add(txtPass, 1, 0);
+            txtPassLayout.Controls.Add(txtPassword, 1, 0);
             txtPassLayout.Dock = DockStyle.Fill;
             txtPassLayout.Location = new Point(1, 1);
             txtPassLayout.Name = "txtPassLayout";
@@ -361,17 +361,17 @@ namespace ClinicManagementSystem
             lblPassIcon.Text = "🔒";
             lblPassIcon.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // txtPass
+            // txtPassword
             // 
-            txtPass.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            txtPass.BorderStyle = BorderStyle.None;
-            txtPass.Font = new Font("Segoe UI", 14F);
-            txtPass.ForeColor = Color.FromArgb(30, 41, 59);
-            txtPass.Location = new Point(3, 15);
-            txtPass.Name = "txtPass";
-            txtPass.Size = new Size(269, 25);
-            txtPass.TabIndex = 1;
-            txtPass.UseSystemPasswordChar = true;
+            txtPassword.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtPassword.BorderStyle = BorderStyle.None;
+            txtPassword.Font = new Font("Segoe UI", 14F);
+            txtPassword.ForeColor = Color.FromArgb(30, 41, 59);
+            txtPassword.Location = new Point(3, 15);
+            txtPassword.Name = "txtPassword";
+            txtPassword.Size = new Size(269, 25);
+            txtPassword.TabIndex = 1;
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // btnLogin
             // 
@@ -387,6 +387,7 @@ namespace ClinicManagementSystem
             btnLogin.TabIndex = 7;
             btnLogin.Text = "دخول النظام";
             btnLogin.UseVisualStyleBackColor = false;
+            btnLogin.Click += btnLogin_Click;
             // 
             // windowControlsFlowPanel
             // 
@@ -412,6 +413,7 @@ namespace ClinicManagementSystem
             btnClose.TabIndex = 0;
             btnClose.Text = "✕";
             btnClose.UseVisualStyleBackColor = false;
+            btnClose.Click += btnClose_Click;
             // 
             // btnMinimize
             // 
@@ -427,6 +429,7 @@ namespace ClinicManagementSystem
             btnMinimize.TabIndex = 1;
             btnMinimize.Text = "—";
             btnMinimize.UseVisualStyleBackColor = false;
+            btnMinimize.Click += btnMinimize_Click;
             // 
             // frmLogin
             // 
@@ -479,12 +482,12 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Panel txtUserBorder;
         private System.Windows.Forms.TableLayoutPanel txtUserLayout;
         private System.Windows.Forms.Label lblUserIcon;
-        private System.Windows.Forms.TextBox txtUser;
+        private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Label lblPasswordTitle;
         private System.Windows.Forms.Panel txtPassBorder;
         private System.Windows.Forms.TableLayoutPanel txtPassLayout;
         private System.Windows.Forms.Label lblPassIcon;
-        private System.Windows.Forms.TextBox txtPass;
+        private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.FlowLayoutPanel windowControlsFlowPanel;
         private System.Windows.Forms.Button btnClose;

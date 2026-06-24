@@ -103,7 +103,7 @@ namespace ClinicManagementSystem.Appointments
             btnClose.TabIndex = 0;
             btnClose.Text = "إغلاق";
             btnClose.UseVisualStyleBackColor = false;
-            btnClose.Click += btnClose_Click;
+          btnClose.Click += btnClose_Click;
             // 
             // pnlBody
             // 

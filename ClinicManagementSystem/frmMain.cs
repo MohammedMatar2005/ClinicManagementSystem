@@ -1,36 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClinicBusiness;
 using ClinicBusiness.Services;
-using ClinicDataAccess.Interfaces;
-
+using ClinicBusiness.Models; // الاعتماد على الموديلز الموحدة للبزنس
+using ClinicManagementSystem.Appointments; // تبعاً لمجلد شاشات المواعيد
+using System.Threading.Tasks;
+using ClinicBusiness.DTO.UsersDTOs;
 
 namespace ClinicManagementSystem
 {
-
-    
-
     public partial class frmMain : Form
     {
-       // IPaymentRepository _paymentRepository;
+        // 1. تعريف المستخدم الحالي والـ Context على مستوى الكلاس
+        private readonly UserViewDTO _currentUser;
+        private readonly ClinicManagementSystemContext _context;
+        private readonly clsPayment _paymentService;
 
-        public frmMain()
+        private readonly clsInvoice _invoiceService;
+        private readonly clsPatientVisit _patientVisitService;
+
+        // 2. إجبار المَشيد (Constructor) على استقبال بيانات المستخدم المختار عند اللوجن
+        public frmMain(UserViewDTO loggedInUser)
         {
             InitializeComponent();
-           // _paymentRepository = paymentRepository;
+
+            _currentUser = loggedInUser;
+
+            // حقن الـ Context مباشرة وإلغاء الـ Repositories
+            _context = new ClinicManagementSystemContext();
+            _paymentService = new clsPayment(_context);
+            _invoiceService = new clsInvoice(_context);
+            _patientVisitService = new clsPatientVisit(_context);
+        }
+
+        private async void frmMain_Load(object sender, EventArgs e)
+        {
+            // عرض اسم المستخدم الحالي في الواجهة (مثلاً في ليبل الترحيب)
+            lblWelcomeTitle.Text = $"مرحباً بك: {_currentUser.Username}";
+
+            // جلب وعرض إيرادات اليوم بناءً على السيرفس المحدثة
+            await _LoadTodayRevenue();
+        }
+
+        private async Task _LoadTodayRevenue()
+        {
+            try
+            {
+                // جلب القيم بشكل غير متزامن متوافق مع نمط الـ Async المعمول به
+                var todayPayments = await _paymentService.GetPaymentAmountsTodayAsync();
+                lblValueRevenue.Text = todayPayments.ToString("C2"); // تنسيق كعملة ماليّة
+            }
+            catch (Exception ex)
+            {
+                lblValueRevenue.Text = "0.00";
+                // يمكنك تسجيل الخطأ هنا بدون تعطيل الشاشة الرئيسية
+            }
         }
 
         private void btnPatients_Click(object sender, EventArgs e)
         {
-            Form frm = new frmPatients();
-            frm.ShowDialog();
+             Form frm = new frmPatients();
+             frm.ShowDialog();
         }
 
         private void btnAppointments_Click(object sender, EventArgs e)
@@ -47,18 +76,18 @@ namespace ClinicManagementSystem
 
         private void btnPharmacy_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Later...");
+            MessageBox.Show("قريباً...", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnBilling_Click(object sender, EventArgs e)
         {
-            Form frm = new frmInvoices();
-            frm.ShowDialog();
+             Form frm = new frmInvoices(_invoiceService, _patientVisitService);
+             frm.ShowDialog();
         }
 
         private void btnInventory_Click(object sender, EventArgs e)
         {
-
+            // سيتم ربطها لاحقاً
         }
 
         private void btnSupport_Click(object sender, EventArgs e)
@@ -67,14 +96,22 @@ namespace ClinicManagementSystem
             frm.ShowDialog();
         }
 
-        private void pagesContainer_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void btnClose_Click(object sender, EventArgs e)
         {
-            this.Close();
+            DialogResult result = MessageBox.Show(
+                "هل أنت متأكد من الخروج من النظام؟",
+                "تأكيد الإغلاق",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2,
+                MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+                Application.Exit();
+            }
         }
 
         private void btnMinimize_Click(object sender, EventArgs e)
@@ -82,13 +119,9 @@ namespace ClinicManagementSystem
             this.WindowState = FormWindowState.Minimized;
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
+        private void pagesContainer_Paint(object sender, PaintEventArgs e)
         {
-            //clsPayment payments = new clsPayment(_paymentRepository);
-
-            //var todayPayments = payments.GetPaymentAmountsToday();
-            //lblValueRevenue.Text = todayPayments.ToString();
-
+            // للتصميم والرسم إن وجد
         }
     }
 }

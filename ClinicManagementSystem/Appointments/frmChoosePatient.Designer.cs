@@ -1,6 +1,6 @@
 ﻿namespace ClinicManagementSystem.Appointments
 {
-    partial class frmChoosePatient
+    partial class frmChoosePatient : Form
     {
         /// <summary>
         /// Required designer variable.

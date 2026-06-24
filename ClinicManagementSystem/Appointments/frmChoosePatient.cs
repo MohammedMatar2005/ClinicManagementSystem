@@ -1,6 +1,5 @@
 ﻿using ClinicBusiness.Services;
-using ClinicDataAccess.Data;
-using ClinicDataAccess.Repositories;
+using ClinicBusiness.Models; // الاعتماد على الموديلز الموحدة للبزنس
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,12 +10,11 @@ namespace ClinicManagementSystem.Appointments
 {
     public partial class frmChoosePatient : Form
     {
-        private readonly PatientRepository _patientRepository;
+        // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
+        private BindingSource _patientsBindingSource = new BindingSource();
+        private readonly ClinicManagementSystemContext _context;
 
-        // 🎯 هذا المتغير هو سر سرعة الفلترة اللحظية في الذاكرة
-        private DataView _dvPatients = new DataView();
-
-        // خصائص عامة لقراءة البيانات من فورم المواعيد (تطابق الكود الحالي لديك)
+        // خصائص عامة لقراءة البيانات من فورم المواعيد
         public int PatientId { get; private set; } = -1;
         public string PatientName { get; private set; } = string.Empty;
 
@@ -24,13 +22,13 @@ namespace ClinicManagementSystem.Appointments
         {
             InitializeComponent();
 
-            var context = new ClinicManagementSystemContext();
-            _patientRepository = new PatientRepository(context);
+            // حقن الـ Context مباشرة للفورم
+            _context = new ClinicManagementSystemContext();
         }
 
         private void frmChoosePatient_Load(object sender, EventArgs e)
         {
-            // 🛠️ منع توليد أعمدة عشوائية زائدة عن الأربعة المطلوبة
+            // منع توليد أعمدة عشوائية زائدة
             dgvPatients.AutoGenerateColumns = false;
 
             // بناء وتنسيق هيكل الجدول بالترتيب الصحيح
@@ -74,21 +72,19 @@ namespace ClinicManagementSystem.Appointments
             });
 
             // 4. الرقم الوطني 
-            // 💡 تنبيه: إذا لم يظهر، تأكد هل اسم الخاصية في الكلاس: NationalNumber أم NationalId أم NationalID؟
             dgvPatients.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "NationalNumber",
-                DataPropertyName = "NationalNumber", // 👈 يجب أن يطابق اسم الخاصية في الـ DTO حرفياً
+                DataPropertyName = "NationalNumber",
                 HeaderText = "الرقم الوطني",
                 Width = 150
             });
 
             // 5. رقم الجوال
-            // 💡 تنبيه: إذا لم يظهر، تأكد هل اسم الخاصية في الكلاس: Phone أم PhoneNumber؟
             dgvPatients.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "PhoneNumber",
-                DataPropertyName = "PhoneNumber", // 👈 يجب أن يطابق اسم الخاصية في الـ DTO حرفياً
+                DataPropertyName = "PhoneNumber",
                 HeaderText = "رقم الجوال",
                 Width = 150
             });
@@ -104,25 +100,21 @@ namespace ClinicManagementSystem.Appointments
             });
         }
 
-        private void dgvAppointmentsColumnsClear()
-        {
-            dgvPatients.Columns.Clear();
-        }
-
         private async void _LoadAllPatients()
         {
             try
             {
-                clsPatient patient = new clsPatient(_patientRepository);
-                var patientsList = await patient.GetAllPatientsAsync();
+                // تمرير الـ Context مباشرة للسيرفس بعد إلغاء الـ Repositories
+                clsPatient patientService = new clsPatient(_context);
+                var patientsList = await patientService.GetAllPatientsAsync();
 
                 if (patientsList != null)
                 {
                     DataTable dtPatients = _ConvertToDataTable(patientsList);
 
-                    // 🎯 الإصلاح الجذري: ربط الـ DataView بالجدول وإسناده للـ GridView لتفعيل الفلترة
-                    _dvPatients = dtPatients.DefaultView;
-                    dgvPatients.DataSource = _dvPatients;
+                    // 2. إسناد الـ DataTable للـ BindingSource وربطه بالـ DataGridView
+                    _patientsBindingSource.DataSource = dtPatients;
+                    dgvPatients.DataSource = _patientsBindingSource;
                 }
             }
             catch (Exception ex)
@@ -149,21 +141,21 @@ namespace ClinicManagementSystem.Appointments
             return table;
         }
 
-        // الفلترة اللحظية (Real-time Filtering) تعمل الآن 100%
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            if (_dvPatients.Table == null) return;
+            if (_patientsBindingSource.DataSource == null) return;
 
             string filterText = txtSearch.Text.Trim().Replace("'", "''");
 
             if (string.IsNullOrEmpty(filterText) || filterText.Contains("🔍"))
             {
-                _dvPatients.RowFilter = "";
+                // 3. إلغاء الفلترة عبر الـ BindingSource
+                _patientsBindingSource.RemoveFilter();
                 return;
             }
 
-            // الفلترة بناءً على حقل الرقم الوطني المظبوط بالـ DataTable
-            _dvPatients.RowFilter = string.Format("NationalNumber LIKE '{0}%'", filterText);
+            // 4. الفلترة المباشرة اللحظية داخل الـ BindingSource بناءً على الرقم الوطني
+            _patientsBindingSource.Filter = string.Format("NationalNumber LIKE '{0}%'", filterText);
         }
 
         private void btnSelect_Click(object sender, EventArgs e)
@@ -181,11 +173,13 @@ namespace ClinicManagementSystem.Appointments
 
         private void _SelectAndClose()
         {
-            if (dgvPatients.CurrentRow != null)
+            // 5. قراءة السطر الحالي المختار من خلال الـ BindingSource بأمان وسرعة وبدون NullReference
+            if (_patientsBindingSource.Current != null)
             {
-                // سحب القيمة المحددة بناءً على أسماء الخلايا (Columns Names) التي صممناها في الدالة بالأعلى
-                PatientId = Convert.ToInt32(dgvPatients.CurrentRow.Cells["PatientId"].Value);
-                PatientName = dgvPatients.CurrentRow.Cells["PatientFullName"].Value.ToString();
+                DataRowView currentRow = (DataRowView)_patientsBindingSource.Current;
+
+                PatientId = Convert.ToInt32(currentRow["PatientId"]);
+                PatientName = Convert.ToString(currentRow["PatientFullName"]);
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -204,15 +198,14 @@ namespace ClinicManagementSystem.Appointments
 
         private void btnAddNewPatient_Click(object sender, EventArgs e)
         {
-            
+            // يمكنك فتح شاشة إضافة مريض جديد هنا لاحقاً إذا أردت
         }
 
         private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // الفحص: إذا كان المفتاح المضغوط ليس رقماً وليس من أزرار التحكم (كالـ Backspace)
+            // منع إدخال أي شيء عدا الأرقام وأزرار التحكم في خانة البحث عن الرقم الوطني
             if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
             {
-                // إلغاء الحدث ومنع الحرف من الظهور داخل التكست بوكس
                 e.Handled = true;
             }
         }

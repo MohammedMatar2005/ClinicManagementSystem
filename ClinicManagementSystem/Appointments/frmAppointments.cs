@@ -1,34 +1,31 @@
-﻿using System;
+﻿using ClinicBusiness.DTO.AppointmentsDTOs;
+using ClinicBusiness.Models; // تم استبدال الداتا أكسيس بالموديلز الموحدة للبزنس
+using ClinicBusiness.Services;
+using ClinicManagementSystem.Appointments;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
 using System.Threading.Tasks;
-using ClinicBusiness.Services;
-using ClinicBusiness.DTO.AppointmentsDTOs;
-using ClinicDataAccess.Data;
-using ClinicDataAccess.Repositories;
-using ClinicManagementSystem.Appointments;
+using System.Windows.Forms;
 
 namespace ClinicManagementSystem
 {
     public partial class frmAppointments : Form
     {
-        // تعريف الخدمة والـ DataView المسؤول عن الفلترة المحلية في الذاكرة
+        
         private readonly clsAppointment _appointmentService;
         private DataView _appointmentsDataView = new DataView();
 
-        // متغير على مستوى الكلاس للاحتفاظ برقم المريض المختار
         private int _selectedPatientId = -1;
-        private int _selectedDoctorId;
+        private int _selectedDoctorId = -1; // تم تعديل القيمة الابتدائية لـ -1 للحماية
 
         public frmAppointments()
         {
             InitializeComponent();
 
-            // تجهيز سياق البيانات وحقن المستودع داخل الخدمة
+            // حقن الـ DbContext مباشرة في السيرفس وإلغاء طبقة الـ Repository تماماً
             var context = new ClinicManagementSystemContext();
-            var repo = new AppointmentRepository(context);
-            _appointmentService = new clsAppointment(repo);
+            _appointmentService = new clsAppointment(context);
         }
 
         private async void frmAppointments_Load(object sender, EventArgs e)
@@ -40,26 +37,17 @@ namespace ClinicManagementSystem
             cmbSearchType.Items.Add("الرقم الوطني");
             cmbSearchType.SelectedIndex = 0;
 
-
-        
             dtpAppointmentDate.Format = DateTimePickerFormat.Custom;
-
-        
             dtpAppointmentDate.CustomFormat = "yyyy/MM/dd   hh:mm tt";
-
-        
             dtpAppointmentDate.ShowUpDown = false;
-        
 
             await LoadAppointmentsDataAsync();
         }
 
         private void ConfigureGridMapping()
         {
-            // منع الـ Grid من إنشاء أعمدة تلقائية إضافية
             dgvAppointments.AutoGenerateColumns = false;
 
-            // ربط أعمدة الـ DataGridView بالأسماء التي سنعرفها في الـ DataTable
             colAppointmentId.DataPropertyName = "AppointmentId";
             colPatientName.DataPropertyName = "PatientFullName";
             PatientNationalNumber.DataPropertyName = "PatientNationalNumber";
@@ -72,10 +60,10 @@ namespace ClinicManagementSystem
         {
             try
             {
-                // 1. جلب القائمة كاملة لمرة واحدة من الـ Business Layer
+                // 1. جلب القائمة مباشرة من السيرفس التي تتعامل مع الـ DbContext
                 List<AppointmentViewDTO> appointmentsList = await _appointmentService.GetAllAppointmentsAsync();
 
-                // 2. بناء الـ DataTable وتحويل البيانات إليها لتفعيل الـ RowFilter السريع
+                // 2. بناء الـ DataTable لعمل الفلترة السريعة في الذاكرة
                 DataTable dt = new DataTable();
                 dt.Columns.Add("AppointmentId", typeof(int));
                 dt.Columns.Add("PatientFullName", typeof(string));
@@ -96,13 +84,12 @@ namespace ClinicManagementSystem
                     );
                 }
 
-                // 3. إسناد الـ DefaultView للمتغير العام وربطه بالواجهة
                 _appointmentsDataView = dt.DefaultView;
                 dgvAppointments.DataSource = _appointmentsDataView;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ أثناء جلب المواعيد من السيرفر: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"حدث خطأ أثناء جلب المواعيد: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -154,11 +141,9 @@ namespace ClinicManagementSystem
             txtReason.Clear();
             txtNotes.Clear();
             txtPatinetId.Clear();
-            _selectedPatientId = -1;
             txtDoctorId.Clear();
-
-            // إذا كان لديك تكست بوكس لاسم المريض قم بتنظيفه هنا أيضاً:
-            // txtPatientName.Clear();
+            _selectedPatientId = -1;
+            _selectedDoctorId = -1;
         }
 
         private async void DeleteAppointmentMenuItem_Click(object sender, EventArgs e)
@@ -209,26 +194,18 @@ namespace ClinicManagementSystem
 
         private void btnChoosePatient_Click(object sender, EventArgs e)
         {
-            // فتح شاشة الاختيار التي صممناها بشكل منبثق (Using لضمان تدمير الكائن فوراً وتحرير الذاكرة)
             using (frmChoosePatient frm = new frmChoosePatient())
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    // 🎯 قراءة المعرف والاسم بناءً على الخصائص المحدثة بالريبو باترن
                     _selectedPatientId = frm.PatientId;
-
-                    // إسناد رقم المريض للتكست بوكس الخاص به لتثبيته في الواجهة
                     txtPatinetId.Text = _selectedPatientId.ToString();
-
-                    // إذا كان لديك تكست بوكس يعرض اسم المريض لموظف الاستقبال ليتأكد:
-                    // txtPatientName.Text = frm.SelectedPatientName;
                 }
             }
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            // التحقق من أن الموظف قام باختيار مريض فعلاً قبل الحفظ لحماية قاعدة البيانات
             if (_selectedPatientId == -1)
             {
                 MessageBox.Show("الرجاء اختيار مريض للموعد أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -241,8 +218,8 @@ namespace ClinicManagementSystem
                 return;
             }
 
-
-            if(await _appointmentService.IsPatientAvailableAsync(_selectedPatientId, dtpAppointmentDate.Value) == false)
+            // فحص التضارب المباشر عبر السيرفس
+            if (await _appointmentService.IsPatientAvailableAsync(_selectedPatientId, dtpAppointmentDate.Value) == false)
             {
                 MessageBox.Show("المريض لديه موعد آخر في نفس الوقت. الرجاء اختيار وقت آخر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -254,25 +231,22 @@ namespace ClinicManagementSystem
                 return;
             }
 
+            // الاعتماد على الـ DTO الموحد للتخزين
             var appointment = new AppointmentSaveDto
             {
-                
-                
                 AppointmentDate = dtpAppointmentDate.Value,
-                DoctorId = _selectedDoctorId, // طبيب افتراضي أو يتم جلب معرّفه من ComboBox الأطباء
-                PatientId = _selectedPatientId, // 🎯 تم الإسناد الصحيح هنا لـ رقم المريض المختار
+                DoctorId = _selectedDoctorId,
+                PatientId = _selectedPatientId,
                 AppointmentStatusId = cmbStatus.SelectedIndex + 1,
                 Notes = txtNotes.Text.Trim()
             };
 
             int newAppointmentId = await _appointmentService.AddNewAppointmentAsync(appointment);
 
-            // هنا يمكنك استدعاء دالة الحفظ وإرسال الكائن للـ Service:
             if (newAppointmentId > 0)
             {
                 MessageBox.Show("تم حفظ الموعد بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearAllFields();
-
                 await LoadAppointmentsDataAsync();
             }
             else
@@ -287,14 +261,8 @@ namespace ClinicManagementSystem
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    // 🎯 قراءة المعرف والاسم بناءً على الخصائص المحدثة بالريبو باترن
                     _selectedDoctorId = frm.DoctorId;
-
-                    // إسناد رقم الطبيب للتكست بوكس الخاص به لتثبيته في الواجهة
                     txtDoctorId.Text = _selectedDoctorId.ToString();
-
-                    // إذا كان لديك تكست بوكس يعرض اسم المريض لموظف الاستقبال ليتأكد:
-                    // txtPatientName.Text = frm.SelectedPatientName;
                 }
             }
         }

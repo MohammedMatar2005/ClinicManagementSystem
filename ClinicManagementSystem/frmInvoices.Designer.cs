@@ -20,8 +20,9 @@ namespace ClinicManagementSystem
 
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             mainPanel = new Panel();
             tabControl = new TabControl();
             tabNewInvoice = new TabPage();
@@ -31,16 +32,10 @@ namespace ClinicManagementSystem
             tlpMetaCardLayout = new TableLayoutPanel();
             flpMetaFieldsLeft = new FlowLayoutPanel();
             lblMetaTitle = new Label();
-            pnlPatientField = new Panel();
-            txtPatientId = new TextBox();
-            btnChoosePatient = new Button();
-            lblPatient = new Label();
-            pnlVisitField = new Panel();
-            lblVisitTitle = new Label();
-            cmbVisit = new ComboBox();
-            pnlInvoiceNumField = new Panel();
-            lblInvoiceNumTitle = new Label();
-            txtInvoiceNumber = new TextBox();
+            panel1 = new Panel();
+            txtPatientVisitId = new TextBox();
+            btnChooseVisit = new Button();
+            label1 = new Label();
             flpMetaFieldRight = new FlowLayoutPanel();
             lblDueDateTitle = new Label();
             dtpDueDate = new DateTimePicker();
@@ -91,6 +86,7 @@ namespace ClinicManagementSystem
             flpHistoryHeader = new FlowLayoutPanel();
             lblHistoryTitle = new Label();
             btnExportPdf = new Button();
+            btnExportThisInvoice = new Button();
             txtSearchValue = new TextBox();
             dgvInvoices = new DataGridView();
             colInvoiceId = new DataGridViewTextBoxColumn();
@@ -100,7 +96,7 @@ namespace ClinicManagementSystem
             colInvoiceNumber = new DataGridViewTextBoxColumn();
             colDueDate = new DataGridViewTextBoxColumn();
             colVisitId = new DataGridViewTextBoxColumn();
-            btnExportThisInvoice = new Button();
+            epInvoice = new ErrorProvider(components);
             mainPanel.SuspendLayout();
             tabControl.SuspendLayout();
             tabNewInvoice.SuspendLayout();
@@ -109,9 +105,7 @@ namespace ClinicManagementSystem
             pnlInvoiceMetaCard.SuspendLayout();
             tlpMetaCardLayout.SuspendLayout();
             flpMetaFieldsLeft.SuspendLayout();
-            pnlPatientField.SuspendLayout();
-            pnlVisitField.SuspendLayout();
-            pnlInvoiceNumField.SuspendLayout();
+            panel1.SuspendLayout();
             flpMetaFieldRight.SuspendLayout();
             pnlFeesCard.SuspendLayout();
             tlpFeesCardLayout.SuspendLayout();
@@ -135,6 +129,7 @@ namespace ClinicManagementSystem
             tlpHistoryLayout.SuspendLayout();
             flpHistoryHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvInvoices).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)epInvoice).BeginInit();
             SuspendLayout();
             // 
             // mainPanel
@@ -230,14 +225,13 @@ namespace ClinicManagementSystem
             // 
             flpMetaFieldsLeft.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             flpMetaFieldsLeft.Controls.Add(lblMetaTitle);
-            flpMetaFieldsLeft.Controls.Add(pnlPatientField);
-            flpMetaFieldsLeft.Controls.Add(pnlVisitField);
-            flpMetaFieldsLeft.Controls.Add(pnlInvoiceNumField);
-            flpMetaFieldsLeft.FlowDirection = FlowDirection.RightToLeft;
+            flpMetaFieldsLeft.Controls.Add(panel1);
+            flpMetaFieldsLeft.FlowDirection = FlowDirection.TopDown;
             flpMetaFieldsLeft.Location = new Point(183, 3);
             flpMetaFieldsLeft.Name = "flpMetaFieldsLeft";
             flpMetaFieldsLeft.Size = new Size(793, 94);
             flpMetaFieldsLeft.TabIndex = 0;
+            flpMetaFieldsLeft.WrapContents = false;
             // 
             // lblMetaTitle
             // 
@@ -250,118 +244,51 @@ namespace ClinicManagementSystem
             lblMetaTitle.TabIndex = 0;
             lblMetaTitle.Text = "بيانات الفاتورة";
             // 
-            // pnlPatientField
+            // panel1
             // 
-            pnlPatientField.Controls.Add(txtPatientId);
-            pnlPatientField.Controls.Add(btnChoosePatient);
-            pnlPatientField.Controls.Add(lblPatient);
-            pnlPatientField.Location = new Point(20, 30);
-            pnlPatientField.Margin = new Padding(0, 0, 20, 0);
-            pnlPatientField.Name = "pnlPatientField";
-            pnlPatientField.Size = new Size(300, 63);
-            pnlPatientField.TabIndex = 1;
+            panel1.Controls.Add(txtPatientVisitId);
+            panel1.Controls.Add(btnChooseVisit);
+            panel1.Controls.Add(label1);
+            panel1.Location = new Point(493, 30);
+            panel1.Margin = new Padding(0, 0, 20, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(300, 63);
+            panel1.TabIndex = 4;
             // 
-            // txtPatientId
+            // txtPatientVisitId
             // 
-            txtPatientId.Location = new Point(197, 31);
-            txtPatientId.Name = "txtPatientId";
-            txtPatientId.Size = new Size(100, 29);
-            txtPatientId.TabIndex = 7;
+            txtPatientVisitId.Location = new Point(153, 31);
+            txtPatientVisitId.Name = "txtPatientVisitId";
+            txtPatientVisitId.Size = new Size(144, 29);
+            txtPatientVisitId.TabIndex = 7;
             // 
-            // btnChoosePatient
+            // btnChooseVisit
             // 
-            btnChoosePatient.BackColor = Color.FromArgb(46, 204, 113);
-            btnChoosePatient.FlatStyle = FlatStyle.Flat;
-            btnChoosePatient.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            btnChoosePatient.ForeColor = Color.White;
-            btnChoosePatient.Location = new Point(5, 0);
-            btnChoosePatient.Margin = new Padding(5, 30, 5, 5);
-            btnChoosePatient.Name = "btnChoosePatient";
-            btnChoosePatient.Size = new Size(120, 38);
-            btnChoosePatient.TabIndex = 6;
-            btnChoosePatient.Text = "اختر مريض";
-            btnChoosePatient.UseVisualStyleBackColor = false;
-            btnChoosePatient.Click += btnChoosePatient_Click;
+            btnChooseVisit.BackColor = Color.FromArgb(46, 204, 113);
+            btnChooseVisit.FlatStyle = FlatStyle.Flat;
+            btnChooseVisit.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChooseVisit.ForeColor = Color.White;
+            btnChooseVisit.Location = new Point(7, 20);
+            btnChooseVisit.Margin = new Padding(5, 30, 5, 5);
+            btnChooseVisit.Name = "btnChooseVisit";
+            btnChooseVisit.Size = new Size(120, 38);
+            btnChooseVisit.TabIndex = 6;
+            btnChooseVisit.Text = "اختر زيارة";
+            btnChooseVisit.UseVisualStyleBackColor = false;
+          btnChooseVisit.Click += btnChooseVisit_Click;
             // 
-            // lblPatient
+            // label1
             // 
-            lblPatient.Dock = DockStyle.Top;
-            lblPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblPatient.ForeColor = Color.FromArgb(93, 122, 149);
-            lblPatient.Location = new Point(0, 0);
-            lblPatient.Name = "lblPatient";
-            lblPatient.RightToLeft = RightToLeft.No;
-            lblPatient.Size = new Size(300, 22);
-            lblPatient.TabIndex = 4;
-            lblPatient.Text = "اختر معرف المريض";
-            lblPatient.TextAlign = ContentAlignment.TopRight;
-            // 
-            // pnlVisitField
-            // 
-            pnlVisitField.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            pnlVisitField.Controls.Add(lblVisitTitle);
-            pnlVisitField.Controls.Add(cmbVisit);
-            pnlVisitField.Location = new Point(340, 30);
-            pnlVisitField.Margin = new Padding(0, 0, 20, 0);
-            pnlVisitField.Name = "pnlVisitField";
-            pnlVisitField.Size = new Size(325, 50);
-            pnlVisitField.TabIndex = 2;
-            // 
-            // lblVisitTitle
-            // 
-            lblVisitTitle.AutoSize = true;
-            lblVisitTitle.Font = new Font("Segoe UI", 9F);
-            lblVisitTitle.ForeColor = Color.FromArgb(143, 163, 184);
-            lblVisitTitle.Location = new Point(82, 2);
-            lblVisitTitle.Name = "lblVisitTitle";
-            lblVisitTitle.Size = new Size(94, 15);
-            lblVisitTitle.TabIndex = 0;
-            lblVisitTitle.Text = "رقم الزيارة المتاحة";
-            // 
-            // cmbVisit
-            // 
-            cmbVisit.Dock = DockStyle.Bottom;
-            cmbVisit.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbVisit.Font = new Font("Segoe UI", 11.25F);
-            cmbVisit.FormattingEnabled = true;
-            cmbVisit.Location = new Point(0, 22);
-            cmbVisit.Name = "cmbVisit";
-            cmbVisit.Size = new Size(325, 28);
-            cmbVisit.TabIndex = 1;
-            // 
-            // pnlInvoiceNumField
-            // 
-            pnlInvoiceNumField.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            pnlInvoiceNumField.Controls.Add(lblInvoiceNumTitle);
-            pnlInvoiceNumField.Controls.Add(txtInvoiceNumber);
-            pnlInvoiceNumField.Location = new Point(665, 30);
-            pnlInvoiceNumField.Margin = new Padding(0);
-            pnlInvoiceNumField.Name = "pnlInvoiceNumField";
-            pnlInvoiceNumField.Size = new Size(120, 50);
-            pnlInvoiceNumField.TabIndex = 3;
-            // 
-            // lblInvoiceNumTitle
-            // 
-            lblInvoiceNumTitle.AutoSize = true;
-            lblInvoiceNumTitle.Font = new Font("Segoe UI", 9F);
-            lblInvoiceNumTitle.ForeColor = Color.FromArgb(143, 163, 184);
-            lblInvoiceNumTitle.Location = new Point(54, 2);
-            lblInvoiceNumTitle.Name = "lblInvoiceNumTitle";
-            lblInvoiceNumTitle.Size = new Size(63, 15);
-            lblInvoiceNumTitle.TabIndex = 0;
-            lblInvoiceNumTitle.Text = "رقم الفاتورة";
-            // 
-            // txtInvoiceNumber
-            // 
-            txtInvoiceNumber.BackColor = Color.FromArgb(249, 250, 251);
-            txtInvoiceNumber.Dock = DockStyle.Bottom;
-            txtInvoiceNumber.Font = new Font("Segoe UI", 11.25F);
-            txtInvoiceNumber.Location = new Point(0, 12);
-            txtInvoiceNumber.Multiline = true;
-            txtInvoiceNumber.Name = "txtInvoiceNumber";
-            txtInvoiceNumber.ReadOnly = true;
-            txtInvoiceNumber.Size = new Size(120, 38);
-            txtInvoiceNumber.TabIndex = 1;
+            label1.Dock = DockStyle.Top;
+            label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            label1.ForeColor = Color.FromArgb(93, 122, 149);
+            label1.Location = new Point(0, 0);
+            label1.Name = "label1";
+            label1.RightToLeft = RightToLeft.No;
+            label1.Size = new Size(300, 22);
+            label1.TabIndex = 4;
+            label1.Text = "اختر زيارة المريض";
+            label1.TextAlign = ContentAlignment.TopRight;
             // 
             // flpMetaFieldRight
             // 
@@ -475,7 +402,8 @@ namespace ClinicManagementSystem
             txtConsultationFee.Name = "txtConsultationFee";
             txtConsultationFee.Size = new Size(233, 38);
             txtConsultationFee.TabIndex = 1;
-            txtConsultationFee.KeyPress += preventLetters_KeyPress;
+          txtConsultationFee.TextChanged += txtUpdateSummaryLables_TextChanged;
+          txtConsultationFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlLabField
             // 
@@ -508,7 +436,8 @@ namespace ClinicManagementSystem
             txtLabTestFee.Name = "txtLabTestFee";
             txtLabTestFee.Size = new Size(233, 38);
             txtLabTestFee.TabIndex = 1;
-            txtLabTestFee.KeyPress += preventLetters_KeyPress;
+          txtLabTestFee.TextChanged += txtUpdateSummaryLables_TextChanged;
+          txtLabTestFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlProcedureField
             // 
@@ -541,6 +470,7 @@ namespace ClinicManagementSystem
             txtProcedureFee.Name = "txtProcedureFee";
             txtProcedureFee.Size = new Size(233, 38);
             txtProcedureFee.TabIndex = 1;
+            txtProcedureFee.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtProcedureFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlOtherField
@@ -574,7 +504,8 @@ namespace ClinicManagementSystem
             txtOtherCharges.Name = "txtOtherCharges";
             txtOtherCharges.Size = new Size(234, 38);
             txtOtherCharges.TabIndex = 1;
-            txtOtherCharges.KeyPress += preventLetters_KeyPress;
+         txtOtherCharges.TextChanged += txtUpdateSummaryLables_TextChanged;
+         txtOtherCharges.KeyPress += preventLetters_KeyPress;
             // 
             // pnlBrandingSplash
             // 
@@ -730,6 +661,7 @@ namespace ClinicManagementSystem
             txtDiscountPercentage.Name = "txtDiscountPercentage";
             txtDiscountPercentage.Size = new Size(285, 35);
             txtDiscountPercentage.TabIndex = 1;
+            txtDiscountPercentage.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtDiscountPercentage.KeyPress += preventLetters_KeyPress;
             // 
             // pnlTaxField
@@ -766,6 +698,7 @@ namespace ClinicManagementSystem
             txtTaxPercentage.Name = "txtTaxPercentage";
             txtTaxPercentage.Size = new Size(295, 35);
             txtTaxPercentage.TabIndex = 1;
+            txtTaxPercentage.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtTaxPercentage.KeyPress += preventLetters_KeyPress;
             // 
             // flpActionButtons
@@ -792,6 +725,7 @@ namespace ClinicManagementSystem
             btnSaveInvoice.TabIndex = 0;
             btnSaveInvoice.Text = "✅ حفظ الفاتورة";
             btnSaveInvoice.UseVisualStyleBackColor = false;
+           // btnSaveInvoice.Click += btnSaveInvoice_Click;
             // 
             // btnNewInvoice
             // 
@@ -806,6 +740,7 @@ namespace ClinicManagementSystem
             btnNewInvoice.TabIndex = 1;
             btnNewInvoice.Text = "🔄 فاتورة جديدة";
             btnNewInvoice.UseVisualStyleBackColor = false;
+            btnNewInvoice.Click += btnNewInvoice_Click;
             // 
             // tlpFooterRightTotals
             // 
@@ -991,6 +926,23 @@ namespace ClinicManagementSystem
             btnExportPdf.UseVisualStyleBackColor = false;
             btnExportPdf.Click += btnExportPdf_Click;
             // 
+            // btnExportThisInvoice
+            // 
+            btnExportThisInvoice.BackColor = Color.FromArgb(52, 152, 219);
+            btnExportThisInvoice.FlatAppearance.BorderSize = 0;
+            btnExportThisInvoice.FlatStyle = FlatStyle.Flat;
+            btnExportThisInvoice.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            btnExportThisInvoice.ForeColor = Color.White;
+            btnExportThisInvoice.Location = new Point(513, 3);
+            btnExportThisInvoice.Margin = new Padding(0, 3, 30, 3);
+            btnExportThisInvoice.Name = "btnExportThisInvoice";
+            btnExportThisInvoice.Padding = new Padding(15, 0, 15, 0);
+            btnExportThisInvoice.Size = new Size(197, 38);
+            btnExportThisInvoice.TabIndex = 3;
+            btnExportThisInvoice.Text = "تصدير إلى PDF 📄";
+            btnExportThisInvoice.UseVisualStyleBackColor = false;
+           btnExportThisInvoice.Click += btnExportThisInvoice_Click;
+            // 
             // txtSearchValue
             // 
             txtSearchValue.Anchor = AnchorStyles.None;
@@ -1001,7 +953,7 @@ namespace ClinicManagementSystem
             txtSearchValue.Size = new Size(260, 29);
             txtSearchValue.TabIndex = 2;
             txtSearchValue.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
-            txtSearchValue.TextChanged += txtSearchValue_TextChanged;
+           txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             // 
             // dgvInvoices
             // 
@@ -1012,27 +964,27 @@ namespace ClinicManagementSystem
             dgvInvoices.BorderStyle = BorderStyle.None;
             dgvInvoices.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             dgvInvoices.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
-            dataGridViewCellStyle3.ForeColor = Color.FromArgb(52, 73, 94);
-            dataGridViewCellStyle3.Padding = new Padding(10, 5, 10, 5);
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
-            dgvInvoices.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(244, 247, 250);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = Color.FromArgb(52, 73, 94);
+            dataGridViewCellStyle1.Padding = new Padding(10, 5, 10, 5);
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(244, 247, 250);
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgvInvoices.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvInvoices.ColumnHeadersHeight = 45;
             dgvInvoices.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvInvoices.Columns.AddRange(new DataGridViewColumn[] { colInvoiceId, colPatientName, colFinalAmount, colInvoiceDate, colInvoiceNumber });
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = Color.White;
-            dataGridViewCellStyle4.Font = new Font("Segoe UI", 10F);
-            dataGridViewCellStyle4.ForeColor = Color.FromArgb(44, 62, 80);
-            dataGridViewCellStyle4.Padding = new Padding(10, 0, 10, 0);
-            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(235, 243, 250);
-            dataGridViewCellStyle4.SelectionForeColor = Color.FromArgb(44, 62, 80);
-            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
-            dgvInvoices.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.White;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
+            dataGridViewCellStyle2.ForeColor = Color.FromArgb(44, 62, 80);
+            dataGridViewCellStyle2.Padding = new Padding(10, 0, 10, 0);
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(235, 243, 250);
+            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(44, 62, 80);
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            dgvInvoices.DefaultCellStyle = dataGridViewCellStyle2;
             dgvInvoices.Dock = DockStyle.Fill;
             dgvInvoices.EnableHeadersVisualStyles = false;
             dgvInvoices.GridColor = Color.FromArgb(235, 240, 245);
@@ -1094,22 +1046,9 @@ namespace ClinicManagementSystem
             // 
             colVisitId.Name = "colVisitId";
             // 
-            // btnExportThisInvoice
+            // epInvoice
             // 
-            btnExportThisInvoice.BackColor = Color.FromArgb(52, 152, 219);
-            btnExportThisInvoice.FlatAppearance.BorderSize = 0;
-            btnExportThisInvoice.FlatStyle = FlatStyle.Flat;
-            btnExportThisInvoice.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnExportThisInvoice.ForeColor = Color.White;
-            btnExportThisInvoice.Location = new Point(513, 3);
-            btnExportThisInvoice.Margin = new Padding(0, 3, 30, 3);
-            btnExportThisInvoice.Name = "btnExportThisInvoice";
-            btnExportThisInvoice.Padding = new Padding(15, 0, 15, 0);
-            btnExportThisInvoice.Size = new Size(197, 38);
-            btnExportThisInvoice.TabIndex = 3;
-            btnExportThisInvoice.Text = "تصدير إلى PDF 📄";
-            btnExportThisInvoice.UseVisualStyleBackColor = false;
-            btnExportThisInvoice.Click += btnExportThisInvoice_Click;
+            epInvoice.ContainerControl = this;
             // 
             // frmInvoices
             // 
@@ -1131,12 +1070,8 @@ namespace ClinicManagementSystem
             pnlInvoiceMetaCard.ResumeLayout(false);
             tlpMetaCardLayout.ResumeLayout(false);
             flpMetaFieldsLeft.ResumeLayout(false);
-            pnlPatientField.ResumeLayout(false);
-            pnlPatientField.PerformLayout();
-            pnlVisitField.ResumeLayout(false);
-            pnlVisitField.PerformLayout();
-            pnlInvoiceNumField.ResumeLayout(false);
-            pnlInvoiceNumField.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             flpMetaFieldRight.ResumeLayout(false);
             flpMetaFieldRight.PerformLayout();
             pnlFeesCard.ResumeLayout(false);
@@ -1168,6 +1103,7 @@ namespace ClinicManagementSystem
             flpHistoryHeader.ResumeLayout(false);
             flpHistoryHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvInvoices).EndInit();
+            ((System.ComponentModel.ISupportInitialize)epInvoice).EndInit();
             ResumeLayout(false);
         }
 
@@ -1182,13 +1118,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.TableLayoutPanel tlpMetaCardLayout;
         private System.Windows.Forms.FlowLayoutPanel flpMetaFieldsLeft;
         private System.Windows.Forms.Label lblMetaTitle;
-        private System.Windows.Forms.Panel pnlPatientField;
-        private System.Windows.Forms.Panel pnlVisitField;
-        private System.Windows.Forms.Label lblVisitTitle;
-        private System.Windows.Forms.ComboBox cmbVisit;
-        private System.Windows.Forms.Panel pnlInvoiceNumField;
-        private System.Windows.Forms.Label lblInvoiceNumTitle;
-        private System.Windows.Forms.TextBox txtInvoiceNumber;
         private System.Windows.Forms.FlowLayoutPanel flpMetaFieldRight;
         private System.Windows.Forms.Label lblDueDateTitle;
         private System.Windows.Forms.DateTimePicker dtpDueDate;
@@ -1248,12 +1177,12 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.DataGridViewTextBoxColumn colDueDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFinalAmount;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPatientNationalNumber;
-
-
-        private TextBox txtPatientId;
-        private Button btnChoosePatient;
-        private Label lblPatient;
         private TextBox txtSearchValue;
         private Button btnExportThisInvoice;
+        private ErrorProvider epInvoice;
+        private Panel panel1;
+        private TextBox txtPatientVisitId;
+        private Button btnChooseVisit;
+        private Label label1;
     }
 }

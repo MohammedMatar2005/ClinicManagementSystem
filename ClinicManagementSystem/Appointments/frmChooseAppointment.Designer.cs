@@ -1,6 +1,6 @@
 ﻿namespace ClinicManagementSystem.Appointments
 {
-    partial class frmChooseDoctor : Form
+    partial class frmChooseAppointment : Form
     {
         /// <summary>
         /// Required designer variable.
@@ -33,12 +33,12 @@
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
             txtSearch = new TextBox();
-            dgvDoctors = new DataGridView();
+            dgvAppointments = new DataGridView();
             btnSelect = new Button();
             btnCancel = new Button();
-            btnAddNewDoctor = new Button();
+            btnAddNewAppointment = new Button();
             pnlTopHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvAppointments).BeginInit();
             SuspendLayout();
             // 
             // pnlTopHeader
@@ -58,9 +58,9 @@
             lblHeaderTitle.ForeColor = Color.White;
             lblHeaderTitle.Location = new Point(10, 13);
             lblHeaderTitle.Name = "lblHeaderTitle";
-            lblHeaderTitle.Size = new Size(174, 25);
+            lblHeaderTitle.Size = new Size(171, 25);
             lblHeaderTitle.TabIndex = 0;
-            lblHeaderTitle.Text = "البحث واختيار الطبيب";
+            lblHeaderTitle.Text = "البحث واختيار الموعد";
             // 
             // txtSearch
             // 
@@ -72,20 +72,20 @@
             txtSearch.Name = "txtSearch";
             txtSearch.Size = new Size(818, 27);
             txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
+            txtSearch.Text = "🔍 أدخل اسم المريض أو الطبيب للبحث...";
             txtSearch.TextChanged += txtSearch_TextChanged;
             // 
-            // dgvDoctors
+            // dgvAppointments
             // 
-            dgvDoctors.AllowUserToAddRows = false;
-            dgvDoctors.AllowUserToDeleteRows = false;
-            dgvDoctors.AllowUserToResizeRows = false;
-            dgvDoctors.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvDoctors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvDoctors.BackgroundColor = Color.FromArgb(245, 247, 250);
-            dgvDoctors.BorderStyle = BorderStyle.None;
-            dgvDoctors.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvDoctors.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvAppointments.AllowUserToAddRows = false;
+            dgvAppointments.AllowUserToDeleteRows = false;
+            dgvAppointments.AllowUserToResizeRows = false;
+            dgvAppointments.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvAppointments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvAppointments.BackgroundColor = Color.FromArgb(245, 247, 250);
+            dgvAppointments.BorderStyle = BorderStyle.None;
+            dgvAppointments.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvAppointments.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = Color.FromArgb(230, 235, 245);
             dataGridViewCellStyle1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -93,8 +93,8 @@
             dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(230, 235, 245);
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvDoctors.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvDoctors.ColumnHeadersHeight = 40;
+            dgvAppointments.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvAppointments.ColumnHeadersHeight = 40;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
@@ -102,20 +102,20 @@
             dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(80, 140, 238);
             dataGridViewCellStyle2.SelectionForeColor = Color.White;
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dgvDoctors.DefaultCellStyle = dataGridViewCellStyle2;
-            dgvDoctors.EnableHeadersVisualStyles = false;
-            dgvDoctors.GridColor = Color.FromArgb(225, 230, 240);
-            dgvDoctors.Location = new Point(16, 120);
-            dgvDoctors.MultiSelect = false;
-            dgvDoctors.Name = "dgvDoctors";
-            dgvDoctors.ReadOnly = true;
-            dgvDoctors.RowHeadersVisible = false;
-            dgvDoctors.RowHeadersWidth = 51;
-            dgvDoctors.RowTemplate.Height = 35;
-            dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDoctors.Size = new Size(818, 350);
-            dgvDoctors.TabIndex = 2;
-            dgvDoctors.CellContentDoubleClick += dgvDoctors_CellDoubleClick;
+            dgvAppointments.DefaultCellStyle = dataGridViewCellStyle2;
+            dgvAppointments.EnableHeadersVisualStyles = false;
+            dgvAppointments.GridColor = Color.FromArgb(225, 230, 240);
+            dgvAppointments.Location = new Point(16, 120);
+            dgvAppointments.MultiSelect = false;
+            dgvAppointments.Name = "dgvAppointments";
+            dgvAppointments.ReadOnly = true;
+            dgvAppointments.RowHeadersVisible = false;
+            dgvAppointments.RowHeadersWidth = 51;
+            dgvAppointments.RowTemplate.Height = 35;
+            dgvAppointments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvAppointments.Size = new Size(818, 350);
+            dgvAppointments.TabIndex = 2;
+            dgvAppointments.CellContentDoubleClick += dgvAppointments_CellDoubleClick;
             // 
             // btnSelect
             // 
@@ -148,21 +148,21 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
             // 
-            // btnAddNewDoctor
+            // btnAddNewAppointment
             // 
-            btnAddNewDoctor.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnAddNewDoctor.BackColor = Color.FromArgb(0, 123, 255);
-            btnAddNewDoctor.FlatStyle = FlatStyle.Flat;
-            btnAddNewDoctor.Font = new Font("Segoe UI", 10F);
-            btnAddNewDoctor.ForeColor = Color.White;
-            btnAddNewDoctor.Location = new Point(16, 490);
-            btnAddNewDoctor.Name = "btnAddNewDoctor";
-            btnAddNewDoctor.Size = new Size(158, 39);
-            btnAddNewDoctor.TabIndex = 5;
-            btnAddNewDoctor.Text = "➕ إضافة طبيب جديد";
-            btnAddNewDoctor.UseVisualStyleBackColor = false;
+            btnAddNewAppointment.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnAddNewAppointment.BackColor = Color.FromArgb(0, 123, 255);
+            btnAddNewAppointment.FlatStyle = FlatStyle.Flat;
+            btnAddNewAppointment.Font = new Font("Segoe UI", 10F);
+            btnAddNewAppointment.ForeColor = Color.White;
+            btnAddNewAppointment.Location = new Point(16, 490);
+            btnAddNewAppointment.Name = "btnAddNewAppointment";
+            btnAddNewAppointment.Size = new Size(158, 39);
+            btnAddNewAppointment.TabIndex = 5;
+            btnAddNewAppointment.Text = "➕ حجز موعد جديد";
+            btnAddNewAppointment.UseVisualStyleBackColor = false;
             // 
-            // frmChooseDoctor
+            // frmChooseAppointment
             // 
             AcceptButton = btnSelect;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -170,24 +170,25 @@
             BackColor = Color.White;
             CancelButton = btnCancel;
             ClientSize = new Size(850, 550);
-            Controls.Add(btnAddNewDoctor);
+            Controls.Add(btnAddNewAppointment);
             Controls.Add(btnCancel);
             Controls.Add(btnSelect);
-            Controls.Add(dgvDoctors);
+            Controls.Add(dgvAppointments);
             Controls.Add(txtSearch);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
-            Name = "frmChooseDoctor";
+            Name = "frmChooseAppointment";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "شاشة اختيار طبيب";
-            Load += frmChooseDoctor_Load;
+            Text = "شاشة اختيار موعد";
+            Load += frmChooseAppointment_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvAppointments).EndInit();
             ResumeLayout(false);
             PerformLayout();
+
         }
 
         #endregion
@@ -195,9 +196,9 @@
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
         private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dgvDoctors;
+        private System.Windows.Forms.DataGridView dgvAppointments;
         private System.Windows.Forms.Button btnSelect;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnAddNewDoctor;
+        private System.Windows.Forms.Button btnAddNewAppointment;
     }
 }
