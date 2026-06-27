@@ -158,5 +158,34 @@ namespace ClinicManagementSystem.Appointments
         {
             this.Close();
         }
+
+        private void btnAddNewAppointment_Click(object sender, EventArgs e)
+        {
+            using (frmAppointments frm = new frmAppointments())
+            {
+                // 2. فتح الفورم بشكل حواري (سيجعل الفورم الصغير خلفه مباشرة وغير قابل للنقر)
+                frm.ShowDialog();
+
+                // 3. (اختياري) إذا كنت تريد تحديث البيانات في الفورم الحالي بعد إغلاق فورم المواعيد:
+                // _RefreshData(); 
+            }
+        }
+
+        private void toolStripShowAppointmentInfo_Click(object sender, EventArgs e)
+        {
+            int _selectedAppointmentId = 0;
+
+            _selectedAppointmentId = Convert.ToInt32(dgvAppointments.CurrentRow.Cells["AppointmentId"].Value);
+
+            using (frmShowAppointmentInfo frm = new frmShowAppointmentInfo(_selectedAppointmentId))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void toolStripUpdateAppointment_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

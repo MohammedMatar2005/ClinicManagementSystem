@@ -275,7 +275,7 @@ namespace ClinicManagementSystem
             btnChoosePatient.FlatStyle = FlatStyle.Flat;
             btnChoosePatient.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnChoosePatient.ForeColor = Color.White;
-            btnChoosePatient.Location = new Point(178, 0);
+            btnChoosePatient.Location = new Point(148, 0);
             btnChoosePatient.Margin = new Padding(5, 30, 5, 5);
             btnChoosePatient.Name = "btnChoosePatient";
             btnChoosePatient.Size = new Size(120, 38);
@@ -343,7 +343,7 @@ namespace ClinicManagementSystem
             btnChooseDoctor.FlatStyle = FlatStyle.Flat;
             btnChooseDoctor.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnChooseDoctor.ForeColor = Color.White;
-            btnChooseDoctor.Location = new Point(40, 0);
+            btnChooseDoctor.Location = new Point(0, 0);
             btnChooseDoctor.Margin = new Padding(5, 30, 5, 5);
             btnChooseDoctor.Name = "btnChooseDoctor";
             btnChooseDoctor.Size = new Size(110, 38);
@@ -711,7 +711,7 @@ namespace ClinicManagementSystem
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RenderMode = ToolStripRenderMode.Professional;
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(210, 100);
+            contextMenuStrip1.Size = new Size(210, 122);
             // 
             // ShowInfoMenuItem
             // 
@@ -725,6 +725,7 @@ namespace ClinicManagementSystem
             UpdateAppointmentMenuItem.Name = "UpdateAppointmentMenuItem";
             UpdateAppointmentMenuItem.Size = new Size(209, 24);
             UpdateAppointmentMenuItem.Text = "  تعديل بيانات الموعد";
+            UpdateAppointmentMenuItem.Click += UpdateAppointmentMenuItem_Click;
             // 
             // DeleteAppointmentMenuItem
             // 

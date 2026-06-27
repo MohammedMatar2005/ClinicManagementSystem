@@ -12,7 +12,7 @@ namespace ClinicManagementSystem
 {
     public partial class frmAppointments : Form
     {
-        
+
         private readonly clsAppointment _appointmentService;
         private DataView _appointmentsDataView = new DataView();
 
@@ -238,7 +238,9 @@ namespace ClinicManagementSystem
                 DoctorId = _selectedDoctorId,
                 PatientId = _selectedPatientId,
                 AppointmentStatusId = cmbStatus.SelectedIndex + 1,
-                Notes = txtNotes.Text.Trim()
+                Notes = txtNotes.Text.Trim(),
+                ReasonForVisit = txtReason.Text.Trim()
+
             };
 
             int newAppointmentId = await _appointmentService.AddNewAppointmentAsync(appointment);
@@ -270,6 +272,19 @@ namespace ClinicManagementSystem
         private void AddNewAppointmentMenuItem_Click(object sender, EventArgs e)
         {
             tabControl.SelectedIndex = 0;
+        }
+
+        private void UpdateAppointmentMenuItem_Click(object sender, EventArgs e)
+        {
+            int _selectedAppointmentId = -1;
+           
+            _selectedAppointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
+            
+
+            using (frmUpdateAppointment frm = new frmUpdateAppointment(_selectedAppointmentId))
+            {
+                frm.ShowDialog();
+            }
         }
     }
 }

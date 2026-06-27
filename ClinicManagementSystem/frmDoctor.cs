@@ -104,7 +104,7 @@ namespace ClinicManagementSystem
                 btnBack.Visible = true;
                 btnBack.BringToFront();
             }
-            else
+            else if (currentStep == totalSteps - 1)
             {
                 // الخطوة الأخيرة
                 btnNext.Visible = false;
