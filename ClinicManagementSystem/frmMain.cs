@@ -70,7 +70,7 @@ namespace ClinicManagementSystem
 
         private void btnDoctors_Click(object sender, EventArgs e)
         {
-            Form frm = new frmDoctor();
+            Form frm = new frmAddUpdateDoctor();
             frm.ShowDialog();
         }
 

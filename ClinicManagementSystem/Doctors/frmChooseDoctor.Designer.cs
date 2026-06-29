@@ -28,17 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
             txtSearch = new TextBox();
             dgvDoctors = new DataGridView();
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            toolStripShowDoctorInfo = new ToolStripMenuItem();
+            toolStripAddNewDoctor = new ToolStripMenuItem();
+            toolStripUpdateDoctorData = new ToolStripMenuItem();
+            toolStripDeleteDoctor = new ToolStripMenuItem();
             btnSelect = new Button();
             btnCancel = new Button();
             btnAddNewDoctor = new Button();
             pnlTopHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDoctors).BeginInit();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // pnlTopHeader
@@ -95,6 +102,7 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvDoctors.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvDoctors.ColumnHeadersHeight = 40;
+            dgvDoctors.ContextMenuStrip = contextMenuStrip1;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
@@ -116,6 +124,49 @@
             dgvDoctors.Size = new Size(818, 350);
             dgvDoctors.TabIndex = 2;
             dgvDoctors.CellContentDoubleClick += dgvDoctors_CellDoubleClick;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowDoctorInfo, toolStripAddNewDoctor, toolStripUpdateDoctorData, toolStripDeleteDoctor });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.RightToLeft = RightToLeft.Yes;
+            contextMenuStrip1.Size = new Size(209, 100);
+            // 
+            // toolStripShowDoctorInfo
+            // 
+            toolStripShowDoctorInfo.Font = new Font("Segoe UI", 11.25F);
+            toolStripShowDoctorInfo.ForeColor = Color.Black;
+            toolStripShowDoctorInfo.Name = "toolStripShowDoctorInfo";
+            toolStripShowDoctorInfo.Size = new Size(208, 24);
+            toolStripShowDoctorInfo.Text = "عرض بيانات الطبيب";
+            toolStripShowDoctorInfo.Click += toolStripShowDoctorInfo_Click;
+            // 
+            // toolStripAddNewDoctor
+            // 
+            toolStripAddNewDoctor.Font = new Font("Segoe UI", 11.25F);
+            toolStripAddNewDoctor.ForeColor = Color.Green;
+            toolStripAddNewDoctor.Name = "toolStripAddNewDoctor";
+            toolStripAddNewDoctor.Size = new Size(208, 24);
+            toolStripAddNewDoctor.Text = "إضافة طبيب جديد";
+            toolStripAddNewDoctor.Click += toolStripAddNewDoctor_Click;
+            // 
+            // toolStripUpdateDoctorData
+            // 
+            toolStripUpdateDoctorData.Font = new Font("Segoe UI", 11.25F);
+            toolStripUpdateDoctorData.ForeColor = Color.Blue;
+            toolStripUpdateDoctorData.Name = "toolStripUpdateDoctorData";
+            toolStripUpdateDoctorData.Size = new Size(208, 24);
+            toolStripUpdateDoctorData.Text = "تحديث بيانات الطبيب";
+            //toolStripUpdateDoctorData.Click += this.toolStripUpdateDoctorData_Click;
+            // 
+            // toolStripDeleteDoctor
+            // 
+            toolStripDeleteDoctor.Font = new Font("Segoe UI", 11.25F);
+            toolStripDeleteDoctor.ForeColor = Color.Red;
+            toolStripDeleteDoctor.Name = "toolStripDeleteDoctor";
+            toolStripDeleteDoctor.Size = new Size(208, 24);
+            toolStripDeleteDoctor.Text = "حذف الطبيب";
+            toolStripDeleteDoctor.Click += toolStripDeleteDoctor_Click;
             // 
             // btnSelect
             // 
@@ -161,6 +212,7 @@
             btnAddNewDoctor.TabIndex = 5;
             btnAddNewDoctor.Text = "➕ إضافة طبيب جديد";
             btnAddNewDoctor.UseVisualStyleBackColor = false;
+            btnAddNewDoctor.Click += btnAddNewDoctor_Click;
             // 
             // frmChooseDoctor
             // 
@@ -186,6 +238,7 @@
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDoctors).EndInit();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -199,5 +252,10 @@
         private System.Windows.Forms.Button btnSelect;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnAddNewDoctor;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem toolStripShowDoctorInfo;
+        private ToolStripMenuItem toolStripAddNewDoctor;
+        private ToolStripMenuItem toolStripUpdateDoctorData;
+        private ToolStripMenuItem toolStripDeleteDoctor;
     }
 }

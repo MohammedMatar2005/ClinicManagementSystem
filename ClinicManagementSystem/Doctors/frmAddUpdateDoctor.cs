@@ -11,7 +11,7 @@ using ClinicBusiness.DTO.UsersDTOs;
 
 namespace ClinicManagementSystem
 {
-    public partial class frmDoctor : Form
+    public partial class frmAddUpdateDoctor : Form
     {
         private static readonly Color ColorPrimary = Color.FromArgb(37, 99, 235); // أزرق رئيسي
         private static readonly Color ColorSuccess = Color.FromArgb(37, 162, 87); // أخضر الحفظ
@@ -28,13 +28,28 @@ namespace ClinicManagementSystem
             "البيانات المهنية للطبيب"
         };
 
-        public frmDoctor()
+        public frmAddUpdateDoctor()
         {
             InitializeComponent();
 
             // حقن الـ Context مباشرة للفورم والسيرفس
             _context = new ClinicManagementSystemContext();
             _doctorService = new clsDoctor(_context);
+            _doctorId = null;
+        }
+
+        private readonly int? _doctorId;
+
+        public frmAddUpdateDoctor(int doctorId)
+        {
+            InitializeComponent();
+
+            // حقن الـ Context مباشرة للفورم والسيرفس
+            _context = new ClinicManagementSystemContext();
+            _doctorService = new clsDoctor(_context);
+            _doctorId = doctorId;
+
+
         }
 
         private void frmDoctor_Load(object sender, EventArgs e)
@@ -42,7 +57,71 @@ namespace ClinicManagementSystem
             InitializeComboBoxes();
             InitializeNumericControls();
             InitializeDefaultValues();
-            UpdateButtonStates(); // ضبط حالة الأزرار والعناوين عند الإقلاع
+            UpdateButtonStates();
+
+            if (_doctorId.HasValue)
+                LoadDoctorData(_doctorId.Value);
+        }
+
+        private async void LoadDoctorData(int doctorId)
+        {
+            try
+            {
+                var dto = await _doctorService.GetDoctorByIdAsync(doctorId);
+
+                if (dto is null)
+                {
+                    MessageBox.Show(
+                        "لم يتم العثور على بيانات الطبيب.",
+                        "خطأ",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+                    this.Close();
+                    return;
+                }
+
+                // ── البيانات الشخصية ──
+                txtFirstName.Text = dto.FirstName;
+                txtSecondName.Text = dto.SecondName;
+                txtThirdName.Text = dto.ThirdName;
+                txtLastName.Text = dto.LastName;
+                txtNationalNo.Text = dto.NationalNumber;
+                txtPhone.Text = dto.Phone;
+                txtEmail.Text = dto.Email;
+                txtAddress.Text = dto.Address;
+
+                dtpDateOfBirth.Value = dto.DateOfBirth.ToDateTime(TimeOnly.MinValue);
+                cmbGender.SelectedIndex = dto.Gender == true ? 0 : 1; // 0=ذكر، 1=أنثى
+
+                // ── بيانات الحساب ──
+                txtUsername.Text = dto.Username;
+                txtPassword.Text = string.Empty; // لا تعرض كلمة المرور أبداً
+                chkUserIsActive.Checked = dto.DoctorIsActive;
+
+                // ── البيانات المهنية ──
+                txtSpecialization.Text = dto.Specialization;
+                txtLicenseNo.Text = dto.LicenseNumber;
+                txtClinicRoom.Text = dto.OfficeLocation;
+                nudSalary.Value = dto.Salary ?? 0;
+                nudExperienceYears.Value = dto.ExperienceYears ?? 0;
+                chkDoctorIsActive.Checked = dto.DoctorIsActive;
+
+                // ── تحديث عنوان النافذة ──
+                this.Text = $"تعديل بيانات الطبيب - {dto.FirstName} {dto.LastName}";
+                lblFormTitle.Text = $"تعديل بيانات الطبيب - {dto.FirstName} {dto.LastName}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"حدث خطأ أثناء تحميل البيانات:\n{ex.Message}",
+                    "خطأ",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+            }
         }
 
         private void InitializeComboBoxes()
@@ -79,79 +158,29 @@ namespace ClinicManagementSystem
             wizardTabs.SelectedIndex = 0;
         }
 
+        // ✅ الكود الصحيح لـ UpdateButtonStates
         private void UpdateButtonStates()
         {
             int currentStep = wizardTabs.SelectedIndex;
             int totalSteps = wizardTabs.TabCount;
 
-            // تحديث عنوان المرحلة الحالية في الفورم إن وجد ليبل للعناوين
             this.Text = $"إضافة طبيب جديد - {StepTitles[currentStep]}";
 
-            if (currentStep == 0)
-            {
-                // الخطوة الأولى
-                btnNext.Visible = true;
-                btnSave.Visible = false;
-                btnNext.BringToFront();
-                btnBack.Visible = false;
-            }
-            else if (currentStep < totalSteps - 1)
-            {
-                // الخطوات الوسطى
-                btnNext.Visible = true;
-                btnSave.Visible = false;
-                btnNext.BringToFront();
-                btnBack.Visible = true;
-                btnBack.BringToFront();
-            }
-            else if (currentStep == totalSteps - 1)
-            {
-                // الخطوة الأخيرة
-                btnNext.Visible = false;
-                btnSave.Visible = true;
-                btnSave.BringToFront();
-                btnBack.Visible = true;
-                btnBack.BringToFront();
-            }
+            bool isFirst = currentStep == 0;
+            bool isLast = currentStep == totalSteps - 1;
+
+            btnBack.Visible = !isFirst;
+            btnNext.Visible = !isLast;
+            btnSave.Visible = isLast;
         }
 
-        // حدث نقرة زر التالي الموحد لتنفيذ التحقق أولاً
-        private void btnNext_Click_1(object sender, EventArgs e)
-        {
-            int current = wizardTabs.SelectedIndex;
 
-            if (!ValidateCurrentStep(current))
-                return;
-
-            if (wizardTabs.SelectedIndex < wizardTabs.TabCount - 1)
-            {
-                wizardTabs.SelectedIndex++;
-            }
-        }
-
-        private void btnBack_Click(object sender, EventArgs e)
-        {
-            if (wizardTabs.SelectedIndex > 0)
-            {
-                wizardTabs.SelectedIndex--;
-            }
-        }
-
-        // حدث تغيير التاب يدوياً أو برمجياً لتحديث حالة الأزرار فوراً
         private void wizardTabs_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateButtonStates();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            int current = wizardTabs.SelectedIndex;
-
-            if (!ValidateCurrentStep(current))
-                return;
-
-            SaveDoctor();
-        }
+      
 
         private bool ValidateCurrentStep(int stepIndex)
         {
@@ -184,9 +213,9 @@ namespace ClinicManagementSystem
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtNationalNumber.Text))
+            if (string.IsNullOrWhiteSpace(txtNationalNo.Text))
             {
-                ShowValidationError("الرقم الوطني حقل إجباري.", txtNationalNumber);
+                ShowValidationError("الرقم الوطني حقل إجباري.", txtNationalNo);
                 return false;
             }
 
@@ -236,9 +265,9 @@ namespace ClinicManagementSystem
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtLicenseNumber.Text))
+            if (string.IsNullOrWhiteSpace(txtLicenseNo.Text))
             {
-                ShowValidationError("رقم الرخصة الطبية حقل إجباري.", txtLicenseNumber);
+                ShowValidationError("رقم الرخصة الطبية حقل إجباري.", txtLicenseNo);
                 return false;
             }
 
@@ -263,12 +292,12 @@ namespace ClinicManagementSystem
                         Gender = cmbGender.SelectedItem?.ToString() == "ذكر" ? true : false,
                         Phone = txtPhone.Text.Trim(),
                         Email = txtEmail.Text.Trim(),
-                        NationalNumber = txtNationalNumber.Text.Trim(),
+                        NationalNumber = txtNationalNo.Text.Trim(),
                         Address = txtAddress.Text.Trim()
                     },
 
                     // ── 3. تعبئة بيانات الحساب (User) ──
-                    User = new UserSaveDTO 
+                    User = new UserSaveDTO
                     {
                         Username = txtUsername.Text.Trim(),
                         PasswordHash = txtPassword.Text.Trim(), // سيتم تشفيره لاحقاً في السيرفس أو هنا
@@ -280,9 +309,9 @@ namespace ClinicManagementSystem
                     DoctorDetails = new DoctorDetailsDTO
                     {
                         Specialization = txtSpecialization.Text.Trim(),
-                        LicenseNumber = txtLicenseNumber.Text.Trim(),
+                        LicenseNumber = txtLicenseNo.Text.Trim(),
                         Salary = nudSalary.Value,
-                        OfficeLocation = txtOfficeLocation.Text.Trim(),
+                        OfficeLocation = txtAddress.Text.Trim(),
                         ExperienceYears = (byte)nudExperienceYears.Value,
                         IsActive = chkDoctorIsActive.Checked
                     }
@@ -348,5 +377,42 @@ namespace ClinicManagementSystem
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
+        private void btnSave_Click_1(object sender, EventArgs e)
+        {
+
+            for (int i = 0; i < wizardTabs.TabCount; i++)
+            {
+                if (!ValidateCurrentStep(i))
+                {
+                    wizardTabs.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            SaveDoctor();
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+
+
+            if (!ValidateCurrentStep(wizardTabs.SelectedIndex)) return;
+
+            if (wizardTabs.SelectedIndex < wizardTabs.TabCount - 1)
+                wizardTabs.SelectedIndex++;
+        }
+
+        private void btnBack_Click_1(object sender, EventArgs e)
+        {
+            if (wizardTabs.SelectedIndex > 0)
+            {
+                wizardTabs.SelectedIndex--;
+            }
+        }
+
+
+
+      
     }
 }

@@ -35,14 +35,14 @@
             lblHeaderTitle = new Label();
             txtSearch = new TextBox();
             dgvAppointments = new DataGridView();
-            btnSelect = new Button();
-            btnCancel = new Button();
-            btnAddNewAppointment = new Button();
             contextMenuStrip1 = new ContextMenuStrip(components);
             toolStripShowAppointmentInfo = new ToolStripMenuItem();
             toolStripUpdateAppointment = new ToolStripMenuItem();
             toolStripAddNewAppointment = new ToolStripMenuItem();
             toolStripDeleteAppointmen = new ToolStripMenuItem();
+            btnSelect = new Button();
+            btnCancel = new Button();
+            btnAddNewAppointment = new Button();
             pnlTopHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvAppointments).BeginInit();
             contextMenuStrip1.SuspendLayout();
@@ -102,6 +102,7 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvAppointments.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvAppointments.ColumnHeadersHeight = 40;
+            dgvAppointments.ContextMenuStrip = contextMenuStrip1;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
@@ -123,6 +124,44 @@
             dgvAppointments.Size = new Size(818, 350);
             dgvAppointments.TabIndex = 2;
             dgvAppointments.CellContentDoubleClick += dgvAppointments_CellDoubleClick;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowAppointmentInfo, toolStripUpdateAppointment, toolStripAddNewAppointment, toolStripDeleteAppointmen });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.RightToLeft = RightToLeft.Yes;
+            contextMenuStrip1.Size = new Size(206, 108);
+            // 
+            // toolStripShowAppointmentInfo
+            // 
+            toolStripShowAppointmentInfo.Name = "toolStripShowAppointmentInfo";
+            toolStripShowAppointmentInfo.Size = new Size(205, 26);
+            toolStripShowAppointmentInfo.Text = "عرض بيانات الموعد";
+            toolStripShowAppointmentInfo.Click += toolStripShowAppointmentInfo_Click;
+            // 
+            // toolStripUpdateAppointment
+            // 
+            toolStripUpdateAppointment.Name = "toolStripUpdateAppointment";
+            toolStripUpdateAppointment.Size = new Size(205, 26);
+            toolStripUpdateAppointment.Text = "تحديث الموعد";
+            toolStripUpdateAppointment.Click += toolStripUpdateAppointment_Click;
+            // 
+            // toolStripAddNewAppointment
+            // 
+            toolStripAddNewAppointment.ForeColor = Color.Green;
+            toolStripAddNewAppointment.Name = "toolStripAddNewAppointment";
+            toolStripAddNewAppointment.Size = new Size(205, 26);
+            toolStripAddNewAppointment.Text = "حجز موعد جديد";
+            toolStripAddNewAppointment.Click += toolStripAddNewAppointment_Click;
+            // 
+            // toolStripDeleteAppointmen
+            // 
+            toolStripDeleteAppointmen.ForeColor = Color.Red;
+            toolStripDeleteAppointmen.Name = "toolStripDeleteAppointmen";
+            toolStripDeleteAppointmen.Size = new Size(205, 26);
+            toolStripDeleteAppointmen.Text = "إلغاء الموعد";
+            toolStripDeleteAppointmen.Click += this.toolStripDeleteAppointmen_Click;
             // 
             // btnSelect
             // 
@@ -169,42 +208,6 @@
             btnAddNewAppointment.Text = "➕ حجز موعد جديد";
             btnAddNewAppointment.UseVisualStyleBackColor = false;
             btnAddNewAppointment.Click += btnAddNewAppointment_Click;
-            // 
-            // contextMenuStrip1
-            // 
-            contextMenuStrip1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowAppointmentInfo, toolStripUpdateAppointment, toolStripAddNewAppointment, toolStripDeleteAppointmen });
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(206, 108);
-            // 
-            // toolStripShowAppointmentInfo
-            // 
-            toolStripShowAppointmentInfo.Name = "toolStripShowAppointmentInfo";
-            toolStripShowAppointmentInfo.Size = new Size(205, 26);
-            toolStripShowAppointmentInfo.Text = "عرض بيانات الموعد";
-            toolStripShowAppointmentInfo.Click += toolStripShowAppointmentInfo_Click;
-            // 
-            // toolStripUpdateAppointment
-            // 
-            toolStripUpdateAppointment.Name = "toolStripUpdateAppointment";
-            toolStripUpdateAppointment.Size = new Size(205, 26);
-            toolStripUpdateAppointment.Text = "تحديث الموعد";
-            toolStripUpdateAppointment.Click += toolStripUpdateAppointment_Click;
-            // 
-            // toolStripAddNewAppointment
-            // 
-            toolStripAddNewAppointment.ForeColor = Color.Green;
-            toolStripAddNewAppointment.Name = "toolStripAddNewAppointment";
-            toolStripAddNewAppointment.Size = new Size(205, 26);
-            toolStripAddNewAppointment.Text = "حجز موعد جديد";
-            // 
-            // toolStripDeleteAppointmen
-            // 
-            toolStripDeleteAppointmen.ForeColor = Color.Red;
-            toolStripDeleteAppointmen.Name = "toolStripDeleteAppointmen";
-            toolStripDeleteAppointmen.Size = new Size(205, 26);
-            toolStripDeleteAppointmen.Text = "إلغاء الموعد";
             // 
             // frmChooseAppointment
             // 

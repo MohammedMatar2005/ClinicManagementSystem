@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ClinicManagementSystem.Appointments
 {
@@ -15,6 +16,8 @@ namespace ClinicManagementSystem.Appointments
         private BindingSource _doctorsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
 
+        clsDoctor _doctorService;
+
         // خصائص عامة لقراءة البيانات من الفورم
         public int DoctorId { get; private set; } = -1;
         public string DoctorName { get; private set; } = string.Empty;
@@ -23,8 +26,9 @@ namespace ClinicManagementSystem.Appointments
         {
             InitializeComponent();
 
-            // حقن الـ Context مباشرة للفورم
+
             _context = new ClinicManagementSystemContext();
+            _doctorService = new clsDoctor(_context);
         }
 
         private void frmChooseDoctor_Load(object sender, EventArgs e)
@@ -182,6 +186,57 @@ namespace ClinicManagementSystem.Appointments
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void toolStripShowDoctorInfo_Click(object sender, EventArgs e)
+        {
+            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
+
+            using (frmShowDoctorInfo frm = new frmShowDoctorInfo(doctorId))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void toolStripAddNewDoctor_Click(object sender, EventArgs e)
+        {
+            using (frmAddUpdateDoctor frm = new frmAddUpdateDoctor())
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private async void toolStripDeleteDoctor_Click(object sender, EventArgs e)
+        {
+
+            if (dgvDoctors.CurrentRow == null) return;
+
+            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
+
+            if (doctorId <= 0) return;
+
+
+            DialogResult result = MessageBox.Show("هل أنت متأكد من حذف هذا الطبيب؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                bool isDeleted = await _doctorService.DeleteDoctorAsync(doctorId);
+
+                if (isDeleted)
+                {
+                    MessageBox.Show("تم حذف الطبيب بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                else
+                {
+                    MessageBox.Show("فشلت عملية الحذف، قد يكون الطبيب مرتبطاً ببيانات أخرى", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnAddNewDoctor_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
