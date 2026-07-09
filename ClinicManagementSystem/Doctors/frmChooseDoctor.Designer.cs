@@ -130,7 +130,7 @@
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowDoctorInfo, toolStripAddNewDoctor, toolStripUpdateDoctorData, toolStripDeleteDoctor });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(209, 100);
+            contextMenuStrip1.Size = new Size(209, 122);
             // 
             // toolStripShowDoctorInfo
             // 
@@ -157,7 +157,7 @@
             toolStripUpdateDoctorData.Name = "toolStripUpdateDoctorData";
             toolStripUpdateDoctorData.Size = new Size(208, 24);
             toolStripUpdateDoctorData.Text = "تحديث بيانات الطبيب";
-            //toolStripUpdateDoctorData.Click += this.toolStripUpdateDoctorData_Click;
+            
             // 
             // toolStripDeleteDoctor
             // 

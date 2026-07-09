@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace ClinicManagementSystem    
+namespace ClinicManagementSystem
 {
     partial class frmInvoices : Form
     {
@@ -275,7 +275,7 @@ namespace ClinicManagementSystem
             btnChooseVisit.TabIndex = 6;
             btnChooseVisit.Text = "اختر زيارة";
             btnChooseVisit.UseVisualStyleBackColor = false;
-          btnChooseVisit.Click += btnChooseVisit_Click;
+            btnChooseVisit.Click += btnChooseVisit_Click;
             // 
             // label1
             // 
@@ -402,8 +402,8 @@ namespace ClinicManagementSystem
             txtConsultationFee.Name = "txtConsultationFee";
             txtConsultationFee.Size = new Size(233, 38);
             txtConsultationFee.TabIndex = 1;
-          txtConsultationFee.TextChanged += txtUpdateSummaryLables_TextChanged;
-          txtConsultationFee.KeyPress += preventLetters_KeyPress;
+            txtConsultationFee.TextChanged += txtUpdateSummaryLables_TextChanged;
+            txtConsultationFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlLabField
             // 
@@ -436,8 +436,8 @@ namespace ClinicManagementSystem
             txtLabTestFee.Name = "txtLabTestFee";
             txtLabTestFee.Size = new Size(233, 38);
             txtLabTestFee.TabIndex = 1;
-          txtLabTestFee.TextChanged += txtUpdateSummaryLables_TextChanged;
-          txtLabTestFee.KeyPress += preventLetters_KeyPress;
+            txtLabTestFee.TextChanged += txtUpdateSummaryLables_TextChanged;
+            txtLabTestFee.KeyPress += preventLetters_KeyPress;
             // 
             // pnlProcedureField
             // 
@@ -504,8 +504,8 @@ namespace ClinicManagementSystem
             txtOtherCharges.Name = "txtOtherCharges";
             txtOtherCharges.Size = new Size(234, 38);
             txtOtherCharges.TabIndex = 1;
-         txtOtherCharges.TextChanged += txtUpdateSummaryLables_TextChanged;
-         txtOtherCharges.KeyPress += preventLetters_KeyPress;
+            txtOtherCharges.TextChanged += txtUpdateSummaryLables_TextChanged;
+            txtOtherCharges.KeyPress += preventLetters_KeyPress;
             // 
             // pnlBrandingSplash
             // 
@@ -725,7 +725,7 @@ namespace ClinicManagementSystem
             btnSaveInvoice.TabIndex = 0;
             btnSaveInvoice.Text = "✅ حفظ الفاتورة";
             btnSaveInvoice.UseVisualStyleBackColor = false;
-           // btnSaveInvoice.Click += btnSaveInvoice_Click;
+            btnSaveInvoice.Click += btnSaveInvoice_Click;
             // 
             // btnNewInvoice
             // 
@@ -941,7 +941,7 @@ namespace ClinicManagementSystem
             btnExportThisInvoice.TabIndex = 3;
             btnExportThisInvoice.Text = "تصدير إلى PDF 📄";
             btnExportThisInvoice.UseVisualStyleBackColor = false;
-           btnExportThisInvoice.Click += btnExportThisInvoice_Click;
+            btnExportThisInvoice.Click += btnExportThisInvoice_Click;
             // 
             // txtSearchValue
             // 
@@ -953,7 +953,7 @@ namespace ClinicManagementSystem
             txtSearchValue.Size = new Size(260, 29);
             txtSearchValue.TabIndex = 2;
             txtSearchValue.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
-           txtSearchValue.TextChanged += txtSearchValue_TextChanged;
+            txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             // 
             // dgvInvoices
             // 

@@ -155,6 +155,7 @@ namespace ClinicManagementSystem
             wizardTabs.Size = new Size(684, 488);
             wizardTabs.TabIndex = 0;
             wizardTabs.SelectedIndexChanged += wizardTabs_SelectedIndexChanged;
+            wizardTabs.Selecting += wizardTabs_Selecting;
             // 
             // tpPersonalInfo
             // 
@@ -170,8 +171,8 @@ namespace ClinicManagementSystem
             // tlpPersonal
             // 
             tlpPersonal.ColumnCount = 2;
-            tlpPersonal.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tlpPersonal.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpPersonal.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 49.37107F));
+            tlpPersonal.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.62893F));
             tlpPersonal.Controls.Add(lblFullName, 0, 0);
             tlpPersonal.Controls.Add(pnlNameFields, 0, 1);
             tlpPersonal.Controls.Add(lblNationalNo, 0, 2);
@@ -230,9 +231,9 @@ namespace ClinicManagementSystem
             // tlpNameFields
             // 
             tlpNameFields.ColumnCount = 4;
-            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
-            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 22F));
-            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 22F));
+            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 31.4285717F));
+            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 23.015873F));
+            tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24.2857151F));
             tlpNameFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 21F));
             tlpNameFields.Controls.Add(txtFirstName, 0, 0);
             tlpNameFields.Controls.Add(txtSecondName, 1, 0);
@@ -251,10 +252,10 @@ namespace ClinicManagementSystem
             txtFirstName.BorderStyle = BorderStyle.FixedSingle;
             txtFirstName.Dock = DockStyle.Fill;
             txtFirstName.Font = new Font("Segoe UI", 9.5F);
-            txtFirstName.Location = new Point(413, 3);
+            txtFirstName.Location = new Point(435, 3);
             txtFirstName.Name = "txtFirstName";
             txtFirstName.PlaceholderText = "الأول";
-            txtFirstName.Size = new Size(214, 24);
+            txtFirstName.Size = new Size(192, 24);
             txtFirstName.TabIndex = 3;
             // 
             // txtSecondName
@@ -262,10 +263,10 @@ namespace ClinicManagementSystem
             txtSecondName.BorderStyle = BorderStyle.FixedSingle;
             txtSecondName.Dock = DockStyle.Fill;
             txtSecondName.Font = new Font("Segoe UI", 9.5F);
-            txtSecondName.Location = new Point(275, 3);
+            txtSecondName.Location = new Point(290, 3);
             txtSecondName.Name = "txtSecondName";
             txtSecondName.PlaceholderText = "الثاني";
-            txtSecondName.Size = new Size(132, 24);
+            txtSecondName.Size = new Size(139, 24);
             txtSecondName.TabIndex = 4;
             // 
             // txtThirdName
@@ -276,7 +277,7 @@ namespace ClinicManagementSystem
             txtThirdName.Location = new Point(137, 3);
             txtThirdName.Name = "txtThirdName";
             txtThirdName.PlaceholderText = "الثالث";
-            txtThirdName.Size = new Size(132, 24);
+            txtThirdName.Size = new Size(147, 24);
             txtThirdName.TabIndex = 5;
             // 
             // txtLastName
@@ -319,9 +320,9 @@ namespace ClinicManagementSystem
             lblBirthDate.Dock = DockStyle.Fill;
             lblBirthDate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblBirthDate.ForeColor = Color.FromArgb(55, 65, 81);
-            lblBirthDate.Location = new Point(331, 130);
+            lblBirthDate.Location = new Point(335, 130);
             lblBirthDate.Name = "lblBirthDate";
-            lblBirthDate.Size = new Size(312, 26);
+            lblBirthDate.Size = new Size(308, 26);
             lblBirthDate.TabIndex = 9;
             lblBirthDate.Text = "تاريخ الميلاد:";
             lblBirthDate.TextAlign = ContentAlignment.BottomLeft;
@@ -333,7 +334,7 @@ namespace ClinicManagementSystem
             lblGender.ForeColor = Color.FromArgb(55, 65, 81);
             lblGender.Location = new Point(13, 130);
             lblGender.Name = "lblGender";
-            lblGender.Size = new Size(312, 26);
+            lblGender.Size = new Size(316, 26);
             lblGender.TabIndex = 7;
             lblGender.Text = "الجنس:";
             lblGender.TextAlign = ContentAlignment.BottomLeft;
@@ -343,9 +344,9 @@ namespace ClinicManagementSystem
             dtpDateOfBirth.Dock = DockStyle.Fill;
             dtpDateOfBirth.Font = new Font("Segoe UI", 9.5F);
             dtpDateOfBirth.Format = DateTimePickerFormat.Short;
-            dtpDateOfBirth.Location = new Point(331, 159);
+            dtpDateOfBirth.Location = new Point(335, 159);
             dtpDateOfBirth.Name = "dtpDateOfBirth";
-            dtpDateOfBirth.Size = new Size(312, 24);
+            dtpDateOfBirth.Size = new Size(308, 24);
             dtpDateOfBirth.TabIndex = 10;
             // 
             // cmbGender
@@ -357,7 +358,7 @@ namespace ClinicManagementSystem
             cmbGender.Items.AddRange(new object[] { "ذكر", "أنثى" });
             cmbGender.Location = new Point(13, 159);
             cmbGender.Name = "cmbGender";
-            cmbGender.Size = new Size(312, 25);
+            cmbGender.Size = new Size(316, 25);
             cmbGender.TabIndex = 8;
             // 
             // lblEmail
@@ -365,9 +366,9 @@ namespace ClinicManagementSystem
             lblEmail.Dock = DockStyle.Fill;
             lblEmail.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblEmail.ForeColor = Color.FromArgb(55, 65, 81);
-            lblEmail.Location = new Point(331, 190);
+            lblEmail.Location = new Point(335, 190);
             lblEmail.Name = "lblEmail";
-            lblEmail.Size = new Size(312, 26);
+            lblEmail.Size = new Size(308, 26);
             lblEmail.TabIndex = 13;
             lblEmail.Text = "البريد الإلكتروني:";
             lblEmail.TextAlign = ContentAlignment.BottomLeft;
@@ -379,7 +380,7 @@ namespace ClinicManagementSystem
             lblPhone.ForeColor = Color.FromArgb(55, 65, 81);
             lblPhone.Location = new Point(13, 190);
             lblPhone.Name = "lblPhone";
-            lblPhone.Size = new Size(312, 26);
+            lblPhone.Size = new Size(316, 26);
             lblPhone.TabIndex = 11;
             lblPhone.Text = "رقم الهاتف:";
             lblPhone.TextAlign = ContentAlignment.BottomLeft;
@@ -389,9 +390,9 @@ namespace ClinicManagementSystem
             txtEmail.BorderStyle = BorderStyle.FixedSingle;
             txtEmail.Dock = DockStyle.Fill;
             txtEmail.Font = new Font("Segoe UI", 9.5F);
-            txtEmail.Location = new Point(331, 219);
+            txtEmail.Location = new Point(335, 219);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(312, 24);
+            txtEmail.Size = new Size(308, 24);
             txtEmail.TabIndex = 14;
             // 
             // txtPhone
@@ -401,8 +402,9 @@ namespace ClinicManagementSystem
             txtPhone.Font = new Font("Segoe UI", 9.5F);
             txtPhone.Location = new Point(13, 219);
             txtPhone.Name = "txtPhone";
-            txtPhone.Size = new Size(312, 24);
+            txtPhone.Size = new Size(316, 24);
             txtPhone.TabIndex = 12;
+            txtPhone.Validating += txtPhone_Validating;
             // 
             // lblAddress
             // 
@@ -767,8 +769,8 @@ namespace ClinicManagementSystem
             tlpFooter.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
             tlpFooter.Controls.Add(btnClose, 0, 0);
             tlpFooter.Controls.Add(btnSave, 1, 0);
-            tlpFooter.Controls.Add(btnBack, 3, 0);
-            tlpFooter.Controls.Add(btnNext, 4, 0);
+            tlpFooter.Controls.Add(btnBack, 4, 0);
+            tlpFooter.Controls.Add(btnNext, 3, 0);
             tlpFooter.Dock = DockStyle.Fill;
             tlpFooter.Location = new Point(0, 0);
             tlpFooter.Name = "tlpFooter";
@@ -824,7 +826,7 @@ namespace ClinicManagementSystem
             btnBack.FlatStyle = FlatStyle.Flat;
             btnBack.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnBack.ForeColor = Color.Black;
-            btnBack.Location = new Point(148, 8);
+            btnBack.Location = new Point(8, 8);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(134, 34);
             btnBack.TabIndex = 2;
@@ -842,7 +844,7 @@ namespace ClinicManagementSystem
             btnNext.FlatStyle = FlatStyle.Flat;
             btnNext.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnNext.ForeColor = Color.Black;
-            btnNext.Location = new Point(8, 8);
+            btnNext.Location = new Point(148, 8);
             btnNext.Name = "btnNext";
             btnNext.Size = new Size(134, 34);
             btnNext.TabIndex = 3;

@@ -17,57 +17,51 @@ namespace ClinicManagementSystem
 {
     public partial class frmShowDoctorInfo : Form
     {
-        private clsDoctor _doctorService;
-        private clsUser _userService;
-        private clsPeople _peopleService;
+        private readonly clsDoctor _doctorService;
+        private readonly int _selectedDoctorId;
+        private DoctorSaveDTO _doctorSaveDTO;
 
-
-        private int _selectedDoctorId;
         public frmShowDoctorInfo(int selectedDoctorId)
         {
             InitializeComponent();
             _selectedDoctorId = selectedDoctorId;
 
-            var _context = new ClinicManagementSystemContext();
-
-            _doctorService = new clsDoctor(_context);
-            _userService = new clsUser(_context);
-            _peopleService = new clsPeople(_context);
+            // إنشاء الـ Context وحقنه في السيرفس (تمت إزالة السيرفسز غير المستخدمة)
+            var context = new ClinicManagementSystemContext();
+            _doctorService = new clsDoctor(context);
         }
-
-        private PersonViewDTO _personViewDTO;
-        private UserDetailsDTO _userDetailsDTO;
-        private DoctorEditDTO _doctorViewDTO;
 
         private async Task<bool> _FillDataInDTOs()
         {
             try
             {
-                bool isFound = await _doctorService.IsDoctorExistByIdAsync(_selectedDoctorId);
+                // جلب كائن الـ DTO المجمع بالكامل في طلب واحد فقط للخادم
+                _doctorSaveDTO = await _doctorService.GetDoctorByIdAsync(_selectedDoctorId);
 
-                if (!isFound)
+                // إذا كان الـ DTO فارغاً، فهذا يعني أن الطبيب غير موجود في قاعدة البيانات
+                if (_doctorSaveDTO == null)
                 {
-                    MessageBox.Show("خطأ", "الطبيب غير موجود");
+                    MessageBox.Show(
+                        "لم يتم العثور على بيانات هذا الطبيب، قد يكون قد تم حذفه.",
+                        "خطأ في البيانات",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
                     return false;
                 }
-
-                _doctorViewDTO = await _doctorService.GetDoctorByIdAsync(_selectedDoctorId);
-
-                if (_doctorViewDTO == null) return false;
-
-                int userID = _doctorViewDTO.UserId;
-
-                _userDetailsDTO = await _userService.GetUserByIdAsync(userID);
-
-                int personId = _doctorViewDTO.PersonId;
-
-                _personViewDTO = await _peopleService.GetPersonByIdAsync(personId);
 
                 return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ أثناء جلب البيانات من الخادم: {ex.Message}", "خطأ في قاعدة البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"حدث خطأ أثناء جلب البيانات من الخادم:\n{ex.Message}",
+                    "خطأ في قاعدة البيانات",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
                 return false;
             }
         }
@@ -76,35 +70,38 @@ namespace ClinicManagementSystem
         {
             try
             {
-                //  Person Fields
-                txtNationalNo.Text = _personViewDTO.NationalNumber.ToString();
-                txtFullName.Text = _personViewDTO.FullName.ToString();
-                txtGender.Text = _personViewDTO.Gender.ToString();
-                txtBirthDate.Text = _personViewDTO.DateOfBirth.ToShortDateString();
-                txtPhone.Text = _personViewDTO.Phone.ToString();
-                txtEmail.Text = _personViewDTO.Email.ToString();
-                txtAddress.Text = _personViewDTO.Address.ToString();
+                // 1. بيانات الشخص (Person Fields)
+                txtNationalNo.Text = _doctorSaveDTO.Person.NationalNumber;
 
-                //  User Fields
-                txtUserId.Text = _userDetailsDTO.UserId.ToString();
-                txtUsername.Text = _userDetailsDTO.Username.ToString();
-                txtPermissions.Text = _userDetailsDTO.RoleName.ToString();
-                chkIsActive.Checked = _userDetailsDTO.IsActive;
+                // تجميع الاسم الكامل لأن الهيكل الجديد يحتوي على حقول الاسم منفصلة
+                txtFullName.Text = $"{_doctorSaveDTO.Person.FirstName} {_doctorSaveDTO.Person.SecondName} {_doctorSaveDTO.Person.ThirdName} {_doctorSaveDTO.Person.LastName}".Replace("  ", " ").Trim();
 
-                //  Doctor Fields
-                txtDoctorId.Text = _doctorViewDTO.DoctorId.ToString();
-                txtSpecialization.Text = _doctorViewDTO.Specialization.ToString();
-                txtExperienceYears.Text = _doctorViewDTO.ExperienceYears.ToString();
-                txtLicenseNo.Text = _doctorViewDTO.LicenseNumber.ToString();
-                txtClinicRoom.Text = _doctorViewDTO.OfficeLocation.ToString();
+                txtGender.Text = _doctorSaveDTO.Person.Gender == true ? "ذكر" : "أنثى";
+                txtBirthDate.Text = _doctorSaveDTO.Person.DateOfBirth.ToString("yyyy-MM-dd");
+                txtPhone.Text = _doctorSaveDTO.Person.Phone;
+                txtEmail.Text = _doctorSaveDTO.Person.Email;
+                txtAddress.Text = _doctorSaveDTO.Person.Address;
+
+                // 2. بيانات حساب المستخدم (User Fields)
+                txtUserId.Text = _doctorSaveDTO.User.UserId.ToString();
+                txtUsername.Text = _doctorSaveDTO.User.Username;
+                txtPermissions.Text = "طبيب"; // أو جلب اسم الدور بناءً على الـ RoleId إذا كان متوفراً
+                chkIsActive.Checked = _doctorSaveDTO.User.IsActive;
+
+                // 3. البيانات المهنية للطبيب (Doctor Fields)
+                txtDoctorId.Text = _doctorSaveDTO.DoctorDetails.DoctorId.ToString();
+                txtSpecialization.Text = _doctorSaveDTO.DoctorDetails.Specialization;
+                txtExperienceYears.Text = _doctorSaveDTO.DoctorDetails.ExperienceYears.ToString();
+                txtLicenseNo.Text = _doctorSaveDTO.DoctorDetails.LicenseNumber;
+                txtClinicRoom.Text = _doctorSaveDTO.DoctorDetails.OfficeLocation;
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show("تنبيه: بعض حقول البيانات فارغة أو غير مكتملة في النظام.", "بيانات ناقصة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("تنبيه: بعض حقول البيانات فارغة أو غير مكتملة في النظام.", "بيانات ناقصة", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ غير متوقع أثناء عرض البيانات: {ex.Message}", "خطأ داخلي", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"حدث خطأ غير متوقع أثناء عرض البيانات: {ex.Message}", "خطأ داخلي", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
             }
         }
 
@@ -123,7 +120,7 @@ namespace ClinicManagementSystem
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"فشل تحميل واجهة الطبيب: {ex.Message}", "خطأ في النظام", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"فشل تحميل واجهة الطبيب: {ex.Message}", "خطأ في النظام", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
                 this.Close();
             }
         }
@@ -131,6 +128,11 @@ namespace ClinicManagementSystem
         private void frmShowDoctorInfo_Load(object sender, EventArgs e)
         {
             _LoadDoctorData();
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

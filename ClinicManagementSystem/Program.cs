@@ -1,6 +1,9 @@
+using ClinicBusiness.DTO.UsersDTOs;
+using ClinicBusiness.Models;
 using ClinicBusiness.Services;
 using ClinicManagementSystem.Appointments;
-using ClinicBusiness.Models;
+using ClinicManagementSystem.Finance;
+using ClinicManagementSystem.Invoices;
 
 namespace ClinicManagementSystem
 {
@@ -17,11 +20,17 @@ namespace ClinicManagementSystem
             // 2. إنشاء الخدمات وتمرير الـ context لها يدوياً في الباني
             var patientVisitService = new clsPatientVisit(context);
             var invoiceService = new clsInvoice(context);
+            var paymentServcie = new clsPayment(context);
+
+            LoginRequestDTO loggedUser = new LoginRequestDTO { Username = "MM11MM",
+                Password = "MMM111MMM"
+            };
+        
 
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmAddUpdateDoctor(1));
+            Application.Run(new frmLogin());
 
 
           

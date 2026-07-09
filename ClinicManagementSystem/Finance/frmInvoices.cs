@@ -91,70 +91,6 @@ namespace ClinicManagementSystem
             lblFinalTotalValue.Text = $"{finalAmount:N2}$";
         }
 
-        private async void btnSave_Click(object sender, EventArgs e)
-        {
-            // 1. التحققات الأولية للواجهة
-            if (!IsFormValid()) return;
-
-            if (_selectedPatientId == -1)
-            {
-                MessageBox.Show("الرجاء اختيار مريض أولاً لإصدار الفاتورة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int visitId = Convert.ToInt32(txtPatientVisitId.Text.Trim());
-
-            try
-            {
-                this.Cursor = Cursors.WaitCursor;
-
-                // 2. فحص البزنس: هل توجد فاتورة سابقة لهذه الزيارة؟
-                if (await _invoiceService.IsInvoiceExistByVisitIdAsync(visitId))
-                {
-                    MessageBox.Show("عذراً، هذه الزيارة لديها فاتورة بالفعل ولا يمكن إصدار فاتورة أخرى لها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // 3. بناء كائن الحفظ الـ DTO
-                InvoiceSaveDTO saveDto = new InvoiceSaveDTO
-                {
-                    InvoiceId = 0,
-                    VisitId = visitId,
-                    ConsultationFee = string.IsNullOrEmpty(txtConsultationFee.Text) ? 0 : Convert.ToDecimal(txtConsultationFee.Text.Trim()),
-                    LabTestFee = string.IsNullOrEmpty(txtLabTestFee.Text) ? 0 : Convert.ToDecimal(txtLabTestFee.Text.Trim()),
-                    ProcedureFee = string.IsNullOrEmpty(txtProcedureFee.Text) ? 0 : Convert.ToDecimal(txtProcedureFee.Text.Trim()),
-                    OtherCharges = string.IsNullOrEmpty(txtOtherCharges.Text) ? 0 : Convert.ToDecimal(txtOtherCharges.Text.Trim()),
-                    DiscountPercentage = string.IsNullOrEmpty(txtDiscountPercentage.Text) ? 0 : Convert.ToDecimal(txtDiscountPercentage.Text.Trim()),
-                    TaxPercentage = string.IsNullOrEmpty(txtTaxPercentage.Text) ? 0 : Convert.ToDecimal(txtTaxPercentage.Text.Trim()),
-                    StatusId = 4, // افتراضي غير مدفوعة أو حسب النظام لديك
-                    DueDate = DateOnly.FromDateTime(dtpDueDate.Value),
-                    IsActive = true
-                };
-
-                // 4. استدعاء خدمة الحفظ في البزنس
-                int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(saveDto);
-
-                if (newInvoiceId > 0)
-                {
-                    MessageBox.Show("تم حفظ الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ClearAllFields();
-                    await LoadInvoicesDataAsync(); // تحديث الجدول
-                }
-                else
-                {
-                    MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"حدث خطأ برمي أثناء الحفظ: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                this.Cursor = Cursors.Default;
-            }
-        }
-
         private void txtSearchValue_TextChanged(object sender, EventArgs e)
         {
             string searchValue = txtSearchValue.Text.Trim();
@@ -302,6 +238,70 @@ namespace ClinicManagementSystem
 
             dtpDueDate.Value = DateTime.Now.AddDays(7);
             UpdateSummaryAmountsLabels();
+        }
+
+        private async void btnSaveInvoice_Click(object sender, EventArgs e)
+        {
+            // 1. التحققات الأولية للواجهة
+            if (!IsFormValid()) return;
+
+            if (_selectedPatientId == -1)
+            {
+                MessageBox.Show("الرجاء اختيار مريض أولاً لإصدار الفاتورة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int visitId = Convert.ToInt32(txtPatientVisitId.Text.Trim());
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                // 2. فحص البزنس: هل توجد فاتورة سابقة لهذه الزيارة؟
+                if (await _invoiceService.IsInvoiceExistByVisitIdAsync(visitId))
+                {
+                    MessageBox.Show("عذراً، هذه الزيارة لديها فاتورة بالفعل ولا يمكن إصدار فاتورة أخرى لها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // 3. بناء كائن الحفظ الـ DTO
+                InvoiceSaveDTO saveDto = new InvoiceSaveDTO
+                {
+                    InvoiceId = 0,
+                    VisitId = visitId,
+                    ConsultationFee = string.IsNullOrEmpty(txtConsultationFee.Text) ? 0 : Convert.ToDecimal(txtConsultationFee.Text.Trim()),
+                    LabTestFee = string.IsNullOrEmpty(txtLabTestFee.Text) ? 0 : Convert.ToDecimal(txtLabTestFee.Text.Trim()),
+                    ProcedureFee = string.IsNullOrEmpty(txtProcedureFee.Text) ? 0 : Convert.ToDecimal(txtProcedureFee.Text.Trim()),
+                    OtherCharges = string.IsNullOrEmpty(txtOtherCharges.Text) ? 0 : Convert.ToDecimal(txtOtherCharges.Text.Trim()),
+                    DiscountPercentage = string.IsNullOrEmpty(txtDiscountPercentage.Text) ? 0 : Convert.ToDecimal(txtDiscountPercentage.Text.Trim()),
+                    TaxPercentage = string.IsNullOrEmpty(txtTaxPercentage.Text) ? 0 : Convert.ToDecimal(txtTaxPercentage.Text.Trim()),
+                    StatusId = 4, // افتراضي غير مدفوعة أو حسب النظام لديك
+                    DueDate = DateOnly.FromDateTime(dtpDueDate.Value),
+                    IsActive = true
+                };
+
+                // 4. استدعاء خدمة الحفظ في البزنس
+                int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(saveDto);
+
+                if (newInvoiceId > 0)
+                {
+                    MessageBox.Show("تم حفظ الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ClearAllFields();
+                    await LoadInvoicesDataAsync(); // تحديث الجدول
+                }
+                else
+                {
+                    MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ برمي أثناء الحفظ: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

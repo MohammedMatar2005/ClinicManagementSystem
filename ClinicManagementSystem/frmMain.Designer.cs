@@ -22,6 +22,7 @@ namespace ClinicManagementSystem
 
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             mainLayoutGrid = new TableLayoutPanel();
             sidebarPanel = new TableLayoutPanel();
             logoContainer = new TableLayoutPanel();
@@ -42,15 +43,17 @@ namespace ClinicManagementSystem
             btnDoctors = new Button();
             btnPharmacy = new Button();
             btnBilling = new Button();
-            btnReports = new Button();
+            btnPayment = new Button();
             menuSeparator = new Panel();
             lblAdminHeader = new Label();
-            btnInventory = new Button();
-            btnEmployees = new Button();
             btnSettings = new Button();
             btnSupport = new Button();
             userProfileCard = new TableLayoutPanel();
             btnProfileMenu = new Button();
+            cmsOptions = new ContextMenuStrip(components);
+            toolStripShowInfo = new ToolStripMenuItem();
+            toolStripChangePassword = new ToolStripMenuItem();
+            toolStripLogout = new ToolStripMenuItem();
             userProfileTextLayout = new TableLayoutPanel();
             lblUserName = new Label();
             lblUserRole = new Label();
@@ -62,6 +65,11 @@ namespace ClinicManagementSystem
             welcomeHeaderStack = new FlowLayoutPanel();
             lblWelcomeTitle = new Label();
             lblWelcomeSubtitle = new Label();
+            tlpBrandingCentering = new TableLayoutPanel();
+            lblBrandingIcon = new Label();
+            lblBrandingTitle = new Label();
+            lblBrandingSubtitle = new Label();
+            tlpContentSplitter = new TableLayoutPanel();
             dashboardCardsUniformGrid = new TableLayoutPanel();
             cardPatientsToday = new Panel();
             cardPatientsStack = new FlowLayoutPanel();
@@ -90,11 +98,13 @@ namespace ClinicManagementSystem
             menuScrollViewer.SuspendLayout();
             menuStackPanel.SuspendLayout();
             userProfileCard.SuspendLayout();
+            cmsOptions.SuspendLayout();
             userProfileTextLayout.SuspendLayout();
             avatarContainer.SuspendLayout();
             contentAreaGrid.SuspendLayout();
             pagesContainer.SuspendLayout();
             welcomeHeaderStack.SuspendLayout();
+            tlpBrandingCentering.SuspendLayout();
             dashboardCardsUniformGrid.SuspendLayout();
             cardPatientsToday.SuspendLayout();
             cardPatientsStack.SuspendLayout();
@@ -292,11 +302,9 @@ namespace ClinicManagementSystem
             menuStackPanel.Controls.Add(btnDoctors);
             menuStackPanel.Controls.Add(btnPharmacy);
             menuStackPanel.Controls.Add(btnBilling);
-            menuStackPanel.Controls.Add(btnReports);
+            menuStackPanel.Controls.Add(btnPayment);
             menuStackPanel.Controls.Add(menuSeparator);
             menuStackPanel.Controls.Add(lblAdminHeader);
-            menuStackPanel.Controls.Add(btnInventory);
-            menuStackPanel.Controls.Add(btnEmployees);
             menuStackPanel.Controls.Add(btnSettings);
             menuStackPanel.Controls.Add(btnSupport);
             menuStackPanel.Dock = DockStyle.Top;
@@ -417,26 +425,27 @@ namespace ClinicManagementSystem
             btnBilling.Name = "btnBilling";
             btnBilling.Size = new Size(215, 40);
             btnBilling.TabIndex = 6;
-            btnBilling.Text = "الفواتير والمدفوعات      💳";
+            btnBilling.Text = "الفواتير       💳";
             btnBilling.TextAlign = ContentAlignment.MiddleRight;
             btnBilling.UseVisualStyleBackColor = false;
             btnBilling.Click += btnBilling_Click;
             // 
-            // btnReports
+            // btnPayment
             // 
-            btnReports.BackColor = Color.Transparent;
-            btnReports.FlatAppearance.BorderSize = 0;
-            btnReports.FlatStyle = FlatStyle.Flat;
-            btnReports.Font = new Font("Segoe UI", 10F);
-            btnReports.ForeColor = Color.FromArgb(189, 195, 199);
-            btnReports.Location = new Point(-7, 325);
-            btnReports.Margin = new Padding(10, 3, 10, 3);
-            btnReports.Name = "btnReports";
-            btnReports.Size = new Size(215, 40);
-            btnReports.TabIndex = 7;
-            btnReports.Text = "التقارير والإحصاء       📊";
-            btnReports.TextAlign = ContentAlignment.MiddleRight;
-            btnReports.UseVisualStyleBackColor = false;
+            btnPayment.BackColor = Color.Transparent;
+            btnPayment.FlatAppearance.BorderSize = 0;
+            btnPayment.FlatStyle = FlatStyle.Flat;
+            btnPayment.Font = new Font("Segoe UI", 10F);
+            btnPayment.ForeColor = Color.FromArgb(189, 195, 199);
+            btnPayment.Location = new Point(-7, 325);
+            btnPayment.Margin = new Padding(10, 3, 10, 3);
+            btnPayment.Name = "btnPayment";
+            btnPayment.Size = new Size(215, 40);
+            btnPayment.TabIndex = 7;
+            btnPayment.Text = "المدفوعات والمعاملات 💳";
+            btnPayment.TextAlign = ContentAlignment.MiddleRight;
+            btnPayment.UseVisualStyleBackColor = false;
+            btnPayment.Click += btnPayments_Click;
             // 
             // menuSeparator
             // 
@@ -459,39 +468,6 @@ namespace ClinicManagementSystem
             lblAdminHeader.Text = "الإدارة والنظام";
             lblAdminHeader.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // btnInventory
-            // 
-            btnInventory.BackColor = Color.Transparent;
-            btnInventory.FlatAppearance.BorderSize = 0;
-            btnInventory.FlatStyle = FlatStyle.Flat;
-            btnInventory.Font = new Font("Segoe UI", 10F);
-            btnInventory.ForeColor = Color.FromArgb(189, 195, 199);
-            btnInventory.Location = new Point(-7, 428);
-            btnInventory.Margin = new Padding(10, 3, 10, 3);
-            btnInventory.Name = "btnInventory";
-            btnInventory.Size = new Size(215, 40);
-            btnInventory.TabIndex = 10;
-            btnInventory.Text = "إدارة المخزون          📦";
-            btnInventory.TextAlign = ContentAlignment.MiddleRight;
-            btnInventory.UseVisualStyleBackColor = false;
-            btnInventory.Click += btnInventory_Click;
-            // 
-            // btnEmployees
-            // 
-            btnEmployees.BackColor = Color.Transparent;
-            btnEmployees.FlatAppearance.BorderSize = 0;
-            btnEmployees.FlatStyle = FlatStyle.Flat;
-            btnEmployees.Font = new Font("Segoe UI", 10F);
-            btnEmployees.ForeColor = Color.FromArgb(189, 195, 199);
-            btnEmployees.Location = new Point(-7, 474);
-            btnEmployees.Margin = new Padding(10, 3, 10, 3);
-            btnEmployees.Name = "btnEmployees";
-            btnEmployees.Size = new Size(215, 40);
-            btnEmployees.TabIndex = 11;
-            btnEmployees.Text = "الموظفون           \U0001faaa";
-            btnEmployees.TextAlign = ContentAlignment.MiddleRight;
-            btnEmployees.UseVisualStyleBackColor = false;
-            // 
             // btnSettings
             // 
             btnSettings.BackColor = Color.Transparent;
@@ -499,7 +475,7 @@ namespace ClinicManagementSystem
             btnSettings.FlatStyle = FlatStyle.Flat;
             btnSettings.Font = new Font("Segoe UI", 10F);
             btnSettings.ForeColor = Color.FromArgb(189, 195, 199);
-            btnSettings.Location = new Point(-7, 520);
+            btnSettings.Location = new Point(-7, 428);
             btnSettings.Margin = new Padding(10, 3, 10, 3);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(215, 40);
@@ -507,6 +483,7 @@ namespace ClinicManagementSystem
             btnSettings.Text = "الإعدادات           ⚙️";
             btnSettings.TextAlign = ContentAlignment.MiddleRight;
             btnSettings.UseVisualStyleBackColor = false;
+            btnSettings.Click += btnSettings_Click;
             // 
             // btnSupport
             // 
@@ -515,7 +492,7 @@ namespace ClinicManagementSystem
             btnSupport.FlatStyle = FlatStyle.Flat;
             btnSupport.Font = new Font("Segoe UI", 10F);
             btnSupport.ForeColor = Color.FromArgb(189, 195, 199);
-            btnSupport.Location = new Point(-7, 566);
+            btnSupport.Location = new Point(-7, 474);
             btnSupport.Margin = new Padding(10, 3, 10, 3);
             btnSupport.Name = "btnSupport";
             btnSupport.Size = new Size(215, 40);
@@ -547,6 +524,7 @@ namespace ClinicManagementSystem
             // btnProfileMenu
             // 
             btnProfileMenu.BackColor = Color.Transparent;
+            btnProfileMenu.ContextMenuStrip = cmsOptions;
             btnProfileMenu.Dock = DockStyle.Fill;
             btnProfileMenu.FlatAppearance.BorderSize = 0;
             btnProfileMenu.FlatStyle = FlatStyle.Flat;
@@ -559,6 +537,34 @@ namespace ClinicManagementSystem
             btnProfileMenu.TabIndex = 0;
             btnProfileMenu.Text = "⋮";
             btnProfileMenu.UseVisualStyleBackColor = false;
+            btnProfileMenu.Click += btnProfileMenu_Click;
+            // 
+            // cmsOptions
+            // 
+            cmsOptions.Items.AddRange(new ToolStripItem[] { toolStripShowInfo, toolStripChangePassword, toolStripLogout });
+            cmsOptions.Name = "cmsOptions";
+            cmsOptions.RightToLeft = RightToLeft.Yes;
+            cmsOptions.Size = new Size(157, 70);
+            // 
+            // toolStripShowInfo
+            // 
+            toolStripShowInfo.Name = "toolStripShowInfo";
+            toolStripShowInfo.Size = new Size(156, 22);
+            toolStripShowInfo.Text = "عرض البيانات";
+            toolStripShowInfo.Click += toolStripShowInfo_Click;
+            // 
+            // toolStripChangePassword
+            // 
+            toolStripChangePassword.Name = "toolStripChangePassword";
+            toolStripChangePassword.Size = new Size(156, 22);
+            toolStripChangePassword.Text = "تغيير كلمة المرور";
+            // 
+            // toolStripLogout
+            // 
+            toolStripLogout.Name = "toolStripLogout";
+            toolStripLogout.Size = new Size(156, 22);
+            toolStripLogout.Text = "تسجيل الخروج";
+            toolStripLogout.Click += toolStripLogout_Click;
             // 
             // userProfileTextLayout
             // 
@@ -597,7 +603,7 @@ namespace ClinicManagementSystem
             lblUserRole.Name = "lblUserRole";
             lblUserRole.Size = new Size(109, 33);
             lblUserRole.TabIndex = 1;
-            lblUserRole.Text = "مدير النظام";
+            lblUserRole.Text = "مستخدم النظام";
             lblUserRole.TextAlign = ContentAlignment.TopRight;
             // 
             // avatarContainer
@@ -622,7 +628,7 @@ namespace ClinicManagementSystem
             // 
             // contentAreaGrid
             // 
-            contentAreaGrid.BackColor = Color.FromArgb(240, 243, 248);
+            contentAreaGrid.BackColor = Color.White;
             contentAreaGrid.ColumnCount = 1;
             contentAreaGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             contentAreaGrid.Controls.Add(topHeaderSpacer, 0, 0);
@@ -639,6 +645,7 @@ namespace ClinicManagementSystem
             // 
             // topHeaderSpacer
             // 
+            topHeaderSpacer.BackColor = Color.FromArgb(61, 90, 114);
             topHeaderSpacer.Dock = DockStyle.Fill;
             topHeaderSpacer.Location = new Point(0, 0);
             topHeaderSpacer.Margin = new Padding(0);
@@ -651,7 +658,7 @@ namespace ClinicManagementSystem
             pagesContainer.ColumnCount = 1;
             pagesContainer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             pagesContainer.Controls.Add(welcomeHeaderStack, 0, 0);
-            pagesContainer.Controls.Add(dashboardCardsUniformGrid, 0, 1);
+            pagesContainer.Controls.Add(tlpBrandingCentering, 0, 1);
             pagesContainer.Dock = DockStyle.Fill;
             pagesContainer.Location = new Point(25, 93);
             pagesContainer.Margin = new Padding(25);
@@ -661,7 +668,6 @@ namespace ClinicManagementSystem
             pagesContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             pagesContainer.Size = new Size(1015, 670);
             pagesContainer.TabIndex = 1;
-            pagesContainer.Paint += pagesContainer_Paint;
             // 
             // welcomeHeaderStack
             // 
@@ -680,7 +686,7 @@ namespace ClinicManagementSystem
             // 
             lblWelcomeTitle.AutoSize = true;
             lblWelcomeTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            lblWelcomeTitle.ForeColor = Color.Black;
+            lblWelcomeTitle.ForeColor = Color.DarkSlateGray;
             lblWelcomeTitle.Location = new Point(587, 0);
             lblWelcomeTitle.Name = "lblWelcomeTitle";
             lblWelcomeTitle.Size = new Size(425, 37);
@@ -700,6 +706,75 @@ namespace ClinicManagementSystem
             lblWelcomeSubtitle.TabIndex = 1;
             lblWelcomeSubtitle.Text = "إليك نظرة سريعة على نشاط العيادة اليوم.";
             lblWelcomeSubtitle.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // tlpBrandingCentering
+            // 
+            tlpBrandingCentering.BackColor = Color.White;
+            tlpBrandingCentering.ColumnCount = 1;
+            tlpBrandingCentering.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlpBrandingCentering.Controls.Add(lblBrandingIcon, 0, 0);
+            tlpBrandingCentering.Controls.Add(lblBrandingTitle, 0, 1);
+            tlpBrandingCentering.Controls.Add(lblBrandingSubtitle, 0, 2);
+            tlpBrandingCentering.Dock = DockStyle.Fill;
+            tlpBrandingCentering.Location = new Point(100, 120);
+            tlpBrandingCentering.Margin = new Padding(100, 30, 100, 100);
+            tlpBrandingCentering.Name = "tlpBrandingCentering";
+            tlpBrandingCentering.RowCount = 3;
+            tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
+            tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 35F));
+            tlpBrandingCentering.Size = new Size(815, 450);
+            tlpBrandingCentering.TabIndex = 1;
+            // 
+            // lblBrandingIcon
+            // 
+            lblBrandingIcon.Dock = DockStyle.Fill;
+            lblBrandingIcon.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
+            lblBrandingIcon.ForeColor = Color.FromArgb(46, 117, 89);
+            lblBrandingIcon.Location = new Point(3, 0);
+            lblBrandingIcon.Name = "lblBrandingIcon";
+            lblBrandingIcon.Size = new Size(809, 180);
+            lblBrandingIcon.TabIndex = 0;
+            lblBrandingIcon.Text = "⚕️ مِـنَـصَّـةُ شِـفَـاءْ الـرَّقْـمِـيَّـة";
+            lblBrandingIcon.TextAlign = ContentAlignment.BottomCenter;
+            // 
+            // lblBrandingTitle
+            // 
+            lblBrandingTitle.Dock = DockStyle.Fill;
+            lblBrandingTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            lblBrandingTitle.ForeColor = Color.FromArgb(64, 64, 64);
+            lblBrandingTitle.Location = new Point(3, 180);
+            lblBrandingTitle.Name = "lblBrandingTitle";
+            lblBrandingTitle.Size = new Size(809, 112);
+            lblBrandingTitle.TabIndex = 1;
+            lblBrandingTitle.Text = "نظام إدارة عيادتك الطبية المطور";
+            lblBrandingTitle.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblBrandingSubtitle
+            // 
+            lblBrandingSubtitle.Dock = DockStyle.Fill;
+            lblBrandingSubtitle.Font = new Font("Segoe UI", 12F);
+            lblBrandingSubtitle.ForeColor = Color.Gray;
+            lblBrandingSubtitle.Location = new Point(3, 292);
+            lblBrandingSubtitle.Name = "lblBrandingSubtitle";
+            lblBrandingSubtitle.Size = new Size(809, 158);
+            lblBrandingSubtitle.TabIndex = 2;
+            lblBrandingSubtitle.Text = "نظام متكامل مصمم لإدارة المواعيد بدقة، وتنظيم سجلات المرضى الحالية، ومتابعة جميع المدفوعات والحسابات اليومية للعيادة بكل سهولة وأمان.";
+            lblBrandingSubtitle.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // tlpContentSplitter
+            // 
+            tlpContentSplitter.ColumnCount = 1;
+            tlpContentSplitter.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpContentSplitter.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpContentSplitter.Dock = DockStyle.Fill;
+            tlpContentSplitter.Location = new Point(0, 90);
+            tlpContentSplitter.Margin = new Padding(0);
+            tlpContentSplitter.Name = "tlpContentSplitter";
+            tlpContentSplitter.RowCount = 1;
+            tlpContentSplitter.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tlpContentSplitter.Size = new Size(1015, 580);
+            tlpContentSplitter.TabIndex = 2;
             // 
             // dashboardCardsUniformGrid
             // 
@@ -724,7 +799,7 @@ namespace ClinicManagementSystem
             cardPatientsToday.BackColor = Color.White;
             cardPatientsToday.Controls.Add(cardPatientsStack);
             cardPatientsToday.Dock = DockStyle.Fill;
-            cardPatientsToday.Location = new Point(10, 10);
+            cardPatientsToday.Location = new Point(686, 10);
             cardPatientsToday.Margin = new Padding(10);
             cardPatientsToday.Name = "cardPatientsToday";
             cardPatientsToday.Padding = new Padding(20);
@@ -749,7 +824,7 @@ namespace ClinicManagementSystem
             // 
             iconWrapperPatients.BackColor = Color.FromArgb(227, 242, 253);
             iconWrapperPatients.Controls.Add(lblIconPatients);
-            iconWrapperPatients.Location = new Point(234, 0);
+            iconWrapperPatients.Location = new Point(0, 0);
             iconWrapperPatients.Margin = new Padding(0);
             iconWrapperPatients.Name = "iconWrapperPatients";
             iconWrapperPatients.Size = new Size(45, 45);
@@ -795,7 +870,7 @@ namespace ClinicManagementSystem
             cardAppointments.BackColor = Color.White;
             cardAppointments.Controls.Add(cardAppointmentsStack);
             cardAppointments.Dock = DockStyle.Fill;
-            cardAppointments.Location = new Point(349, 10);
+            cardAppointments.Location = new Point(348, 10);
             cardAppointments.Margin = new Padding(10);
             cardAppointments.Name = "cardAppointments";
             cardAppointments.Padding = new Padding(20);
@@ -820,7 +895,7 @@ namespace ClinicManagementSystem
             // 
             iconWrapperAppointments.BackColor = Color.FromArgb(241, 248, 233);
             iconWrapperAppointments.Controls.Add(lblIconAppointments);
-            iconWrapperAppointments.Location = new Point(233, 0);
+            iconWrapperAppointments.Location = new Point(0, 0);
             iconWrapperAppointments.Margin = new Padding(0);
             iconWrapperAppointments.Name = "iconWrapperAppointments";
             iconWrapperAppointments.Size = new Size(45, 45);
@@ -866,7 +941,7 @@ namespace ClinicManagementSystem
             cardRevenue.BackColor = Color.White;
             cardRevenue.Controls.Add(cardRevenueStack);
             cardRevenue.Dock = DockStyle.Fill;
-            cardRevenue.Location = new Point(687, 10);
+            cardRevenue.Location = new Point(10, 10);
             cardRevenue.Margin = new Padding(10);
             cardRevenue.Name = "cardRevenue";
             cardRevenue.Padding = new Padding(20);
@@ -891,7 +966,7 @@ namespace ClinicManagementSystem
             // 
             iconWrapperRevenue.BackColor = Color.FromArgb(255, 243, 244);
             iconWrapperRevenue.Controls.Add(lblIconRevenue);
-            iconWrapperRevenue.Location = new Point(233, 0);
+            iconWrapperRevenue.Location = new Point(0, 0);
             iconWrapperRevenue.Margin = new Padding(0);
             iconWrapperRevenue.Name = "iconWrapperRevenue";
             iconWrapperRevenue.Size = new Size(45, 45);
@@ -958,12 +1033,14 @@ namespace ClinicManagementSystem
             menuScrollViewer.ResumeLayout(false);
             menuStackPanel.ResumeLayout(false);
             userProfileCard.ResumeLayout(false);
+            cmsOptions.ResumeLayout(false);
             userProfileTextLayout.ResumeLayout(false);
             avatarContainer.ResumeLayout(false);
             contentAreaGrid.ResumeLayout(false);
             pagesContainer.ResumeLayout(false);
             welcomeHeaderStack.ResumeLayout(false);
             welcomeHeaderStack.PerformLayout();
+            tlpBrandingCentering.ResumeLayout(false);
             dashboardCardsUniformGrid.ResumeLayout(false);
             cardPatientsToday.ResumeLayout(false);
             cardPatientsStack.ResumeLayout(false);
@@ -1000,11 +1077,9 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Button btnDoctors;
         private System.Windows.Forms.Button btnPharmacy;
         private System.Windows.Forms.Button btnBilling;
-        private System.Windows.Forms.Button btnReports;
+        private System.Windows.Forms.Button btnPayment;
         private System.Windows.Forms.Panel menuSeparator;
         private System.Windows.Forms.Label lblAdminHeader;
-        private System.Windows.Forms.Button btnInventory;
-        private System.Windows.Forms.Button btnEmployees;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnSupport;
         private System.Windows.Forms.TableLayoutPanel userProfileCard;
@@ -1039,5 +1114,14 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Label lblIconRevenue;
         private System.Windows.Forms.Label lblTitleRevenue;
         private System.Windows.Forms.Label lblValueRevenue;
+        private ContextMenuStrip cmsOptions;
+        private ToolStripMenuItem toolStripShowInfo;
+        private ToolStripMenuItem toolStripChangePassword;
+        private ToolStripMenuItem toolStripLogout;
+        private TableLayoutPanel tlpContentSplitter;
+        private TableLayoutPanel tlpBrandingCentering;
+        private Label lblBrandingIcon;
+        private Label lblBrandingTitle;
+        private Label lblBrandingSubtitle;
     }
 }

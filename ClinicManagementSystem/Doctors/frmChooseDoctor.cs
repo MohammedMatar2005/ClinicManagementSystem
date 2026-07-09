@@ -238,5 +238,25 @@ namespace ClinicManagementSystem.Appointments
         {
 
         }
+
+        private async Task toolStripUpdateDoctorData_Click(object sender, EventArgs e)
+        {
+            if (dgvDoctors.CurrentRow == null) return;
+
+            // جلب معرف الطبيب من السطر الحالي للـ Grid
+            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
+            if (doctorId <= 0) return;
+
+            // فتح فورم التعديل مع تمرير الـ ID المختار
+            using (frmAddUpdateDoctor frm = new frmAddUpdateDoctor(doctorId))
+            {
+                // إذا تمت عملية التحديث بنجاح وضغط المستخدم حفظ، سيعود الـ DialogResult بـ OK
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    // تحديث قائمة الأطباء في الـ Grid لتعكس التعديلات الجديدة فوراً
+                    frmChooseDoctor_Load(null, null);
+                }
+            }
+        }
     }
 }
