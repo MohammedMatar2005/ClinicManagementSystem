@@ -384,6 +384,7 @@ namespace ClinicManagementSystem
             btnRemoveLogo.TabIndex = 1;
             btnRemoveLogo.Text = "🗑️ حذف";
             btnRemoveLogo.UseVisualStyleBackColor = false;
+            btnRemoveLogo.Click += btnRemoveLogo_Click_1;
             // 
             // tabContact
             // 
@@ -764,7 +765,7 @@ namespace ClinicManagementSystem
             cmbDefaultCurrency.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDefaultCurrency.Font = new Font("Segoe UI", 10F);
             cmbDefaultCurrency.FormattingEnabled = true;
-            cmbDefaultCurrency.Items.AddRange(new object[] { "شيكل (ILS)", "دولار أمريكي (USD)", "دينار أردني (JOD)", "يورو (EUR)" });
+            cmbDefaultCurrency.Items.AddRange(new object[] { "شيكل (ILS)", "دولار (USD)", "دينار (JOD)", "يورو (EUR)" });
             cmbDefaultCurrency.Location = new Point(502, 29);
             cmbDefaultCurrency.Margin = new Padding(6, 2, 6, 8);
             cmbDefaultCurrency.Name = "cmbDefaultCurrency";
@@ -826,12 +827,12 @@ namespace ClinicManagementSystem
             // 
             // flpFooterButtons
             // 
-            flpFooterButtons.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             flpFooterButtons.Controls.Add(btnCancel);
             flpFooterButtons.Controls.Add(btnSave);
-            flpFooterButtons.Location = new Point(760, 12);
+            flpFooterButtons.Dock = DockStyle.Fill;
+            flpFooterButtons.Location = new Point(0, 0);
             flpFooterButtons.Name = "flpFooterButtons";
-            flpFooterButtons.Size = new Size(268, 44);
+            flpFooterButtons.Size = new Size(1040, 64);
             flpFooterButtons.TabIndex = 0;
             // 
             // btnCancel
@@ -842,7 +843,7 @@ namespace ClinicManagementSystem
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(145, 3);
+            btnCancel.Location = new Point(917, 3);
             btnCancel.Margin = new Padding(3, 3, 10, 3);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(120, 38);
@@ -858,7 +859,7 @@ namespace ClinicManagementSystem
             btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnSave.ForeColor = Color.White;
-            btnSave.Location = new Point(133, 47);
+            btnSave.Location = new Point(772, 3);
             btnSave.Margin = new Padding(0, 3, 3, 3);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(135, 38);
@@ -887,6 +888,7 @@ namespace ClinicManagementSystem
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "إعدادات العيادة";
+            WindowState = FormWindowState.Maximized;
             pnlHeader.ResumeLayout(false);
             tabControl.ResumeLayout(false);
             tabGeneral.ResumeLayout(false);

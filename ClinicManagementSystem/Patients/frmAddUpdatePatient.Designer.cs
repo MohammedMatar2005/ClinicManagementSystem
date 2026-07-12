@@ -600,6 +600,7 @@ namespace ClinicManagementSystem
             btnSave.TabIndex = 1;
             btnSave.Text = "حفظ بيانات المريض";
             btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += btnSave_Click_1;
             // 
             // frmAddUpdatePatient
             // 

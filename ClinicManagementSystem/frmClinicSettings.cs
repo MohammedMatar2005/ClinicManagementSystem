@@ -107,69 +107,77 @@ namespace ClinicManagementSystem
 
         private async Task LoadSettingsAsync()
         {
-            //try
-            //{
-            //    var settings = await _settingsService.GetSettingsAsync();
+            try
+            {
+                ClinicSettings settings = await _settingsService.GetSettingsAsync();
 
-            //    if (settings == null)
-            //    {
-            //        // أول مرة يتم فتح الإعدادات ولا يوجد سجل محفوظ بعد — نطبّق قيم افتراضية معقولة
-            //        ApplyDefaultSettings();
-            //        return;
-            //    }
+                if (settings == null)
+                {
 
-            //    // ── البيانات العامة ──
-            //    txtClinicNameAr.Text = settings.ClinicNameAr;
-            //    txtClinicNameEn.Text = settings.ClinicNameEn;
-            //    txtTaxNumber.Text = settings.TaxNumber;
-            //    txtAddress.Text = settings.Address;
+                    ApplyDefaultSettings();
+                    return;
+                }
 
-            //    _logoBytes = settings.LogoBytes;
-            //    ApplyLogoBytesToPictureBox(_logoBytes);
+                // ── البيانات العامة ──
+                txtClinicNameAr.Text = settings.ClinicName;
+                txtClinicNameEn.Text = settings.ClinicNameEn;
+                txtTaxNumber.Text = settings.TaxNumber;
+                txtAddress.Text = settings.Address;
 
-            //    // ── بيانات الاتصال ──
-            //    txtPhone1.Text = settings.Phone1;
-            //    txtPhone2.Text = settings.Phone2;
-            //    txtEmail.Text = settings.Email;
-            //    txtWebsite.Text = settings.Website;
+                _logoBytes = settings.Logo;
+                ApplyLogoBytesToPictureBox(_logoBytes);
 
-            //    // ── جدولة المواعيد ──
-            //    numAppointmentDuration.Value = Math.Max(
-            //        numAppointmentDuration.Minimum,
-            //        Math.Min(numAppointmentDuration.Maximum, settings.AppointmentDurationMinutes));
+                // ── بيانات الاتصال ──
+                txtPhone1.Text = settings.PhoneNumber1;
+                txtPhone2.Text = settings.PhoneNumber2;
+                txtEmail.Text = settings.Email;
+                txtWebsite.Text = settings.Website;
 
-            //    dtpWorkStart.Value = DateTime.Today.Add(settings.WorkStart);
-            //    dtpWorkEnd.Value = DateTime.Today.Add(settings.WorkEnd);
+                // ── جدولة المواعيد ──
+                numAppointmentDuration.Value = Math.Max(
+                    numAppointmentDuration.Minimum,
+                    Math.Min(numAppointmentDuration.Maximum, settings.AppointmentDurationMinutes));
 
-            //    for (int i = 0; i < clbWeeklyHolidays.Items.Count; i++)
-            //    {
-            //        string dayName = clbWeeklyHolidays.Items[i]?.ToString() ?? string.Empty;
-            //        bool isHoliday = settings.WeeklyHolidays?.Contains(dayName) == true;
-            //        clbWeeklyHolidays.SetItemChecked(i, isHoliday);
-            //    }
+                dtpWorkStart.Value = DateTime.Today.Add(settings.ClinicStartTime);
+                dtpWorkEnd.Value = DateTime.Today.Add(settings.ClinicEndTime);
 
-            //    // ── الإعدادات المالية ──
-            //    if (!string.IsNullOrWhiteSpace(settings.DefaultCurrency) &&
-            //        cmbDefaultCurrency.Items.Contains(settings.DefaultCurrency))
-            //    {
-            //        cmbDefaultCurrency.SelectedItem = settings.DefaultCurrency;
-            //    }
-            //    else if (cmbDefaultCurrency.Items.Count > 0)
-            //    {
-            //        cmbDefaultCurrency.SelectedIndex = 0;
-            //    }
+                // 🛠️ الإصلاح هنا: تحويل النص المفصول بفاصلة إلى مصفوفة أيام للمقارنة الصحيحة
+                string[] holidays = !string.IsNullOrWhiteSpace(settings.WeekendDays)
+                    ? settings.WeekendDays.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    : Array.Empty<string>();
 
-            //    numTaxPercentage.Value = Math.Max(
-            //        numTaxPercentage.Minimum,
-            //        Math.Min(numTaxPercentage.Maximum, settings.DefaultTaxPercentage));
+                for (int i = 0; i < clbWeeklyHolidays.Items.Count; i++)
+                {
+                    string dayName = clbWeeklyHolidays.Items[i]?.ToString()?.Trim() ?? string.Empty;
 
-            //    txtInvoiceNotes.Text = settings.InvoiceFooterNotes;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show($"حدث خطأ أثناء تحميل إعدادات العيادة: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    ApplyDefaultSettings();
-            //}
+                    // نتحقق من وجود اسم اليوم داخل المصفوفة بدقة (مع تجاهل حالة الأحرف لو كانت بالإنجليزية)
+                    bool isHoliday = Array.Exists(holidays, d => d.Trim().Equals(dayName, StringComparison.OrdinalIgnoreCase));
+
+                    clbWeeklyHolidays.SetItemChecked(i, isHoliday);
+                }
+
+                // ── الإعدادات المالية ──
+                if (!string.IsNullOrWhiteSpace(settings.DefaultCurrency) &&
+                    cmbDefaultCurrency.Items.Contains(settings.DefaultCurrency))
+                {
+                    cmbDefaultCurrency.SelectedItem = settings.DefaultCurrency;
+                }
+                else if (cmbDefaultCurrency.Items.Count > 0)
+                {
+                    cmbDefaultCurrency.SelectedIndex = 0;
+                }
+
+                numTaxPercentage.Value = Math.Max(
+                    numTaxPercentage.Minimum,
+                    Math.Min(numTaxPercentage.Maximum, settings.TaxRate));
+
+                txtInvoiceNotes.Text = settings.DefaultInvoiceNotes;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ أثناء تحميل إعدادات العيادة: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ApplyDefaultSettings();
+            }
         }
 
         private void ApplyDefaultSettings()
@@ -263,9 +271,17 @@ namespace ClinicManagementSystem
 
                 var dto = BuildSettingsDtoFromForm();
 
-                await _settingsService.SaveClinicSettingsAsync(dto);
+                // 🛠️ الإصلاح هنا: استقبال النتيجة وفحصها
+                bool isSuccess = await _settingsService.UpdateClinicSettingsAsync(dto);
 
-                MessageBox.Show("تم حفظ إعدادات العيادة بنجاح.", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (isSuccess)
+                {
+                    MessageBox.Show("تم حفظ إعدادات العيادة بنجاح.", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("تعذر حفظ الإعدادات، يرجى التحقق من البيانات.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             catch (Exception ex)
             {
@@ -277,7 +293,6 @@ namespace ClinicManagementSystem
                 btnSave.Enabled = true;
             }
         }
-
         private bool ValidateSettingsForm()
         {
             if (string.IsNullOrWhiteSpace(txtClinicNameAr.Text))
@@ -310,35 +325,39 @@ namespace ClinicManagementSystem
         private ClinicSettings BuildSettingsDtoFromForm()
         {
             var checkedHolidays = clbWeeklyHolidays.CheckedItems
-                .Cast<object>()
-                .Select(item => item.ToString() ?? string.Empty)
-                .Where(name => !string.IsNullOrEmpty(name))
-                .ToList();
+                               .Cast<object>()
+                               .Select(item => item.ToString() ?? string.Empty)
+                               .Where(name => !string.IsNullOrEmpty(name))
+                               .ToList();
+
+
 
             return new ClinicSettings
             {
-                //ClinicNameAr = txtClinicNameAr.Text.Trim(),
-                //ClinicNameEn = txtClinicNameEn.Text.Trim(),
-                //TaxNumber = txtTaxNumber.Text.Trim(),
-                //Address = txtAddress.Text.Trim(),
-                //LogoBytes = _logoBytes,
+                ClinicName = txtClinicNameAr.Text.Trim(),
+                ClinicNameEn = txtClinicNameEn.Text.Trim(),
+                TaxNumber = txtTaxNumber.Text.Trim(),
+                Address = txtAddress.Text.Trim(),
+                Logo = _logoBytes,
 
-                //Phone1 = txtPhone1.Text.Trim(),
-                //Phone2 = txtPhone2.Text.Trim(),
-                //Email = txtEmail.Text.Trim(),
-                //Website = txtWebsite.Text.Trim(),
+                PhoneNumber1 = txtPhone1.Text.Trim(),
+                PhoneNumber2 = txtPhone2.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
+                Website = txtWebsite.Text.Trim(),
 
-                //AppointmentDurationMinutes = (int)numAppointmentDuration.Value,
+                AppointmentDurationMinutes = (int)numAppointmentDuration.Value,
 
-                //// تخزين وقت الدوام كـ TimeSpan (بدون تاريخ) بدل DateTime كامل
-                //WorkStart = dtpWorkStart.Value.TimeOfDay,
-                //WorkEnd = dtpWorkEnd.Value.TimeOfDay,
 
-                //WeeklyHolidays = checkedHolidays,
+                ClinicStartTime = dtpWorkStart.Value.TimeOfDay,
+                ClinicEndTime = dtpWorkEnd.Value.TimeOfDay,
 
-                //DefaultCurrency = cmbDefaultCurrency.SelectedItem?.ToString() ?? string.Empty,
-                //DefaultTaxPercentage = numTaxPercentage.Value,
-                //InvoiceFooterNotes = txtInvoiceNotes.Text.Trim()
+                WeekendDays = string.Join(",", checkedHolidays),
+
+                DefaultCurrency = cmbDefaultCurrency.SelectedItem?.ToString() ?? string.Empty,
+                TaxRate = numTaxPercentage.Value,
+                DefaultInvoiceNotes = txtInvoiceNotes.Text.Trim(),
+                UpdatedAt = DateTime.Now
+
             };
         }
 
@@ -367,11 +386,49 @@ namespace ClinicManagementSystem
             picLogo.Image?.Dispose();
             _context?.Dispose();
         }
+
+        private void btnRemoveLogo_Click_1(object sender, EventArgs e)
+        {
+            if (_logoBytes == null || _logoBytes.Length == 0)
+            {
+                MessageBox.Show("لا يوجد شعار حالي لحذفه!", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 2. تأكيد رغبة المستخدم في الحذف لتجنب الأخطاء العفوية
+            DialogResult result = MessageBox.Show("هل أنت متأكد من رغبتك في حذف شعار العيادة؟", "تأكيد الحذف",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                // 3. تصفير متغير الـ Bytes برمجياً
+                _logoBytes = null;
+
+                // 4. تحديث الـ PictureBox لعرض صورة فارغة أو افتراضية
+                if (picLogo.Image != null)
+                {
+                    picLogo.Image.Dispose(); // تحرير الذاكرة من الصورة القديمة فوراً
+                    picLogo.Image = null;    // إزالة الصورة من الأداة
+                }
+
+                // اختياري: إذا كان لديك ميثود مخصصة لإعادة الصورة الافتراضية للعيادة يمكنك استدعاؤها هنا:
+                 ApplyLogoBytesToPictureBox(null);
+
+                MessageBox.Show("تم إزالة الشعار بنجاح. يرجى الضغط على حفظ لتأكيد التغييرات في النظام.", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ أثناء إزالة الصورة: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
     // ============================================================================
     // DTO مساعد مؤقت لبيانات إعدادات العيادة.
     // لو عندك DTO حقيقي بنفس الخصائص في ClinicBusiness.DTO، احذف الكلاس ده واستخدم بتاعك.
     // ============================================================================
-    
+
 }

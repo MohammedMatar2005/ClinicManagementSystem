@@ -14,7 +14,9 @@ namespace ClinicManagementSystem
     public partial class frmMain : Form
     {
         // 1. تعريف المستخدم الحالي والـ Context على مستوى الكلاس
-        private readonly LoginRequestDTO _currentUser;
+       
+        private readonly UserViewDTO _loggedUser;
+
         private readonly ClinicManagementSystemContext _context;
         private readonly clsPayment _paymentService;
         private readonly clsAppointment _appointmentService;
@@ -27,11 +29,11 @@ namespace ClinicManagementSystem
         private readonly clsClinicSettings _settingsService;
 
         // 2. إجبار المَشيد (Constructor) على استقبال بيانات المستخدم المختار عند اللوجن
-        public frmMain(LoginRequestDTO loggedInUser)
+        public frmMain(UserViewDTO loggedUser)
         {
             InitializeComponent();
 
-            _currentUser = loggedInUser;
+            _loggedUser = loggedUser;
 
             // حقن الـ Context مباشرة وإلغاء الـ Repositories
             _context = new ClinicManagementSystemContext();
@@ -48,7 +50,7 @@ namespace ClinicManagementSystem
         private async void frmMain_Load(object sender, EventArgs e)
         {
             // عرض اسم المستخدم الحالي في الواجهة (مثلاً في ليبل الترحيب)
-            lblWelcomeTitle.Text = $"مرحباً بك: {_currentUser.Username}";
+            lblWelcomeTitle.Text = $"مرحباً بك: {_loggedUser.FullName}";
 
             lblBrandingIcon.Text = await _settingsService.GetClinicName();
 
@@ -70,7 +72,7 @@ namespace ClinicManagementSystem
                 var todayPatients = await _patientService.GetTodaysPatientsCountAsync();
                 lblValuePatients.Text = todayPatients.ToString();
 
-                lblUserName.Text = _currentUser.Username;
+                lblUserName.Text = _loggedUser.Username;
             }
             catch (Exception ex)
             {
@@ -174,7 +176,7 @@ namespace ClinicManagementSystem
                     var isolatedDoctorService = new clsDoctor(freshContext);
 
                     // جلب بيانات المستخدم أولاً
-                    userInfo = await isolatedUserService.GetUserByUsernameAsync(_currentUser.Username.Trim());
+                    userInfo = await isolatedUserService.GetUserByUsernameAsync(_loggedUser.Username.Trim());
 
                     // 3. التحقق الآمن من وجود المستخدم قبل قراءة الـ UserId
                     if (userInfo == null)

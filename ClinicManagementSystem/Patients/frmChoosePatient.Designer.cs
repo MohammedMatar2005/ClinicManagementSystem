@@ -35,14 +35,14 @@
             lblHeaderTitle = new Label();
             txtSearch = new TextBox();
             dgvPatients = new DataGridView();
-            btnSelect = new Button();
-            btnCancel = new Button();
-            btnAddNewPatient = new Button();
             cmsOptions = new ContextMenuStrip(components);
             tsmiViewPatientDetails = new ToolStripMenuItem();
             tsmiAddNewPatient = new ToolStripMenuItem();
             tsmiUpdatePatientInfo = new ToolStripMenuItem();
             tsmiDeletePatient = new ToolStripMenuItem();
+            btnSelect = new Button();
+            btnCancel = new Button();
+            btnAddNewPatient = new Button();
             pnlTopHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
             cmsOptions.SuspendLayout();
@@ -126,6 +126,42 @@
             dgvPatients.TabIndex = 2;
             dgvPatients.CellDoubleClick += dgvPatients_CellDoubleClick;
             // 
+            // cmsOptions
+            // 
+            cmsOptions.ImageScalingSize = new Size(20, 20);
+            cmsOptions.Items.AddRange(new ToolStripItem[] { tsmiViewPatientDetails, tsmiAddNewPatient, tsmiUpdatePatientInfo, tsmiDeletePatient });
+            cmsOptions.Name = "cmsOptions";
+            cmsOptions.RightToLeft = RightToLeft.Yes;
+            cmsOptions.Size = new Size(164, 92);
+            // 
+            // tsmiViewPatientDetails
+            // 
+            tsmiViewPatientDetails.Name = "tsmiViewPatientDetails";
+            tsmiViewPatientDetails.Size = new Size(163, 22);
+            tsmiViewPatientDetails.Text = "👁️   عرض البيانات";
+            tsmiViewPatientDetails.Click += tsmiViewPatientDetails_Click;
+            // 
+            // tsmiAddNewPatient
+            // 
+            tsmiAddNewPatient.Name = "tsmiAddNewPatient";
+            tsmiAddNewPatient.Size = new Size(163, 22);
+            tsmiAddNewPatient.Text = "➕   إضافة مريض";
+            tsmiAddNewPatient.Click += tsmiAddNewPatient_Click;
+            // 
+            // tsmiUpdatePatientInfo
+            // 
+            tsmiUpdatePatientInfo.Name = "tsmiUpdatePatientInfo";
+            tsmiUpdatePatientInfo.Size = new Size(163, 22);
+            tsmiUpdatePatientInfo.Text = "✏️   تعديل البيانات";
+            // 
+            // tsmiDeletePatient
+            // 
+            tsmiDeletePatient.ForeColor = Color.DarkRed;
+            tsmiDeletePatient.Name = "tsmiDeletePatient";
+            tsmiDeletePatient.Size = new Size(163, 22);
+            tsmiDeletePatient.Text = "❌   حذف المريض";
+            tsmiDeletePatient.Click += tsmiDeletePatient_Click;
+            // 
             // btnSelect
             // 
             btnSelect.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -171,39 +207,6 @@
             btnAddNewPatient.Text = "➕ إضافة مريض جديد";
             btnAddNewPatient.UseVisualStyleBackColor = false;
             btnAddNewPatient.Click += btnAddNewPatient_Click;
-            // 
-            // cmsOptions
-            // 
-            cmsOptions.ImageScalingSize = new Size(20, 20);
-            cmsOptions.Items.AddRange(new ToolStripItem[] { tsmiViewPatientDetails, tsmiAddNewPatient, tsmiUpdatePatientInfo, tsmiDeletePatient });
-            cmsOptions.Name = "cmsOptions";
-            cmsOptions.RightToLeft = RightToLeft.Yes;
-            cmsOptions.Size = new Size(164, 92);
-            // 
-            // tsmiViewPatientDetails
-            // 
-            tsmiViewPatientDetails.Name = "tsmiViewPatientDetails";
-            tsmiViewPatientDetails.Size = new Size(163, 22);
-            tsmiViewPatientDetails.Text = "👁️   عرض البيانات";
-            // 
-            // tsmiAddNewPatient
-            // 
-            tsmiAddNewPatient.Name = "tsmiAddNewPatient";
-            tsmiAddNewPatient.Size = new Size(163, 22);
-            tsmiAddNewPatient.Text = "➕   إضافة مريض";
-            // 
-            // tsmiUpdatePatientInfo
-            // 
-            tsmiUpdatePatientInfo.Name = "tsmiUpdatePatientInfo";
-            tsmiUpdatePatientInfo.Size = new Size(163, 22);
-            tsmiUpdatePatientInfo.Text = "✏️   تعديل البيانات";
-            // 
-            // tsmiDeletePatient
-            // 
-            tsmiDeletePatient.ForeColor = Color.DarkRed;
-            tsmiDeletePatient.Name = "tsmiDeletePatient";
-            tsmiDeletePatient.Size = new Size(163, 22);
-            tsmiDeletePatient.Text = "❌   حذف المريض";
             // 
             // frmChoosePatient
             // 

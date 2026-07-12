@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
+using System.Diagnostics;
+using ClinicManagementSystem;
 
 namespace ClinicManagementSystem.Appointments
 {
@@ -13,6 +15,8 @@ namespace ClinicManagementSystem.Appointments
         // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
         private BindingSource _patientsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
+
+        private clsPatient _patientService;
 
         // خصائص عامة لقراءة البيانات من فورم المواعيد
         public int PatientId { get; private set; } = -1;
@@ -24,6 +28,7 @@ namespace ClinicManagementSystem.Appointments
 
             // حقن الـ Context مباشرة للفورم
             _context = new ClinicManagementSystemContext();
+            _patientService  = new clsPatient(_context);
         }
 
         private void frmChoosePatient_Load(object sender, EventArgs e)
@@ -35,6 +40,8 @@ namespace ClinicManagementSystem.Appointments
             _BuildGridColumnsStructure();
 
             _LoadAllPatients();
+
+            _patientService = new clsPatient(_context);
 
             txtSearch.Text = "";
             txtSearch.ForeColor = System.Drawing.Color.Black;
@@ -207,6 +214,51 @@ namespace ClinicManagementSystem.Appointments
             if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
             {
                 e.Handled = true;
+            }
+        }
+
+        private void tsmiAddNewPatient_Click(object sender, EventArgs e)
+        {
+            using (Form frm = new frmAddUpdatePatient())
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void tsmiViewPatientDetails_Click(object sender, EventArgs e)
+        {
+            var selectedPatientId = (int)dgvPatients.CurrentRow.Cells["PatientId"].Value;
+
+            using (Form frm = new frmShowPatientInfo(selectedPatientId))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private async void tsmiDeletePatient_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.CurrentRow == null) return;
+
+            int patientId = (int)dgvPatients.CurrentRow.Cells["PatientId"].Value;
+
+            if (patientId <= 0) return;
+
+
+            DialogResult result = MessageBox.Show("هل أنت متأكد من حذف هذا المريض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                bool isDeleted = await _patientService.DeletePatientAsync(patientId);
+
+                if (isDeleted)
+                {
+                    MessageBox.Show("تم حذف المريض بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                else
+                {
+                    MessageBox.Show("فشلت عملية الحذف، قد يكون المريض مرتبطاً ببيانات أخرى", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

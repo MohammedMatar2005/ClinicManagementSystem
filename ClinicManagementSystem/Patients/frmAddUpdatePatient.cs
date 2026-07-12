@@ -11,7 +11,7 @@ namespace ClinicManagementSystem
     public partial class frmAddUpdatePatient : Form
     {
         // تعريف نمط الشاشة الحالي (إضافة أم تعديل)
-      
+
         // تعديل السيرفيس لتتوافق مع اسم الكلاس لديك
         private readonly clsPatient _patientService;
         private readonly int _patientID;
@@ -24,7 +24,7 @@ namespace ClinicManagementSystem
         public frmAddUpdatePatient()
         {
             InitializeComponent();
-            _context = new ClinicManagementSystemContext(); 
+            _context = new ClinicManagementSystemContext();
 
             _patientService = new clsPatient(_context); // تهيئة السيرفيس
 
@@ -39,17 +39,22 @@ namespace ClinicManagementSystem
 
             _patientService = new clsPatient(_context); // تهيئة السيرفيس
             _patientID = patientID;
+
+
         }
 
         private async void frmAddUpdatePatient_Load(object sender, EventArgs e)
         {
-            _resetDefaultValues();
+            if (_patientID == 0)
+                _resetDefaultValues();
+            else
+                await _LoadPatientData();
 
         }
 
         private void _resetDefaultValues()
         {
-            
+
 
             if (cmbGender.Items.Count > 0) cmbGender.SelectedIndex = 0; // ذكر افتراضياً
             if (cmbBloodType.Items.Count > 0) cmbBloodType.SelectedIndex = 8; // "غير معروف"
@@ -140,7 +145,13 @@ namespace ClinicManagementSystem
             return true;
         }
 
-        private async void btnSave_Click(object sender, EventArgs e)
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private async void btnSave_Click_1(object sender, EventArgs e)
         {
             if (!_validateRequiredFields())
                 return;
@@ -173,44 +184,39 @@ namespace ClinicManagementSystem
 
             try
             {
-               
-                    int newPatientId = await _patientService.AddNewPatientAsync(_patientSaveDto);
 
-                    if (newPatientId > 0)
-                    {
-                        MessageBox.Show("تم حفظ بيانات المريض الجديد بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("فشلت عملية إضافة المريض، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-               
-                
-                    _patientSaveDto.PatientDetails.PatientId = _patientID;
+                int newPatientId = await _patientService.AddNewPatientAsync(_patientSaveDto);
 
-                    bool isUpdated = await _patientService.UpdatePatientAsync(_patientSaveDto);
+                if (newPatientId > 0)
+                {
+                    MessageBox.Show("تم حفظ بيانات المريض الجديد بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("فشلت عملية إضافة المريض، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                    if (isUpdated)
-                    {
-                        MessageBox.Show("تم تحديث بيانات المريض بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("فشلت عملية تحديث البيانات المحددة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                
+
+                _patientSaveDto.PatientDetails.PatientId = _patientID;
+
+                bool isUpdated = await _patientService.UpdatePatientAsync(_patientSaveDto);
+
+                if (isUpdated)
+                {
+                    MessageBox.Show("تم تحديث بيانات المريض بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("فشلت عملية تحديث البيانات المحددة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ في النظام أثناء معالجة البيانات:\n{ex.Message}", "خطأ غير متوقع", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.Close();
         }
     }
 }

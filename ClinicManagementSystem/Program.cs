@@ -22,15 +22,22 @@ namespace ClinicManagementSystem
             var invoiceService = new clsInvoice(context);
             var paymentServcie = new clsPayment(context);
 
-            LoginRequestDTO loggedUser = new LoginRequestDTO { Username = "MM11MM",
-                Password = "MMM111MMM"
+            UserViewDTO loggedUser = new UserViewDTO
+            {
+                UserId = 1,
+                Username = "MM11MM",
+                FullName = "مهندس محمد أحمد", // اسم العميل للترحيب به في الشاشة الرئيسية
+                RoleName = "Admin",          // الصلاحية لتجربة إخفاء/إظهار الشاشات
+                IsActive = true,
+                CreatedDate = DateTime.Now.AddMonths(-5),
+                LastLoginDate = DateTime.Now
             };
-        
+
 
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmLogin());
+            Application.Run(new frmMain(loggedUser));
 
 
           
