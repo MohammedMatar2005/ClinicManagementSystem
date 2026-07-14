@@ -161,7 +161,7 @@
             toolStripDeleteAppointmen.Name = "toolStripDeleteAppointmen";
             toolStripDeleteAppointmen.Size = new Size(205, 26);
             toolStripDeleteAppointmen.Text = "إلغاء الموعد";
-            toolStripDeleteAppointmen.Click += this.toolStripDeleteAppointmen_Click;
+            toolStripDeleteAppointmen.Click += toolStripDeleteAppointmen_Click;
             // 
             // btnSelect
             // 
@@ -229,6 +229,7 @@
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "شاشة اختيار موعد";
+            WindowState = FormWindowState.Maximized;
             Load += frmChooseAppointment_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();

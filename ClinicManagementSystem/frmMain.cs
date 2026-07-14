@@ -14,7 +14,7 @@ namespace ClinicManagementSystem
     public partial class frmMain : Form
     {
         // 1. تعريف المستخدم الحالي والـ Context على مستوى الكلاس
-       
+
         private readonly UserViewDTO _loggedUser;
 
         private readonly ClinicManagementSystemContext _context;
@@ -89,13 +89,13 @@ namespace ClinicManagementSystem
 
         private void btnAppointments_Click(object sender, EventArgs e)
         {
-            Form frm = new frmAppointments();
+            Form frm = new frmChooseAppointment();
             frm.ShowDialog();
         }
 
         private void btnDoctors_Click(object sender, EventArgs e)
         {
-            Form frm = new frmAddUpdateDoctor();
+            Form frm = new frmChooseDoctor();
             frm.ShowDialog();
         }
 
@@ -112,10 +112,7 @@ namespace ClinicManagementSystem
             frm.ShowDialog();
         }
 
-        private void btnInventory_Click(object sender, EventArgs e)
-        {
-            // سيتم ربطها لاحقاً
-        }
+
 
         private void btnSupport_Click(object sender, EventArgs e)
         {
@@ -254,6 +251,23 @@ namespace ClinicManagementSystem
             {
                 frm.ShowDialog();
             }
+        }
+
+        private void toolStripChangePassword_Click(object sender, EventArgs e)
+        {
+            using (Form frm = new frmChangePassword(_loggedUser, _userService))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void lnkSystemLogs_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+        
+            // هنا تقوم بفتح فورم الـ Logs وتمرير السيرفيس والمستخدم الحالي له
+            //frmSystemLogs frm = new frmSystemLogs(_currentUser, _loggingService);
+            //frm.ShowDialog(); // أو Show() حسب رغبتك في طريقة العرض
+        
         }
     }
 }

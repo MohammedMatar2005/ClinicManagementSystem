@@ -48,6 +48,7 @@ namespace ClinicManagementSystem
             lblAdminHeader = new Label();
             btnSettings = new Button();
             btnSupport = new Button();
+            lnkSystemLogs = new LinkLabel();
             userProfileCard = new TableLayoutPanel();
             btnProfileMenu = new Button();
             cmsOptions = new ContextMenuStrip(components);
@@ -307,6 +308,7 @@ namespace ClinicManagementSystem
             menuStackPanel.Controls.Add(lblAdminHeader);
             menuStackPanel.Controls.Add(btnSettings);
             menuStackPanel.Controls.Add(btnSupport);
+            menuStackPanel.Controls.Add(lnkSystemLogs);
             menuStackPanel.Dock = DockStyle.Top;
             menuStackPanel.FlowDirection = FlowDirection.TopDown;
             menuStackPanel.Location = new Point(0, 0);
@@ -502,6 +504,22 @@ namespace ClinicManagementSystem
             btnSupport.UseVisualStyleBackColor = false;
             btnSupport.Click += btnSupport_Click;
             // 
+            // lnkSystemLogs
+            // 
+            lnkSystemLogs.ActiveLinkColor = Color.White;
+            lnkSystemLogs.Font = new Font("Segoe UI", 9.5F);
+            lnkSystemLogs.LinkBehavior = LinkBehavior.HoverUnderline;
+            lnkSystemLogs.LinkColor = Color.FromArgb(189, 195, 199);
+            lnkSystemLogs.Location = new Point(0, 517);
+            lnkSystemLogs.Name = "lnkSystemLogs";
+            lnkSystemLogs.Size = new Size(215, 30);
+            lnkSystemLogs.TabIndex = 8;
+            lnkSystemLogs.TabStop = true;
+            lnkSystemLogs.Text = "سجلات النظام           📄";
+            lnkSystemLogs.TextAlign = ContentAlignment.MiddleCenter;
+            lnkSystemLogs.VisitedLinkColor = Color.FromArgb(189, 195, 199);
+            lnkSystemLogs.LinkClicked += lnkSystemLogs_LinkClicked;
+            // 
             // userProfileCard
             // 
             userProfileCard.BackColor = Color.FromArgb(44, 62, 80);
@@ -558,6 +576,7 @@ namespace ClinicManagementSystem
             toolStripChangePassword.Name = "toolStripChangePassword";
             toolStripChangePassword.Size = new Size(156, 22);
             toolStripChangePassword.Text = "تغيير كلمة المرور";
+            toolStripChangePassword.Click += toolStripChangePassword_Click;
             // 
             // toolStripLogout
             // 
@@ -1123,5 +1142,6 @@ namespace ClinicManagementSystem
         private Label lblBrandingIcon;
         private Label lblBrandingTitle;
         private Label lblBrandingSubtitle;
+        private LinkLabel lnkSystemLogs;
     }
 }

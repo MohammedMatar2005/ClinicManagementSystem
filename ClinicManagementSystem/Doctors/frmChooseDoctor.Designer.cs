@@ -130,7 +130,7 @@
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowDoctorInfo, toolStripAddNewDoctor, toolStripUpdateDoctorData, toolStripDeleteDoctor });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(209, 122);
+            contextMenuStrip1.Size = new Size(209, 100);
             // 
             // toolStripShowDoctorInfo
             // 
@@ -157,7 +157,6 @@
             toolStripUpdateDoctorData.Name = "toolStripUpdateDoctorData";
             toolStripUpdateDoctorData.Size = new Size(208, 24);
             toolStripUpdateDoctorData.Text = "تحديث بيانات الطبيب";
-            
             // 
             // toolStripDeleteDoctor
             // 
@@ -234,6 +233,7 @@
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "شاشة اختيار طبيب";
+            WindowState = FormWindowState.Maximized;
             Load += frmChooseDoctor_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();

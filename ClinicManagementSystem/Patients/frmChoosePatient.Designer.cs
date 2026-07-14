@@ -228,6 +228,7 @@
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "شاشة اختيار مريض";
+            WindowState = FormWindowState.Maximized;
             Load += frmChoosePatient_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();

@@ -105,5 +105,7 @@ namespace ClinicManagementSystem
         {
             this.Close();
         }
+
+      
     }
 }

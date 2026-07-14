@@ -10,6 +10,7 @@ namespace ClinicManagementSystem
     {
         private readonly ClinicManagementSystemContext _context;
         private readonly clsUser _userService;
+        private readonly clsLoggingService _loggingService;
 
         public frmLogin()
         {
@@ -18,6 +19,7 @@ namespace ClinicManagementSystem
             // 1. إنشاء الـ Context وحقنه مباشرة في السيرفس
             _context = new ClinicManagementSystemContext();
             _userService = new clsUser(_context);
+            _loggingService = new clsLoggingService(_context);
         }
 
         private void frmLogin_Load(object sender, EventArgs e)
@@ -84,6 +86,8 @@ namespace ClinicManagementSystem
                 frmMain mainMenu = new frmMain(loggedInUser);
                 mainMenu.Show();
                 this.Hide();
+
+                await _loggingService.LogAsync("تسجيل دخول", enLogSeverity.Information, loggedInUser.UserId);
             }
             catch (ArgumentException ex)
             {

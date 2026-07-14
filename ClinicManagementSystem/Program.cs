@@ -21,6 +21,7 @@ namespace ClinicManagementSystem
             var patientVisitService = new clsPatientVisit(context);
             var invoiceService = new clsInvoice(context);
             var paymentServcie = new clsPayment(context);
+            var loggingService = new clsLoggingService(context);
 
             UserViewDTO loggedUser = new UserViewDTO
             {
@@ -37,7 +38,7 @@ namespace ClinicManagementSystem
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmMain(loggedUser));
+            Application.Run(new frmSystemLogs(loggedUser, loggingService));
 
 
           
