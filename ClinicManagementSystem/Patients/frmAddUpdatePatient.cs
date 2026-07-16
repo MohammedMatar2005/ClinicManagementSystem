@@ -37,7 +37,7 @@ namespace ClinicManagementSystem
             _context = new ClinicManagementSystemContext();
 
 
-            _patientService = new clsPatient(_context); // تهيئة السيرفيس
+            _patientService = new clsPatient(_context);
             _patientID = patientID;
 
 
@@ -168,7 +168,7 @@ namespace ClinicManagementSystem
             _patientSaveDto.Person.LastName = txtLastName.Text.Trim();
             _patientSaveDto.Person.NationalNumber = txtNationalNo.Text.Trim();
 
-            // 🛠️ التعديل المطلوب: (إذا كان السطر المختار هو الأول "ذكر" يسند true، غير ذلك يسند false)
+            // التعديل: (إذا كان السطر المختار هو الأول "ذكر" يسند true، غير ذلك يسند false)
             _patientSaveDto.Person.Gender = (cmbGender.SelectedIndex == 0);
 
             _patientSaveDto.Person.DateOfBirth = DateOnly.FromDateTime(dtpDateOfBirth.Value);
@@ -177,41 +177,47 @@ namespace ClinicManagementSystem
             _patientSaveDto.Person.Address = rtbAddress.Text.Trim();
 
             // 2. إسناد الحقول لكائن الـ PatientDetails الطبية
-            _patientSaveDto.PatientDetails.BloodType = cmbBloodType.SelectedItem.ToString();
+            _patientSaveDto.PatientDetails.BloodType = cmbBloodType.SelectedItem?.ToString() ?? "غير معروف";
             _patientSaveDto.PatientDetails.EmergencyContact = txtEmergencyName.Text.Trim();
             _patientSaveDto.PatientDetails.EmergencyPhone = txtEmergencyPhone.Text.Trim();
             _patientSaveDto.PatientDetails.IsActive = true;
 
             try
             {
-
-                int newPatientId = await _patientService.AddNewPatientAsync(_patientSaveDto);
-
-                if (newPatientId > 0)
+                // 🛠️ الفحص الصحيح: هل نحن في وضع إضافة مريض جديد أم تعديل مريض حالي؟
+                if (_patientID == 0)
                 {
-                    MessageBox.Show("تم حفظ بيانات المريض الجديد بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close();
+                    // === وضع الإضافة ===
+                    int newPatientId = await _patientService.AddNewPatientAsync(_patientSaveDto);
+
+                    if (newPatientId > 0)
+                    {
+                        MessageBox.Show("تم حفظ بيانات المريض الجديد بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("فشلت عملية إضافة المريض، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("فشلت عملية إضافة المريض، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // === وضع التعديل ===
+                    // نضمن ربط الـ PatientId والـ PersonId الصحيحين لعملية التحديث
+                    _patientSaveDto.PatientDetails.PatientId = _patientID;
+
+                    bool isUpdated = await _patientService.UpdatePatientAsync(_patientSaveDto);
+
+                    if (isUpdated)
+                    {
+                        MessageBox.Show("تم تحديث بيانات المريض بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("فشلت عملية تحديث البيانات المحددة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-
-
-                _patientSaveDto.PatientDetails.PatientId = _patientID;
-
-                bool isUpdated = await _patientService.UpdatePatientAsync(_patientSaveDto);
-
-                if (isUpdated)
-                {
-                    MessageBox.Show("تم تحديث بيانات المريض بنجاح.", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("فشلت عملية تحديث البيانات المحددة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
             }
             catch (Exception ex)
             {

@@ -193,6 +193,7 @@ namespace ClinicManagementSystem.Appointments
             txtAppointmentId.ForeColor = Color.FromArgb(31, 41, 55);
             txtAppointmentId.Location = new Point(340, 45);
             txtAppointmentId.Name = "txtAppointmentId";
+            txtAppointmentId.ReadOnly = true;
             txtAppointmentId.Size = new Size(285, 24);
             txtAppointmentId.TabIndex = 1;
             // 
@@ -215,6 +216,7 @@ namespace ClinicManagementSystem.Appointments
             txtCreatedDate.ForeColor = Color.FromArgb(31, 41, 55);
             txtCreatedDate.Location = new Point(25, 45);
             txtCreatedDate.Name = "txtCreatedDate";
+            txtCreatedDate.ReadOnly = true;
             txtCreatedDate.Size = new Size(285, 24);
             txtCreatedDate.TabIndex = 3;
             // 
@@ -237,6 +239,7 @@ namespace ClinicManagementSystem.Appointments
             txtPatientName.ForeColor = Color.FromArgb(31, 41, 55);
             txtPatientName.Location = new Point(340, 110);
             txtPatientName.Name = "txtPatientName";
+            txtPatientName.ReadOnly = true;
             txtPatientName.Size = new Size(285, 24);
             txtPatientName.TabIndex = 5;
             // 
@@ -259,6 +262,7 @@ namespace ClinicManagementSystem.Appointments
             txtUpdatedDate.ForeColor = Color.FromArgb(31, 41, 55);
             txtUpdatedDate.Location = new Point(25, 110);
             txtUpdatedDate.Name = "txtUpdatedDate";
+            txtUpdatedDate.ReadOnly = true;
             txtUpdatedDate.Size = new Size(285, 24);
             txtUpdatedDate.TabIndex = 7;
             // 
@@ -281,6 +285,7 @@ namespace ClinicManagementSystem.Appointments
             txtDoctorName.ForeColor = Color.FromArgb(31, 41, 55);
             txtDoctorName.Location = new Point(340, 175);
             txtDoctorName.Name = "txtDoctorName";
+            txtDoctorName.ReadOnly = true;
             txtDoctorName.Size = new Size(285, 24);
             txtDoctorName.TabIndex = 9;
             // 

@@ -415,13 +415,21 @@ namespace ClinicManagementSystem
                 }
 
                 // اختياري: إذا كان لديك ميثود مخصصة لإعادة الصورة الافتراضية للعيادة يمكنك استدعاؤها هنا:
-                 ApplyLogoBytesToPictureBox(null);
+                ApplyLogoBytesToPictureBox(null);
 
                 MessageBox.Show("تم إزالة الشعار بنجاح. يرجى الضغط على حفظ لتأكيد التغييرات في النظام.", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء إزالة الصورة: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void AdvancedSettings_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (Form frm = new frmAdvancedSettings())
+            {
+                frm.ShowDialog();
             }
         }
     }

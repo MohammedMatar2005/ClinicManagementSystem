@@ -75,6 +75,8 @@ namespace ClinicManagementSystem
             btnCancel = new Button();
             btnSave = new Button();
             ofdLogo = new OpenFileDialog();
+            AdvancedSettings = new LinkLabel();
+            panel1 = new Panel();
             pnlHeader.SuspendLayout();
             tabControl.SuspendLayout();
             tabGeneral.SuspendLayout();
@@ -140,6 +142,7 @@ namespace ClinicManagementSystem
             // 
             tabGeneral.BackColor = Color.FromArgb(244, 247, 250);
             tabGeneral.Controls.Add(tlpGeneralRoot);
+            tabGeneral.Controls.Add(panel1);
             tabGeneral.Location = new Point(4, 46);
             tabGeneral.Name = "tabGeneral";
             tabGeneral.Padding = new Padding(20);
@@ -829,6 +832,7 @@ namespace ClinicManagementSystem
             // 
             flpFooterButtons.Controls.Add(btnCancel);
             flpFooterButtons.Controls.Add(btnSave);
+            flpFooterButtons.Controls.Add(AdvancedSettings);
             flpFooterButtons.Dock = DockStyle.Fill;
             flpFooterButtons.Location = new Point(0, 0);
             flpFooterButtons.Name = "flpFooterButtons";
@@ -872,6 +876,27 @@ namespace ClinicManagementSystem
             ofdLogo.Filter = "ملفات الصور|*.png;*.jpg;*.jpeg;*.bmp;*.gif";
             ofdLogo.Title = "اختر شعار العيادة";
             // 
+            // AdvancedSettings
+            // 
+            AdvancedSettings.Anchor = AnchorStyles.Left;
+            AdvancedSettings.AutoSize = true;
+            AdvancedSettings.LinkColor = Color.White;
+            AdvancedSettings.Location = new Point(30, 44);
+            AdvancedSettings.Margin = new Padding(900, 0, 3, 0);
+            AdvancedSettings.Name = "AdvancedSettings";
+            AdvancedSettings.Size = new Size(110, 17);
+            AdvancedSettings.TabIndex = 2;
+            AdvancedSettings.TabStop = true;
+            AdvancedSettings.Text = "الاعدادات المتقدمة";
+            AdvancedSettings.LinkClicked += AdvancedSettings_LinkClicked;
+            // 
+            // panel1
+            // 
+            panel1.Location = new Point(-4, 553);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(140, 61);
+            panel1.TabIndex = 3;
+            // 
             // frmClinicSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -913,6 +938,7 @@ namespace ClinicManagementSystem
             ((System.ComponentModel.ISupportInitialize)numTaxPercentage).EndInit();
             pnlFooter.ResumeLayout(false);
             flpFooterButtons.ResumeLayout(false);
+            flpFooterButtons.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -979,5 +1005,7 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Button btnSave;
 
         private System.Windows.Forms.OpenFileDialog ofdLogo;
+        private LinkLabel AdvancedSettings;
+        private Panel panel1;
     }
 }

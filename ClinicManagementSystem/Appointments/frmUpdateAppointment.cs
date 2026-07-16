@@ -128,10 +128,10 @@ namespace ClinicManagementSystem.Appointments
                     Notes = txtNotes.Text,
                     IsActive = chkIsActive.Checked,
                     AppointmentDate = appointmentDateTime,
-                    AppointmentStatusId = (int)cmbAppointmentStatus.SelectedValue
+                    AppointmentStatusId = cmbAppointmentStatus.SelectedIndex + 1 
                 };
 
-                if (!await _appointmentService.IsAppointmentCancelled(AppointmentSaveDto.PatientId))
+                if (await _appointmentService.IsAppointmentCancelled(AppointmentSaveDto.AppointmentId))
                 {
                     MessageBox.Show("الموعد المحدد ملغى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
