@@ -10,22 +10,7 @@ using System.Windows.Forms;
 
 namespace ClinicManagementSystem
 {
-    // ============================================================================
-    // ملاحظات مهمة قبل الاستخدام:
-    //
-    // 1) clsClinicSettings هي خدمة أعمال مفترضة (بنفس نمط clsInvoice / clsPayment
-    //    المستخدمة في باقي المشروع). لازم تكون عندك دالتين:
-    //       - Task<ClinicSettingsDTO?> GetSettingsAsync()
-    //       - Task SaveSettingsAsync(ClinicSettingsDTO dto)
-    //    لو الأسماء مختلفة عندك، عدّل استدعاءاتها في LoadSettingsAsync() و SaveSettingsToDatabaseAsync().
-    //
-    // 2) ClinicSettingsDTO في آخر الملف كلاس مساعد مؤقت. لو عندك DTO حقيقي بنفس
-    //    الخصائص في ClinicBusiness.DTO، احذف الكلاس ده واستخدم بتاعك.
-    //
-    // 3) أوقات الدوام بتتخزن كـ TimeSpan (WorkStart / WorkEnd) مش DateTime كامل،
-    //    والشعار بيتخزن كـ byte[] (LogoBytes) جاهز للحفظ في عمود varbinary/image.
-    // ============================================================================
-
+   
     public partial class frmClinicSettings : Form
     {
         private readonly ClinicManagementSystemContext _context;

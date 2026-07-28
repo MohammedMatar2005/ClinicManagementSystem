@@ -1,5 +1,5 @@
 ﻿using ClinicBusiness.DTO.AppointmentsDTOs;
-using ClinicBusiness.Models; // تم استبدال الداتا أكسيس بالموديلز الموحدة للبزنس
+using ClinicBusiness.Models;
 using ClinicBusiness.Services;
 using ClinicManagementSystem.Appointments;
 using System;
@@ -12,20 +12,20 @@ namespace ClinicManagementSystem
 {
     public partial class frmAppointments : Form
     {
-
         private readonly clsAppointment _appointmentService;
         private DataView _appointmentsDataView = new DataView();
+        private readonly clsLoggingService _loggingService;
 
         private int _selectedPatientId = -1;
-        private int _selectedDoctorId = -1; // تم تعديل القيمة الابتدائية لـ -1 للحماية
+        private int _selectedDoctorId = -1;
 
         public frmAppointments()
         {
             InitializeComponent();
 
-            // حقن الـ DbContext مباشرة في السيرفس وإلغاء طبقة الـ Repository تماماً
             var context = new ClinicManagementSystemContext();
             _appointmentService = new clsAppointment(context);
+            _loggingService = new clsLoggingService(context);
         }
 
         private async void frmAppointments_Load(object sender, EventArgs e)
@@ -40,6 +40,7 @@ namespace ClinicManagementSystem
             dtpAppointmentDate.Format = DateTimePickerFormat.Custom;
             dtpAppointmentDate.CustomFormat = "yyyy/MM/dd   hh:mm tt";
             dtpAppointmentDate.ShowUpDown = false;
+            dtpAppointmentDate.Value = DateTime.Now;
 
             await LoadAppointmentsDataAsync();
         }
@@ -60,10 +61,8 @@ namespace ClinicManagementSystem
         {
             try
             {
-                // 1. جلب القائمة مباشرة من السيرفس التي تتعامل مع الـ DbContext
                 List<AppointmentViewDTO> appointmentsList = await _appointmentService.GetAllAppointmentsAsync();
 
-                // 2. بناء الـ DataTable لعمل الفلترة السريعة في الذاكرة
                 DataTable dt = new DataTable();
                 dt.Columns.Add("AppointmentId", typeof(int));
                 dt.Columns.Add("PatientFullName", typeof(string));
@@ -90,6 +89,7 @@ namespace ClinicManagementSystem
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء جلب المواعيد: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await _loggingService.LogAsync($"خطأ جلب المواعيد: {ex.Message}", (enLogSeverity)2);
             }
         }
 
@@ -137,11 +137,17 @@ namespace ClinicManagementSystem
             txtSearchValue.Clear();
             cmbSearchType.SelectedIndex = 0;
             _appointmentsDataView.RowFilter = string.Empty;
-            cmbStatus.SelectedIndex = 0;
+
+            if (cmbStatus.Items.Count > 0)
+                cmbStatus.SelectedIndex = 0;
+
             txtReason.Clear();
             txtNotes.Clear();
             txtPatinetId.Clear();
             txtDoctorId.Clear();
+
+            dtpAppointmentDate.Value = DateTime.Now;
+
             _selectedPatientId = -1;
             _selectedDoctorId = -1;
         }
@@ -150,8 +156,8 @@ namespace ClinicManagementSystem
         {
             if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            int appointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
-            if (appointmentId == 0) return;
+            int appointmentId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value);
+            if (appointmentId <= 0) return;
 
             DialogResult result = MessageBox.Show(
                 $"هل أنت متأكد من رغبتك في حذف الموعد رقم ({appointmentId}) بشكل نهائي؟",
@@ -185,11 +191,13 @@ namespace ClinicManagementSystem
         {
             if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            int appointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
-            if (appointmentId == 0) return;
+            int appointmentId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value);
+            if (appointmentId <= 0) return;
 
-            var showInfoForm = new frmShowAppointmentInfo(appointmentId);
-            showInfoForm.ShowDialog();
+            using (var showInfoForm = new frmShowAppointmentInfo(appointmentId))
+            {
+                showInfoForm.ShowDialog();
+            }
         }
 
         private void btnChoosePatient_Click(object sender, EventArgs e)
@@ -204,17 +212,35 @@ namespace ClinicManagementSystem
             }
         }
 
+        private void btnChooseDoctor_Click(object sender, EventArgs e)
+        {
+            using (frmChooseDoctor frm = new frmChooseDoctor())
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _selectedDoctorId = frm.DoctorId;
+                    txtDoctorId.Text = _selectedDoctorId.ToString();
+                }
+            }
+        }
+
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            if (_selectedPatientId == -1)
+            // مزامنة المعرفات في حال ألقى المستخدم قيمة يدوية في الـ TextBox
+            if (int.TryParse(txtPatinetId.Text.Trim(), out int pId)) _selectedPatientId = pId;
+            if (int.TryParse(txtDoctorId.Text.Trim(), out int dId)) _selectedDoctorId = dId;
+
+            if (_selectedPatientId <= 0)
             {
                 MessageBox.Show("الرجاء اختيار مريض للموعد أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPatinetId.Focus();
                 return;
             }
 
-            if (_selectedDoctorId == -1)
+            if (_selectedDoctorId <= 0)
             {
                 MessageBox.Show("الرجاء اختيار طبيب للموعد أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtDoctorId.Focus();
                 return;
             }
 
@@ -231,7 +257,6 @@ namespace ClinicManagementSystem
                 return;
             }
 
-            // الاعتماد على الـ DTO الموحد للتخزين
             var appointment = new AppointmentSaveDto
             {
                 AppointmentDate = dtpAppointmentDate.Value,
@@ -240,7 +265,6 @@ namespace ClinicManagementSystem
                 AppointmentStatusId = cmbStatus.SelectedIndex + 1,
                 Notes = txtNotes.Text.Trim(),
                 ReasonForVisit = txtReason.Text.Trim()
-
             };
 
             int newAppointmentId = await _appointmentService.AddNewAppointmentAsync(appointment);
@@ -257,33 +281,25 @@ namespace ClinicManagementSystem
             }
         }
 
-        private void btnChooseDoctor_Click(object sender, EventArgs e)
-        {
-            using (frmChooseDoctor frm = new frmChooseDoctor())
-            {
-                if (frm.ShowDialog() == DialogResult.OK)
-                {
-                    _selectedDoctorId = frm.DoctorId;
-                    txtDoctorId.Text = _selectedDoctorId.ToString();
-                }
-            }
-        }
-
         private void AddNewAppointmentMenuItem_Click(object sender, EventArgs e)
         {
             tabControl.SelectedIndex = 0;
         }
 
-        private void UpdateAppointmentMenuItem_Click(object sender, EventArgs e)
+        private async void UpdateAppointmentMenuItem_Click(object sender, EventArgs e)
         {
-            int _selectedAppointmentId = -1;
-           
-            _selectedAppointmentId = (int)dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value;
-            
+            if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            using (frmUpdateAppointment frm = new frmUpdateAppointment(_selectedAppointmentId))
+            int selectedAppointmentId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["colAppointmentId"].Value);
+            if (selectedAppointmentId <= 0) return;
+
+            using (frmUpdateAppointment frm = new frmUpdateAppointment(selectedAppointmentId))
             {
-                frm.ShowDialog();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    // إعادة تحميل الجدول فور إغلاق شاشة التعديل بنجاح
+                    await LoadAppointmentsDataAsync();
+                }
             }
         }
     }

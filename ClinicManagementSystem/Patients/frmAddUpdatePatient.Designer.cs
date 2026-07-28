@@ -616,6 +616,7 @@ namespace ClinicManagementSystem
             StartPosition = FormStartPosition.CenterScreen;
             Text = "تسجيل مريض جديد";
             WindowState = FormWindowState.Maximized;
+            Load += frmAddUpdatePatient_Load;
             mainLayout.ResumeLayout(false);
             pnlHeader.ResumeLayout(false);
             pnlBody.ResumeLayout(false);

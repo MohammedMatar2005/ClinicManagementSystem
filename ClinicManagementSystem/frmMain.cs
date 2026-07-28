@@ -27,6 +27,8 @@ namespace ClinicManagementSystem
         private readonly clsUser _userService;
         private readonly clsDoctor _doctorService;
         private readonly clsClinicSettings _settingsService;
+        private readonly clsLoggingService _loggingService;
+
 
         // 2. إجبار المَشيد (Constructor) على استقبال بيانات المستخدم المختار عند اللوجن
         public frmMain(UserViewDTO loggedUser)
@@ -45,6 +47,7 @@ namespace ClinicManagementSystem
             _userService = new clsUser(_context);
             _doctorService = new clsDoctor(_context);
             _settingsService = new clsClinicSettings(_context);
+            _loggingService = new clsLoggingService(_context);
         }
 
         private async void frmMain_Load(object sender, EventArgs e)
@@ -54,7 +57,7 @@ namespace ClinicManagementSystem
 
             lblBrandingIcon.Text = await _settingsService.GetClinicName();
 
-            // جلب وعرض إيرادات اليوم بناءً على السيرفس المحدثة
+           
             await _LoadTodayRevenue();
         }
 
@@ -189,8 +192,13 @@ namespace ClinicManagementSystem
                 // 4. التحقق من وجود بيانات الطبيب
                 if (doctorInfo == null)
                 {
-                    MessageBox.Show("هذا الحساب غير مسجل كطبيب في النظام لعرض بياناته العيادية.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+
+                    using (frmShowUserInfo frm = new frmShowUserInfo(userInfo.UserId))
+                    {
+                        frm.ShowDialog();
+                    }
+
+                    return; 
                 }
 
                 // 5. عرض الفورم وتمرير بيانات الطبيب الكاملة (التي تحتوي أصلاً على بيانات الشخص والمستخدم المسطحة)
@@ -263,11 +271,19 @@ namespace ClinicManagementSystem
 
         private void lnkSystemLogs_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-        
+
             // هنا تقوم بفتح فورم الـ Logs وتمرير السيرفيس والمستخدم الحالي له
-            //frmSystemLogs frm = new frmSystemLogs(_currentUser, _loggingService);
-            //frm.ShowDialog(); // أو Show() حسب رغبتك في طريقة العرض
-        
+            frmSystemLogs frm = new frmSystemLogs(_loggedUser, _loggingService);
+            frm.ShowDialog(); // أو Show() حسب رغبتك في طريقة العرض
+
+        }
+
+        private void btnPatientVisits_Click(object sender, EventArgs e)
+        {
+            using (Form frm = new frmChoosePatientVisit())
+            {
+                frm.ShowDialog();
+            }
         }
     }
 }

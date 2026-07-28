@@ -1,4 +1,5 @@
 ﻿using ClinicBusiness.DTO.InvoicesDTOs;
+using ClinicBusiness.Models;
 using ClinicBusiness.Services;
 using ClinicManagementSystem.Appointments;
 using System;
@@ -6,35 +7,50 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClinicBusiness.Utils;
+using ClinicBusiness.Helpers;
 
 namespace ClinicManagementSystem
 {
     public partial class frmInvoices : Form
     {
-        // استخدام الأسماء الصريحة والمباشرة للخدمات المحقونة
         private readonly clsInvoice _invoiceService;
         private readonly clsPatientVisit _patientVisitService;
 
-        // وسيط احترافي وبسيط للتحكم بالفلترة والترتيب داخل الـ Grid مباشرة بدون DataTable
         private BindingSource _invoicesBindingSource = new BindingSource();
         private List<InvoiceViewDTO> _originalInvoicesList = new List<InvoiceViewDTO>();
 
         private int _selectedPatientId = -1;
 
-        // تمرير الخدمات مباشرة عبر الـ Constructor بناءً على المعمارية الجديدة
-        public frmInvoices(clsInvoice invoiceService, clsPatientVisit patientVisitService)
+        // 1. متغير لتحديد وضع الفورم (إضافة: -1، تعديل: أي رقم آخر)
+        private int _invoiceId = -1;
+
+        // 2. تحديث الباني ليستقبل الـ Id كبارامتر اختياري
+        public frmInvoices(clsInvoice invoiceService, clsPatientVisit patientVisitService, int invoiceId = -1)
         {
             InitializeComponent();
             _invoiceService = invoiceService;
             _patientVisitService = patientVisitService;
+            _invoiceId = invoiceId;
         }
 
         private async void frmInvoices_Load(object sender, EventArgs e)
         {
             ConfigureGridMapping();
             await LoadInvoicesDataAsync();
+
+            // 3. الفحص عند تحميل الفورم: هل هو تعديل أم إضافة؟
+            if (_invoiceId != -1)
+            {
+                await LoadInvoiceDataForUpdateAsync();
+            }
+            else
+            {
+                ClearAllFields(); // وضع الإضافة الافتراضي
+            }
         }
 
         private void ConfigureGridMapping()
@@ -53,17 +69,64 @@ namespace ClinicManagementSystem
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-
-                // جلب البيانات مباشرة من الـ Service كـ List
                 _originalInvoicesList = await _invoiceService.GetAllInvoicesAsync();
-
-                // ربط القائمة بالـ BindingSource ثم بالـ Grid مباشرة دون الحاجة لـ DataTable
                 _invoicesBindingSource.DataSource = _originalInvoicesList;
                 dgvInvoices.DataSource = _invoicesBindingSource;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء جلب الفواتير من السيرفر: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // 4. دالة جلب بيانات الفاتورة المحددة وتحميلها في عناصر الواجهة لغرض التعديل
+        private async Task LoadInvoiceDataForUpdateAsync()
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                // جلب كائن الحفظ أو تفاصيل الفاتورة من السيرفر (افترضنا أن الخدمة توفر دالة GetById)
+                Invoice invoice = await _invoiceService.GetInvoiceByIdAsync(_invoiceId);
+
+                if (invoice == null)
+                {
+                    MessageBox.Show("عذراً، لم يتم العثور على بيانات الفاتورة المطلوبة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                    return;
+                }
+
+                // تعبئة عناصر التحكم بالبيانات القادمة من السيرفر
+                _selectedPatientId = invoice.VisitId;
+                txtPatientVisitId.Text = invoice.VisitId.ToString();
+
+                txtConsultationFee.Text = invoice.ConsultationFee.ToString("G0");
+                txtLabTestFee.Text = invoice.LabTestFee.ToString("G0");
+                txtProcedureFee.Text = invoice.ProcedureFee.ToString("G0");
+                txtOtherCharges.Text = invoice.OtherCharges.ToString("G0");
+                txtDiscountPercentage.Text = invoice.DiscountPercentage.ToString();
+                txtTaxPercentage.Text = invoice.TaxPercentage.ToString();
+
+                // تحويل DateOnly إلى DateTime ليقبلها الـ DateTimePicker
+                dtpDueDate.Value = invoice.DueDate.ToDateTime(TimeOnly.MinValue);
+
+                // تحديث الحسابات والـ Labels تلقائياً بعد ملء الخانات
+                UpdateSummaryAmountsLabels();
+
+                // تغيير هوية الواجهة لتعكس وضع التعديل (UX ممتازة للطبيب/المستخدم)
+                tabNewInvoice.Text = "تعديل بيانات الفاتورة الحالية"; // افترضت وجود تسمية للعنوان أعلى الفورم
+                btnSaveInvoice.Text = "تحديث الفاتورة";
+
+                // في وضع التعديل يفضل قفل زر اختيار الزيارة لمنع تغيير الفاتورة لزيارة أخرى كقاعدة بزنس ثابته
+                btnChooseVisit.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ أثناء تحميل بيانات الفاتورة للتعديل: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -101,7 +164,6 @@ namespace ClinicManagementSystem
             }
             else
             {
-                // فلترة ذكية وسريعة باستخدام LINQ على القائمة الأصلية المتواجدة في الذاكرة
                 var filtered = _originalInvoicesList
                     .Where(x => x.PatientFullName != null && x.PatientFullName.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
                     .ToList();
@@ -112,7 +174,6 @@ namespace ClinicManagementSystem
 
         private void btnExportPdf_Click(object sender, EventArgs e)
         {
-            // الحصول على القائمة الظاهرة حالياً للمستخدم (سواءً كاملة أو مفلترة)
             var currentList = _invoicesBindingSource.List.Cast<InvoiceViewDTO>().ToList();
 
             if (currentList == null || currentList.Count == 0)
@@ -152,7 +213,6 @@ namespace ClinicManagementSystem
 
             try
             {
-                // الحصول على الـ DTO المربوط بالسطر المحدد مباشرة وبأمان تام
                 InvoiceViewDTO selectedInvoice = (InvoiceViewDTO)dgvInvoices.SelectedRows[0].DataBoundItem;
 
                 using (SaveFileDialog sfd = new SaveFileDialog())
@@ -193,13 +253,11 @@ namespace ClinicManagementSystem
 
         private void preventLetters_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // السماح بالأرقام، مفتاح المسح الـ Backspace، والنقطة العشرية
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
             {
                 e.Handled = true;
             }
 
-            // منع تكرار النقطة العشرية
             if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
             {
                 e.Handled = true;
@@ -208,6 +266,12 @@ namespace ClinicManagementSystem
 
         private void btnNewInvoice_Click(object sender, EventArgs e)
         {
+            // إعادة الفورم لوضع الإضافة الأصلي
+            _invoiceId = -1;
+            if (tabNewInvoice != null) tabNewInvoice.Text = "إصدار فاتورة جديدة";
+            btnSaveInvoice.Text = "حفظ الفاتورة";
+            btnChooseVisit.Enabled = true;
+
             ClearAllFields();
         }
 
@@ -240,9 +304,9 @@ namespace ClinicManagementSystem
             UpdateSummaryAmountsLabels();
         }
 
+        // 5. تعديل ميثود الحفظ لتتعامل مع حالتي الإضافة والتعديل بذكاء
         private async void btnSaveInvoice_Click(object sender, EventArgs e)
         {
-            // 1. التحققات الأولية للواجهة
             if (!IsFormValid()) return;
 
             if (_selectedPatientId == -1)
@@ -257,51 +321,75 @@ namespace ClinicManagementSystem
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 2. فحص البزنس: هل توجد فاتورة سابقة لهذه الزيارة؟
-                if (await _invoiceService.IsInvoiceExistByVisitIdAsync(visitId))
+                // فحص البزنس الخاص بالإضافة فقط (منع تكرار فاتورة لنفس الزيارة)
+                if (_invoiceId == -1 && await _invoiceService.IsInvoiceExistByVisitIdAsync(visitId))
                 {
                     MessageBox.Show("عذراً، هذه الزيارة لديها فاتورة بالفعل ولا يمكن إصدار فاتورة أخرى لها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 3. بناء كائن الحفظ الـ DTO
+                // بناء كائن الحفظ الـ DTO وتمرير الـ _invoiceId الحالي له (0 للإضافة أو القيمة الفعلية للتعديل)
                 InvoiceSaveDTO saveDto = new InvoiceSaveDTO
                 {
-                    InvoiceId = 0,
+                    InvoiceId = _invoiceId == -1 ? 0 : _invoiceId,
                     VisitId = visitId,
+                    InvoiceNumber = InvoiceNumberGenerator.GenerateSemanticInvoiceNumber(),
                     ConsultationFee = string.IsNullOrEmpty(txtConsultationFee.Text) ? 0 : Convert.ToDecimal(txtConsultationFee.Text.Trim()),
                     LabTestFee = string.IsNullOrEmpty(txtLabTestFee.Text) ? 0 : Convert.ToDecimal(txtLabTestFee.Text.Trim()),
                     ProcedureFee = string.IsNullOrEmpty(txtProcedureFee.Text) ? 0 : Convert.ToDecimal(txtProcedureFee.Text.Trim()),
                     OtherCharges = string.IsNullOrEmpty(txtOtherCharges.Text) ? 0 : Convert.ToDecimal(txtOtherCharges.Text.Trim()),
                     DiscountPercentage = string.IsNullOrEmpty(txtDiscountPercentage.Text) ? 0 : Convert.ToDecimal(txtDiscountPercentage.Text.Trim()),
                     TaxPercentage = string.IsNullOrEmpty(txtTaxPercentage.Text) ? 0 : Convert.ToDecimal(txtTaxPercentage.Text.Trim()),
-                    StatusId = 4, // افتراضي غير مدفوعة أو حسب النظام لديك
+                    StatusId = 4, // يمكن ربطه بكومبو بوكس لاحقاً في التعديل لتغيير حالة الفاتورة (مدفوعة، مرتجعة..الخ)
                     DueDate = DateOnly.FromDateTime(dtpDueDate.Value),
                     IsActive = true
                 };
 
-                // 4. استدعاء خدمة الحفظ في البزنس
-                int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(saveDto);
-
-                if (newInvoiceId > 0)
+                if (_invoiceId == -1)
                 {
-                    MessageBox.Show("تم حفظ الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ClearAllFields();
-                    await LoadInvoicesDataAsync(); // تحديث الجدول
+                    // ================= وضع الإضافة =================
+                    int newInvoiceId = await _invoiceService.AddNewInvoiceAsync(saveDto);
+
+                    if (newInvoiceId > 0)
+                    {
+                        MessageBox.Show("تم حفظ الفاتورة الجديدة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearAllFields();
+                        await LoadInvoicesDataAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("حدث خطأ أثناء حفظ الفاتورة. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // ================= وضع التعديل =================
+                    // استدعاء خدمة التحديث في البزنس (افترضنا أن الخدمة توفر دالة UpdateInvoiceAsync)
+                    bool isUpdated = await _invoiceService.UpdateInvoiceAsync(saveDto);
+
+                    if (isUpdated)
+                    {
+                        MessageBox.Show("تم تحديث بيانات الفاتورة بنجاح!", "نجاح التعديل", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // إعادة تهيئة الواجهة للوضع الافتراضي بعد النجاح
+                        btnNewInvoice_Click(null, null);
+                        await LoadInvoicesDataAsync(); // تحديث الجدول لعرض البيانات الجديدة
+                    }
+                    else
+                    {
+                        MessageBox.Show("حدث خطأ أثناء تحديث الفاتورة، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ برمي أثناء الحفظ: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"حدث خطأ برمي أثناء العملية: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 this.Cursor = Cursors.Default;
             }
         }
+
     }
 }

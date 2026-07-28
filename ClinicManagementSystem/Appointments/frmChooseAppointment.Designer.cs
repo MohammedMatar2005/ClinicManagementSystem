@@ -33,6 +33,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
+            cmbSearchType = new ComboBox();
             txtSearch = new TextBox();
             dgvAppointments = new DataGridView();
             contextMenuStrip1 = new ContextMenuStrip(components);
@@ -69,18 +70,31 @@
             lblHeaderTitle.TabIndex = 0;
             lblHeaderTitle.Text = "البحث واختيار الموعد";
             // 
+            // cmbSearchType
+            // 
+            cmbSearchType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSearchType.Font = new Font("Segoe UI", 11F);
+            cmbSearchType.FormattingEnabled = true;
+            cmbSearchType.Items.AddRange(new object[] { "بلا", "رقم الموعد", "الرقم الوطني", "اسم المريض", "الطبيب المعالج", "حالة الموعد" });
+            cmbSearchType.Location = new Point(16, 75);
+            cmbSearchType.Name = "cmbSearchType";
+            cmbSearchType.Size = new Size(180, 28);
+            cmbSearchType.TabIndex = 1;
+            cmbSearchType.SelectedIndexChanged += cmbSearchType_SelectedIndexChanged;
+            // 
             // txtSearch
             // 
             txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSearch.BorderStyle = BorderStyle.FixedSingle;
             txtSearch.Font = new Font("Segoe UI", 11F);
-            txtSearch.ForeColor = Color.Gray;
-            txtSearch.Location = new Point(16, 75);
+            txtSearch.ForeColor = Color.Black;
+            txtSearch.Location = new Point(202, 75);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(818, 27);
-            txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل اسم المريض أو الطبيب للبحث...";
+            txtSearch.Size = new Size(632, 27);
+            txtSearch.TabIndex = 2;
+            txtSearch.Visible = false;
             txtSearch.TextChanged += txtSearch_TextChanged;
+            txtSearch.KeyPress += txtSearch_KeyPress;
             // 
             // dgvAppointments
             // 
@@ -122,8 +136,8 @@
             dgvAppointments.RowTemplate.Height = 35;
             dgvAppointments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvAppointments.Size = new Size(818, 350);
-            dgvAppointments.TabIndex = 2;
-            dgvAppointments.CellContentDoubleClick += dgvAppointments_CellDoubleClick;
+            dgvAppointments.TabIndex = 3;
+            dgvAppointments.CellDoubleClick += dgvAppointments_CellDoubleClick;
             // 
             // contextMenuStrip1
             // 
@@ -173,7 +187,7 @@
             btnSelect.Location = new Point(720, 490);
             btnSelect.Name = "btnSelect";
             btnSelect.Size = new Size(114, 39);
-            btnSelect.TabIndex = 3;
+            btnSelect.TabIndex = 4;
             btnSelect.Text = "تأكيد الاختيار";
             btnSelect.UseVisualStyleBackColor = false;
             btnSelect.Click += btnSelect_Click;
@@ -189,7 +203,7 @@
             btnCancel.Location = new Point(598, 490);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(114, 39);
-            btnCancel.TabIndex = 4;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "إغلاق";
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
@@ -204,7 +218,7 @@
             btnAddNewAppointment.Location = new Point(16, 490);
             btnAddNewAppointment.Name = "btnAddNewAppointment";
             btnAddNewAppointment.Size = new Size(158, 39);
-            btnAddNewAppointment.TabIndex = 5;
+            btnAddNewAppointment.TabIndex = 6;
             btnAddNewAppointment.Text = "➕ حجز موعد جديد";
             btnAddNewAppointment.UseVisualStyleBackColor = false;
             btnAddNewAppointment.Click += btnAddNewAppointment_Click;
@@ -222,6 +236,7 @@
             Controls.Add(btnSelect);
             Controls.Add(dgvAppointments);
             Controls.Add(txtSearch);
+            Controls.Add(cmbSearchType);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
             Name = "frmChooseAppointment";
@@ -237,13 +252,13 @@
             contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
-
         }
 
         #endregion
 
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
+        private System.Windows.Forms.ComboBox cmbSearchType;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dgvAppointments;
         private System.Windows.Forms.Button btnSelect;

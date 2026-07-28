@@ -1,6 +1,6 @@
 ﻿namespace ClinicManagementSystem.Invoices
 {
-    partial class frmChooseInvoice : Form
+    partial class frmChooseInvoice
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
+            cmbSearchType = new ComboBox();
             txtSearch = new TextBox();
             dgvInvoices = new DataGridView();
             contextMenuStrip1 = new ContextMenuStrip(components);
@@ -69,17 +70,31 @@
             lblHeaderTitle.TabIndex = 0;
             lblHeaderTitle.Text = "البحث واختيار الفاتورة";
             // 
+            // cmbSearchType
+            // 
+            cmbSearchType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSearchType.Font = new Font("Segoe UI", 11F);
+            cmbSearchType.FormattingEnabled = true;
+            cmbSearchType.Items.AddRange(new object[] { "بلا", "معرف الفاتورة", "رقم الفاتورة", "اسم المريض", "الرقم الوطني", "حالة السداد" });
+            cmbSearchType.Location = new Point(16, 75);
+            cmbSearchType.Name = "cmbSearchType";
+            cmbSearchType.Size = new Size(180, 28);
+            cmbSearchType.TabIndex = 1;
+            cmbSearchType.SelectedIndexChanged += cmbSearchType_SelectedIndexChanged;
+            // 
             // txtSearch
             // 
             txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSearch.BorderStyle = BorderStyle.FixedSingle;
             txtSearch.Font = new Font("Segoe UI", 11F);
-            txtSearch.ForeColor = Color.Gray;
-            txtSearch.Location = new Point(16, 75);
+            txtSearch.ForeColor = Color.Black;
+            txtSearch.Location = new Point(202, 75);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(818, 27);
-            txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل اسم المريض أو رقم الفاتورة للبحث...";
+            txtSearch.Size = new Size(632, 27);
+            txtSearch.TabIndex = 2;
+            txtSearch.Visible = false;
+            txtSearch.TextChanged += txtSearch_TextChanged;
+            txtSearch.KeyPress += txtSearch_KeyPress;
             // 
             // dgvInvoices
             // 
@@ -121,45 +136,46 @@
             dgvInvoices.RowTemplate.Height = 35;
             dgvInvoices.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvInvoices.Size = new Size(818, 350);
-            dgvInvoices.TabIndex = 2;
+            dgvInvoices.TabIndex = 3;
+            dgvInvoices.CellDoubleClick += dgvInvoices_CellDoubleClick;
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            contextMenuStrip1.Font = new Font("Segoe UI", 11.25F);
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowInvoiceInfo, toolStripUpdateInvoice, toolStripAddNewInvoice, toolStripDeleteInvoice });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(211, 108);
+            contextMenuStrip1.Size = new Size(201, 100);
             // 
             // toolStripShowInvoiceInfo
             // 
             toolStripShowInvoiceInfo.Name = "toolStripShowInvoiceInfo";
-            toolStripShowInvoiceInfo.Size = new Size(210, 26);
+            toolStripShowInvoiceInfo.Size = new Size(200, 24);
             toolStripShowInvoiceInfo.Text = "عرض بيانات الفاتورة";
-            toolStripShowInvoiceInfo.Click += toolStripShowInvoiceInfo_Click_1;
+            toolStripShowInvoiceInfo.Click += toolStripShowInvoiceInfo_Click;
             // 
             // toolStripUpdateInvoice
             // 
             toolStripUpdateInvoice.Name = "toolStripUpdateInvoice";
-            toolStripUpdateInvoice.Size = new Size(210, 26);
+            toolStripUpdateInvoice.Size = new Size(200, 24);
             toolStripUpdateInvoice.Text = "تحديث الفاتورة";
-            toolStripUpdateInvoice.Click += toolStripUpdateInvoice_Click_1;
+            toolStripUpdateInvoice.Click += toolStripUpdateInvoice_Click;
             // 
             // toolStripAddNewInvoice
             // 
             toolStripAddNewInvoice.ForeColor = Color.Green;
             toolStripAddNewInvoice.Name = "toolStripAddNewInvoice";
-            toolStripAddNewInvoice.Size = new Size(210, 26);
+            toolStripAddNewInvoice.Size = new Size(200, 24);
             toolStripAddNewInvoice.Text = "إنشاء فاتورة جديدة";
-            toolStripAddNewInvoice.Click += toolStripAddNewInvoice_Click_1;
+            toolStripAddNewInvoice.Click += toolStripAddNewInvoice_Click;
             // 
             // toolStripDeleteInvoice
             // 
             toolStripDeleteInvoice.ForeColor = Color.Red;
             toolStripDeleteInvoice.Name = "toolStripDeleteInvoice";
-            toolStripDeleteInvoice.Size = new Size(210, 26);
+            toolStripDeleteInvoice.Size = new Size(200, 24);
             toolStripDeleteInvoice.Text = "حذف الفاتورة";
-            toolStripDeleteInvoice.Click += toolStripDeleteInvoice_Click_1;
+            toolStripDeleteInvoice.Click += toolStripDeleteInvoice_Click;
             // 
             // btnSelect
             // 
@@ -171,10 +187,10 @@
             btnSelect.Location = new Point(720, 490);
             btnSelect.Name = "btnSelect";
             btnSelect.Size = new Size(114, 39);
-            btnSelect.TabIndex = 3;
+            btnSelect.TabIndex = 4;
             btnSelect.Text = "تأكيد الاختيار";
             btnSelect.UseVisualStyleBackColor = false;
-            btnSelect.Click += btnSelect_Click_1;
+            btnSelect.Click += btnSelect_Click;
             // 
             // btnCancel
             // 
@@ -187,9 +203,10 @@
             btnCancel.Location = new Point(598, 490);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(114, 39);
-            btnCancel.TabIndex = 4;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "إغلاق";
             btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += btnCancel_Click;
             // 
             // btnAddNewInvoice
             // 
@@ -201,9 +218,10 @@
             btnAddNewInvoice.Location = new Point(16, 490);
             btnAddNewInvoice.Name = "btnAddNewInvoice";
             btnAddNewInvoice.Size = new Size(158, 39);
-            btnAddNewInvoice.TabIndex = 5;
+            btnAddNewInvoice.TabIndex = 6;
             btnAddNewInvoice.Text = "➕ إنشاء فاتورة جديدة";
             btnAddNewInvoice.UseVisualStyleBackColor = false;
+            btnAddNewInvoice.Click += btnAddNewInvoice_Click;
             // 
             // frmChooseInvoice
             // 
@@ -218,6 +236,7 @@
             Controls.Add(btnSelect);
             Controls.Add(dgvInvoices);
             Controls.Add(txtSearch);
+            Controls.Add(cmbSearchType);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
             Name = "frmChooseInvoice";
@@ -233,13 +252,13 @@
             contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
-
         }
 
         #endregion
 
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
+        private System.Windows.Forms.ComboBox cmbSearchType;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dgvInvoices;
         private System.Windows.Forms.Button btnSelect;

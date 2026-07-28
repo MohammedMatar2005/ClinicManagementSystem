@@ -102,12 +102,12 @@ namespace ClinicManagementSystem
             // 
             // mainGridPanel
             // 
-            mainGridPanel.BackColor = Color.FromArgb(244, 247, 250);
+            mainGridPanel.BackColor = Color.FromArgb(245, 247, 250);
             mainGridPanel.Controls.Add(tabControl);
             mainGridPanel.Dock = DockStyle.Fill;
             mainGridPanel.Location = new Point(0, 0);
             mainGridPanel.Name = "mainGridPanel";
-            mainGridPanel.Padding = new Padding(10);
+            mainGridPanel.Padding = new Padding(16);
             mainGridPanel.Size = new Size(984, 661);
             mainGridPanel.TabIndex = 0;
             // 
@@ -116,24 +116,24 @@ namespace ClinicManagementSystem
             tabControl.Controls.Add(tabBookAppointment);
             tabControl.Controls.Add(tabAppointmentHistory);
             tabControl.Dock = DockStyle.Fill;
-            tabControl.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            tabControl.ItemSize = new Size(160, 40);
-            tabControl.Location = new Point(10, 10);
+            tabControl.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+            tabControl.ItemSize = new Size(160, 42);
+            tabControl.Location = new Point(16, 16);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(964, 641);
+            tabControl.Size = new Size(952, 629);
             tabControl.SizeMode = TabSizeMode.Fixed;
             tabControl.TabIndex = 0;
             // 
             // tabBookAppointment
             // 
-            tabBookAppointment.BackColor = Color.FromArgb(244, 247, 250);
+            tabBookAppointment.BackColor = Color.FromArgb(245, 247, 250);
             tabBookAppointment.Controls.Add(tlpBookRoot);
             tabBookAppointment.Font = new Font("Segoe UI", 10F);
-            tabBookAppointment.Location = new Point(4, 44);
+            tabBookAppointment.Location = new Point(4, 46);
             tabBookAppointment.Name = "tabBookAppointment";
             tabBookAppointment.RightToLeft = RightToLeft.Yes;
-            tabBookAppointment.Size = new Size(956, 593);
+            tabBookAppointment.Size = new Size(944, 579);
             tabBookAppointment.TabIndex = 0;
             tabBookAppointment.Text = "📅 حجز موعد";
             // 
@@ -147,19 +147,19 @@ namespace ClinicManagementSystem
             tlpBookRoot.Location = new Point(0, 0);
             tlpBookRoot.Name = "tlpBookRoot";
             tlpBookRoot.RowCount = 2;
-            tlpBookRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 9F));
+            tlpBookRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 4F));
             tlpBookRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpBookRoot.Size = new Size(956, 593);
+            tlpBookRoot.Size = new Size(944, 579);
             tlpBookRoot.TabIndex = 0;
             // 
             // pnlTopBorder
             // 
-            pnlTopBorder.BackColor = Color.FromArgb(26, 37, 51);
+            pnlTopBorder.BackColor = Color.FromArgb(37, 99, 235);
             pnlTopBorder.Dock = DockStyle.Fill;
-            pnlTopBorder.Location = new Point(10, 5);
-            pnlTopBorder.Margin = new Padding(10, 5, 10, 0);
+            pnlTopBorder.Location = new Point(0, 0);
+            pnlTopBorder.Margin = new Padding(0);
             pnlTopBorder.Name = "pnlTopBorder";
-            pnlTopBorder.Size = new Size(936, 4);
+            pnlTopBorder.Size = new Size(944, 4);
             pnlTopBorder.TabIndex = 0;
             // 
             // pnlFormCard
@@ -167,11 +167,11 @@ namespace ClinicManagementSystem
             pnlFormCard.BackColor = Color.White;
             pnlFormCard.Controls.Add(tlpFormLayout);
             pnlFormCard.Dock = DockStyle.Fill;
-            pnlFormCard.Location = new Point(10, 24);
-            pnlFormCard.Margin = new Padding(10, 15, 10, 10);
+            pnlFormCard.Location = new Point(0, 12);
+            pnlFormCard.Margin = new Padding(0, 8, 0, 0);
             pnlFormCard.Name = "pnlFormCard";
-            pnlFormCard.Padding = new Padding(25);
-            pnlFormCard.Size = new Size(936, 559);
+            pnlFormCard.Padding = new Padding(24);
+            pnlFormCard.Size = new Size(944, 567);
             pnlFormCard.TabIndex = 1;
             // 
             // tlpFormLayout
@@ -184,26 +184,26 @@ namespace ClinicManagementSystem
             tlpFormLayout.Controls.Add(pnlNotesField, 0, 3);
             tlpFormLayout.Controls.Add(flpButtonsContainer, 0, 4);
             tlpFormLayout.Dock = DockStyle.Fill;
-            tlpFormLayout.Location = new Point(25, 25);
+            tlpFormLayout.Location = new Point(24, 24);
             tlpFormLayout.Name = "tlpFormLayout";
             tlpFormLayout.RowCount = 5;
-            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
-            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 95F));
-            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 95F));
-            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 135F));
+            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 130F));
             tlpFormLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpFormLayout.Size = new Size(886, 509);
+            tlpFormLayout.Size = new Size(896, 519);
             tlpFormLayout.TabIndex = 0;
             // 
             // lblFormTitle
             // 
             lblFormTitle.AutoSize = true;
-            lblFormTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-            lblFormTitle.ForeColor = Color.FromArgb(26, 37, 51);
-            lblFormTitle.Location = new Point(691, 0);
-            lblFormTitle.Margin = new Padding(0, 0, 0, 15);
+            lblFormTitle.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold);
+            lblFormTitle.ForeColor = Color.FromArgb(15, 23, 42);
+            lblFormTitle.Location = new Point(718, 0);
+            lblFormTitle.Margin = new Padding(0, 0, 0, 12);
             lblFormTitle.Name = "lblFormTitle";
-            lblFormTitle.Size = new Size(195, 30);
+            lblFormTitle.Size = new Size(178, 28);
             lblFormTitle.TabIndex = 0;
             lblFormTitle.Text = "بيانات الموعد الطبي";
             // 
@@ -215,12 +215,12 @@ namespace ClinicManagementSystem
             tlpRow1Uniform.Controls.Add(pnlReasonField, 1, 0);
             tlpRow1Uniform.Controls.Add(pnlPatientField, 0, 0);
             tlpRow1Uniform.Dock = DockStyle.Fill;
-            tlpRow1Uniform.Location = new Point(0, 45);
+            tlpRow1Uniform.Location = new Point(0, 40);
             tlpRow1Uniform.Margin = new Padding(0);
             tlpRow1Uniform.Name = "tlpRow1Uniform";
             tlpRow1Uniform.RowCount = 1;
             tlpRow1Uniform.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpRow1Uniform.Size = new Size(886, 95);
+            tlpRow1Uniform.Size = new Size(896, 80);
             tlpRow1Uniform.TabIndex = 1;
             // 
             // pnlReasonField
@@ -228,57 +228,58 @@ namespace ClinicManagementSystem
             pnlReasonField.Controls.Add(txtReason);
             pnlReasonField.Controls.Add(lblReason);
             pnlReasonField.Dock = DockStyle.Fill;
-            pnlReasonField.Location = new Point(10, 10);
-            pnlReasonField.Margin = new Padding(10);
+            pnlReasonField.Location = new Point(8, 4);
+            pnlReasonField.Margin = new Padding(8, 4, 8, 4);
             pnlReasonField.Name = "pnlReasonField";
-            pnlReasonField.Size = new Size(423, 75);
+            pnlReasonField.Size = new Size(432, 72);
             pnlReasonField.TabIndex = 1;
             // 
             // txtReason
             // 
-            txtReason.Anchor = AnchorStyles.Left;
+            txtReason.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             txtReason.BorderStyle = BorderStyle.FixedSingle;
-            txtReason.Font = new Font("Segoe UI", 12F);
-            txtReason.Location = new Point(0, 46);
-            txtReason.Multiline = true;
+            txtReason.Font = new Font("Segoe UI", 10.5F);
+            txtReason.ForeColor = Color.FromArgb(30, 41, 59);
+            txtReason.Location = new Point(0, 32);
             txtReason.Name = "txtReason";
-            txtReason.Size = new Size(423, 29);
+            txtReason.Size = new Size(432, 26);
             txtReason.TabIndex = 1;
             // 
             // lblReason
             // 
             lblReason.Dock = DockStyle.Top;
-            lblReason.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblReason.ForeColor = Color.FromArgb(93, 122, 149);
+            lblReason.Font = new Font("Segoe UI Medium", 9.5F);
+            lblReason.ForeColor = Color.FromArgb(71, 85, 105);
             lblReason.Location = new Point(0, 0);
             lblReason.Name = "lblReason";
-            lblReason.Size = new Size(423, 22);
+            lblReason.Size = new Size(432, 24);
             lblReason.TabIndex = 0;
             lblReason.Text = "سبب الزيارة";
-            lblReason.TextAlign = ContentAlignment.TopRight;
+            lblReason.TextAlign = ContentAlignment.MiddleRight;
             // 
             // pnlPatientField
             // 
-            pnlPatientField.Anchor = AnchorStyles.None;
             pnlPatientField.Controls.Add(btnChoosePatient);
             pnlPatientField.Controls.Add(txtPatinetId);
             pnlPatientField.Controls.Add(lblPatient);
-            pnlPatientField.Location = new Point(453, 10);
-            pnlPatientField.Margin = new Padding(10);
+            pnlPatientField.Dock = DockStyle.Fill;
+            pnlPatientField.Location = new Point(456, 4);
+            pnlPatientField.Margin = new Padding(8, 4, 8, 4);
             pnlPatientField.Name = "pnlPatientField";
-            pnlPatientField.Size = new Size(423, 75);
+            pnlPatientField.Size = new Size(432, 72);
             pnlPatientField.TabIndex = 0;
             // 
             // btnChoosePatient
             // 
-            btnChoosePatient.BackColor = Color.FromArgb(46, 204, 113);
+            btnChoosePatient.BackColor = Color.FromArgb(37, 99, 235);
+            btnChoosePatient.FlatAppearance.BorderSize = 0;
             btnChoosePatient.FlatStyle = FlatStyle.Flat;
-            btnChoosePatient.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChoosePatient.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold);
             btnChoosePatient.ForeColor = Color.White;
-            btnChoosePatient.Location = new Point(148, 0);
-            btnChoosePatient.Margin = new Padding(5, 30, 5, 5);
+            btnChoosePatient.Location = new Point(0, 30);
+            btnChoosePatient.Margin = new Padding(0);
             btnChoosePatient.Name = "btnChoosePatient";
-            btnChoosePatient.Size = new Size(120, 38);
+            btnChoosePatient.Size = new Size(110, 30);
             btnChoosePatient.TabIndex = 3;
             btnChoosePatient.Text = "اختر مريض";
             btnChoosePatient.UseVisualStyleBackColor = false;
@@ -286,26 +287,27 @@ namespace ClinicManagementSystem
             // 
             // txtPatinetId
             // 
-            txtPatinetId.Anchor = AnchorStyles.Top;
+            txtPatinetId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtPatinetId.BorderStyle = BorderStyle.FixedSingle;
-            txtPatinetId.Font = new Font("Segoe UI", 12F);
-            txtPatinetId.Location = new Point(148, 46);
+            txtPatinetId.Font = new Font("Segoe UI", 10.5F);
+            txtPatinetId.ForeColor = Color.FromArgb(30, 41, 59);
+            txtPatinetId.Location = new Point(118, 32);
             txtPatinetId.Name = "txtPatinetId";
-            txtPatinetId.Size = new Size(275, 29);
+            txtPatinetId.Size = new Size(314, 26);
             txtPatinetId.TabIndex = 2;
             // 
             // lblPatient
             // 
             lblPatient.Dock = DockStyle.Top;
-            lblPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblPatient.ForeColor = Color.FromArgb(93, 122, 149);
+            lblPatient.Font = new Font("Segoe UI Medium", 9.5F);
+            lblPatient.ForeColor = Color.FromArgb(71, 85, 105);
             lblPatient.Location = new Point(0, 0);
             lblPatient.Name = "lblPatient";
-            lblPatient.RightToLeft = RightToLeft.No;
-            lblPatient.Size = new Size(423, 22);
+            lblPatient.RightToLeft = RightToLeft.Yes;
+            lblPatient.Size = new Size(432, 24);
             lblPatient.TabIndex = 0;
-            lblPatient.Text = "اختر معرف المريض";
-            lblPatient.TextAlign = ContentAlignment.TopRight;
+            lblPatient.Text = "معرف المريض";
+            lblPatient.TextAlign = ContentAlignment.MiddleRight;
             // 
             // tlpRow2Uniform
             // 
@@ -317,36 +319,37 @@ namespace ClinicManagementSystem
             tlpRow2Uniform.Controls.Add(pnlDateField, 1, 0);
             tlpRow2Uniform.Controls.Add(pnlStatusField, 2, 0);
             tlpRow2Uniform.Dock = DockStyle.Fill;
-            tlpRow2Uniform.Location = new Point(0, 140);
+            tlpRow2Uniform.Location = new Point(0, 120);
             tlpRow2Uniform.Margin = new Padding(0);
             tlpRow2Uniform.Name = "tlpRow2Uniform";
             tlpRow2Uniform.RowCount = 1;
             tlpRow2Uniform.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpRow2Uniform.Size = new Size(886, 95);
+            tlpRow2Uniform.Size = new Size(896, 80);
             tlpRow2Uniform.TabIndex = 2;
             // 
             // pnlDoctorField
             // 
-            pnlDoctorField.Anchor = AnchorStyles.None;
             pnlDoctorField.Controls.Add(btnChooseDoctor);
             pnlDoctorField.Controls.Add(txtDoctorId);
             pnlDoctorField.Controls.Add(lblDoctor);
-            pnlDoctorField.Location = new Point(601, 10);
-            pnlDoctorField.Margin = new Padding(10);
+            pnlDoctorField.Dock = DockStyle.Fill;
+            pnlDoctorField.Location = new Point(604, 4);
+            pnlDoctorField.Margin = new Padding(8, 4, 8, 4);
             pnlDoctorField.Name = "pnlDoctorField";
-            pnlDoctorField.Size = new Size(275, 75);
+            pnlDoctorField.Size = new Size(284, 72);
             pnlDoctorField.TabIndex = 0;
             // 
             // btnChooseDoctor
             // 
-            btnChooseDoctor.BackColor = Color.FromArgb(46, 204, 113);
+            btnChooseDoctor.BackColor = Color.FromArgb(37, 99, 235);
+            btnChooseDoctor.FlatAppearance.BorderSize = 0;
             btnChooseDoctor.FlatStyle = FlatStyle.Flat;
-            btnChooseDoctor.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnChooseDoctor.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold);
             btnChooseDoctor.ForeColor = Color.White;
-            btnChooseDoctor.Location = new Point(0, 0);
-            btnChooseDoctor.Margin = new Padding(5, 30, 5, 5);
+            btnChooseDoctor.Location = new Point(0, 30);
+            btnChooseDoctor.Margin = new Padding(0);
             btnChooseDoctor.Name = "btnChooseDoctor";
-            btnChooseDoctor.Size = new Size(110, 38);
+            btnChooseDoctor.Size = new Size(95, 30);
             btnChooseDoctor.TabIndex = 3;
             btnChooseDoctor.Text = "اختر طبيب";
             btnChooseDoctor.UseVisualStyleBackColor = false;
@@ -354,105 +357,108 @@ namespace ClinicManagementSystem
             // 
             // txtDoctorId
             // 
+            txtDoctorId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDoctorId.BorderStyle = BorderStyle.FixedSingle;
-            txtDoctorId.Dock = DockStyle.Bottom;
-            txtDoctorId.Font = new Font("Segoe UI", 12F);
-            txtDoctorId.Location = new Point(0, 46);
+            txtDoctorId.Font = new Font("Segoe UI", 10.5F);
+            txtDoctorId.ForeColor = Color.FromArgb(30, 41, 59);
+            txtDoctorId.Location = new Point(103, 32);
             txtDoctorId.Name = "txtDoctorId";
-            txtDoctorId.Size = new Size(275, 29);
+            txtDoctorId.Size = new Size(181, 26);
             txtDoctorId.TabIndex = 2;
             // 
             // lblDoctor
             // 
             lblDoctor.Dock = DockStyle.Top;
-            lblDoctor.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblDoctor.ForeColor = Color.FromArgb(93, 122, 149);
-            lblDoctor.ImageAlign = ContentAlignment.BottomRight;
+            lblDoctor.Font = new Font("Segoe UI Medium", 9.5F);
+            lblDoctor.ForeColor = Color.FromArgb(71, 85, 105);
             lblDoctor.Location = new Point(0, 0);
             lblDoctor.Name = "lblDoctor";
-            lblDoctor.Size = new Size(275, 22);
+            lblDoctor.Size = new Size(284, 24);
             lblDoctor.TabIndex = 0;
-            lblDoctor.Text = "اختر معرف الطبيب";
+            lblDoctor.Text = "معرف الطبيب";
+            lblDoctor.TextAlign = ContentAlignment.MiddleRight;
             // 
             // pnlDateField
             // 
             pnlDateField.Controls.Add(dtpAppointmentDate);
             pnlDateField.Controls.Add(lblDate);
             pnlDateField.Dock = DockStyle.Fill;
-            pnlDateField.Location = new Point(306, 10);
-            pnlDateField.Margin = new Padding(10);
+            pnlDateField.Location = new Point(306, 4);
+            pnlDateField.Margin = new Padding(8, 4, 8, 4);
             pnlDateField.Name = "pnlDateField";
-            pnlDateField.Size = new Size(275, 75);
+            pnlDateField.Size = new Size(282, 72);
             pnlDateField.TabIndex = 1;
             // 
             // dtpAppointmentDate
             // 
-            dtpAppointmentDate.CalendarFont = new Font("Segoe UI", 11F);
+            dtpAppointmentDate.CalendarFont = new Font("Segoe UI", 10F);
             dtpAppointmentDate.Dock = DockStyle.Bottom;
-            dtpAppointmentDate.Font = new Font("Segoe UI", 12F);
+            dtpAppointmentDate.Font = new Font("Segoe UI", 10.5F);
             dtpAppointmentDate.Format = DateTimePickerFormat.Short;
-            dtpAppointmentDate.Location = new Point(0, 46);
+            dtpAppointmentDate.Location = new Point(0, 32);
             dtpAppointmentDate.MaxDate = new DateTime(2100, 12, 31, 0, 0, 0, 0);
             dtpAppointmentDate.MinDate = new DateTime(1900, 1, 1, 0, 0, 0, 0);
             dtpAppointmentDate.Name = "dtpAppointmentDate";
-            dtpAppointmentDate.Size = new Size(275, 29);
+            dtpAppointmentDate.Size = new Size(282, 26);
             dtpAppointmentDate.TabIndex = 1;
             // 
             // lblDate
             // 
             lblDate.Dock = DockStyle.Top;
-            lblDate.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblDate.ForeColor = Color.FromArgb(93, 122, 149);
+            lblDate.Font = new Font("Segoe UI Medium", 9.5F);
+            lblDate.ForeColor = Color.FromArgb(71, 85, 105);
             lblDate.Location = new Point(0, 0);
             lblDate.Name = "lblDate";
-            lblDate.Size = new Size(275, 25);
+            lblDate.Size = new Size(282, 24);
             lblDate.TabIndex = 0;
             lblDate.Text = "تاريخ الموعد";
-            lblDate.TextAlign = ContentAlignment.TopRight;
+            lblDate.TextAlign = ContentAlignment.MiddleRight;
             // 
             // pnlStatusField
             // 
             pnlStatusField.Controls.Add(cmbStatus);
             pnlStatusField.Controls.Add(lblStatus);
             pnlStatusField.Dock = DockStyle.Fill;
-            pnlStatusField.Location = new Point(10, 10);
-            pnlStatusField.Margin = new Padding(10);
+            pnlStatusField.Location = new Point(8, 4);
+            pnlStatusField.Margin = new Padding(8, 4, 8, 4);
             pnlStatusField.Name = "pnlStatusField";
-            pnlStatusField.Size = new Size(276, 75);
+            pnlStatusField.Size = new Size(282, 72);
             pnlStatusField.TabIndex = 2;
             // 
             // cmbStatus
             // 
             cmbStatus.Dock = DockStyle.Bottom;
             cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbStatus.Font = new Font("Segoe UI", 12F);
+            cmbStatus.Font = new Font("Segoe UI", 10.5F);
+            cmbStatus.ForeColor = Color.FromArgb(30, 41, 59);
+            cmbStatus.FormattingEnabled = true;
             cmbStatus.Items.AddRange(new object[] { "انتظار", "مؤكد", "مكتمل", "ملغي" });
-            cmbStatus.Location = new Point(0, 46);
+            cmbStatus.Location = new Point(0, 32);
             cmbStatus.Name = "cmbStatus";
-            cmbStatus.Size = new Size(276, 29);
+            cmbStatus.Size = new Size(282, 27);
             cmbStatus.TabIndex = 1;
             // 
             // lblStatus
             // 
             lblStatus.Dock = DockStyle.Top;
-            lblStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblStatus.ForeColor = Color.FromArgb(93, 122, 149);
+            lblStatus.Font = new Font("Segoe UI Medium", 9.5F);
+            lblStatus.ForeColor = Color.FromArgb(71, 85, 105);
             lblStatus.Location = new Point(0, 0);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(276, 25);
+            lblStatus.Size = new Size(282, 24);
             lblStatus.TabIndex = 0;
             lblStatus.Text = "الحالة";
-            lblStatus.TextAlign = ContentAlignment.TopRight;
+            lblStatus.TextAlign = ContentAlignment.MiddleRight;
             // 
             // pnlNotesField
             // 
             pnlNotesField.Controls.Add(txtNotes);
             pnlNotesField.Controls.Add(lblNotes);
             pnlNotesField.Dock = DockStyle.Fill;
-            pnlNotesField.Location = new Point(10, 245);
-            pnlNotesField.Margin = new Padding(10, 10, 10, 0);
+            pnlNotesField.Location = new Point(8, 204);
+            pnlNotesField.Margin = new Padding(8, 4, 8, 4);
             pnlNotesField.Name = "pnlNotesField";
-            pnlNotesField.Size = new Size(866, 125);
+            pnlNotesField.Size = new Size(880, 122);
             pnlNotesField.TabIndex = 3;
             // 
             // txtNotes
@@ -460,47 +466,50 @@ namespace ClinicManagementSystem
             txtNotes.AcceptsReturn = true;
             txtNotes.BorderStyle = BorderStyle.FixedSingle;
             txtNotes.Dock = DockStyle.Bottom;
-            txtNotes.Font = new Font("Segoe UI", 11F);
-            txtNotes.Location = new Point(0, 45);
+            txtNotes.Font = new Font("Segoe UI", 10.5F);
+            txtNotes.ForeColor = Color.FromArgb(30, 41, 59);
+            txtNotes.Location = new Point(0, 30);
             txtNotes.Multiline = true;
             txtNotes.Name = "txtNotes";
             txtNotes.ScrollBars = ScrollBars.Vertical;
-            txtNotes.Size = new Size(866, 80);
+            txtNotes.Size = new Size(880, 92);
             txtNotes.TabIndex = 1;
             // 
             // lblNotes
             // 
             lblNotes.Dock = DockStyle.Top;
-            lblNotes.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblNotes.ForeColor = Color.FromArgb(93, 122, 149);
+            lblNotes.Font = new Font("Segoe UI Medium", 9.5F);
+            lblNotes.ForeColor = Color.FromArgb(71, 85, 105);
             lblNotes.Location = new Point(0, 0);
             lblNotes.Name = "lblNotes";
-            lblNotes.Size = new Size(866, 25);
+            lblNotes.Size = new Size(880, 24);
             lblNotes.TabIndex = 0;
             lblNotes.Text = "ملاحظات إضافية";
-            lblNotes.TextAlign = ContentAlignment.TopRight;
+            lblNotes.TextAlign = ContentAlignment.MiddleRight;
             // 
             // flpButtonsContainer
             // 
             flpButtonsContainer.Controls.Add(btnSave);
             flpButtonsContainer.Controls.Add(btnClear);
             flpButtonsContainer.Dock = DockStyle.Fill;
-            flpButtonsContainer.Location = new Point(10, 370);
-            flpButtonsContainer.Margin = new Padding(0, 0, 10, 0);
+            flpButtonsContainer.Location = new Point(0, 330);
+            flpButtonsContainer.Margin = new Padding(0, 0, 8, 0);
             flpButtonsContainer.Name = "flpButtonsContainer";
-            flpButtonsContainer.Size = new Size(876, 139);
+            flpButtonsContainer.Padding = new Padding(0, 12, 0, 0);
+            flpButtonsContainer.Size = new Size(888, 189);
             flpButtonsContainer.TabIndex = 4;
             // 
             // btnSave
             // 
-            btnSave.BackColor = Color.FromArgb(46, 204, 113);
+            btnSave.BackColor = Color.FromArgb(16, 185, 129);
+            btnSave.FlatAppearance.BorderSize = 0;
             btnSave.FlatStyle = FlatStyle.Flat;
-            btnSave.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnSave.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
             btnSave.ForeColor = Color.White;
-            btnSave.Location = new Point(751, 30);
-            btnSave.Margin = new Padding(5, 30, 5, 5);
+            btnSave.Location = new Point(758, 12);
+            btnSave.Margin = new Padding(0, 0, 10, 0);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(120, 42);
+            btnSave.Size = new Size(130, 38);
             btnSave.TabIndex = 0;
             btnSave.Text = "حفظ البيانات";
             btnSave.UseVisualStyleBackColor = false;
@@ -508,14 +517,15 @@ namespace ClinicManagementSystem
             // 
             // btnClear
             // 
-            btnClear.BackColor = Color.FromArgb(224, 224, 224);
+            btnClear.BackColor = Color.FromArgb(241, 245, 249);
+            btnClear.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
             btnClear.FlatStyle = FlatStyle.Flat;
-            btnClear.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            btnClear.ForeColor = Color.FromArgb(26, 37, 51);
-            btnClear.Location = new Point(621, 30);
-            btnClear.Margin = new Padding(5, 30, 5, 5);
+            btnClear.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
+            btnClear.ForeColor = Color.FromArgb(71, 85, 105);
+            btnClear.Location = new Point(638, 12);
+            btnClear.Margin = new Padding(0);
             btnClear.Name = "btnClear";
-            btnClear.Size = new Size(120, 42);
+            btnClear.Size = new Size(110, 38);
             btnClear.TabIndex = 1;
             btnClear.Text = "جديد";
             btnClear.UseVisualStyleBackColor = false;
@@ -523,13 +533,13 @@ namespace ClinicManagementSystem
             // 
             // tabAppointmentHistory
             // 
-            tabAppointmentHistory.BackColor = Color.FromArgb(244, 247, 250);
+            tabAppointmentHistory.BackColor = Color.FromArgb(245, 247, 250);
             tabAppointmentHistory.Controls.Add(pnlHistoryCard);
             tabAppointmentHistory.Font = new Font("Segoe UI", 10F);
-            tabAppointmentHistory.Location = new Point(4, 44);
+            tabAppointmentHistory.Location = new Point(4, 46);
             tabAppointmentHistory.Name = "tabAppointmentHistory";
             tabAppointmentHistory.RightToLeft = RightToLeft.Yes;
-            tabAppointmentHistory.Size = new Size(956, 593);
+            tabAppointmentHistory.Size = new Size(944, 579);
             tabAppointmentHistory.TabIndex = 1;
             tabAppointmentHistory.Text = "💳 سجل المواعيد";
             // 
@@ -539,10 +549,10 @@ namespace ClinicManagementSystem
             pnlHistoryCard.Controls.Add(tlpHistoryLayout);
             pnlHistoryCard.Dock = DockStyle.Fill;
             pnlHistoryCard.Location = new Point(0, 0);
-            pnlHistoryCard.Margin = new Padding(10);
+            pnlHistoryCard.Margin = new Padding(0);
             pnlHistoryCard.Name = "pnlHistoryCard";
-            pnlHistoryCard.Padding = new Padding(20);
-            pnlHistoryCard.Size = new Size(956, 593);
+            pnlHistoryCard.Padding = new Padding(24);
+            pnlHistoryCard.Size = new Size(944, 579);
             pnlHistoryCard.TabIndex = 0;
             // 
             // tlpHistoryLayout
@@ -553,24 +563,24 @@ namespace ClinicManagementSystem
             tlpHistoryLayout.Controls.Add(flpFilters, 0, 1);
             tlpHistoryLayout.Controls.Add(dgvAppointments, 0, 2);
             tlpHistoryLayout.Dock = DockStyle.Fill;
-            tlpHistoryLayout.Location = new Point(20, 20);
+            tlpHistoryLayout.Location = new Point(24, 24);
             tlpHistoryLayout.Name = "tlpHistoryLayout";
             tlpHistoryLayout.RowCount = 3;
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62F));
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
             tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Size = new Size(916, 553);
+            tlpHistoryLayout.Size = new Size(896, 531);
             tlpHistoryLayout.TabIndex = 0;
             // 
             // lblHistoryTitle
             // 
             lblHistoryTitle.AutoSize = true;
-            lblHistoryTitle.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold);
-            lblHistoryTitle.ForeColor = Color.FromArgb(26, 37, 51);
-            lblHistoryTitle.Location = new Point(780, 0);
-            lblHistoryTitle.Margin = new Padding(0, 0, 0, 20);
+            lblHistoryTitle.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold);
+            lblHistoryTitle.ForeColor = Color.FromArgb(15, 23, 42);
+            lblHistoryTitle.Location = new Point(765, 0);
+            lblHistoryTitle.Margin = new Padding(0, 0, 0, 12);
             lblHistoryTitle.Name = "lblHistoryTitle";
-            lblHistoryTitle.Size = new Size(136, 30);
+            lblHistoryTitle.Size = new Size(131, 28);
             lblHistoryTitle.TabIndex = 0;
             lblHistoryTitle.Text = "عرض المواعيد";
             // 
@@ -580,40 +590,46 @@ namespace ClinicManagementSystem
             flpFilters.Controls.Add(cmbSearchType);
             flpFilters.Controls.Add(txtSearchValue);
             flpFilters.Dock = DockStyle.Fill;
-            flpFilters.Location = new Point(0, 62);
-            flpFilters.Margin = new Padding(0, 0, 0, 15);
+            flpFilters.Location = new Point(0, 40);
+            flpFilters.Margin = new Padding(0, 0, 0, 10);
             flpFilters.Name = "flpFilters";
-            flpFilters.Size = new Size(916, 33);
+            flpFilters.Size = new Size(896, 35);
             flpFilters.TabIndex = 1;
             // 
             // lblSearch
             // 
             lblSearch.AutoSize = true;
-            lblSearch.Font = new Font("Segoe UI", 10F);
-            lblSearch.Location = new Point(813, 6);
-            lblSearch.Margin = new Padding(5, 6, 5, 0);
+            lblSearch.Font = new Font("Segoe UI Medium", 9.5F);
+            lblSearch.ForeColor = Color.FromArgb(71, 85, 105);
+            lblSearch.Location = new Point(810, 6);
+            lblSearch.Margin = new Padding(0, 6, 8, 0);
             lblSearch.Name = "lblSearch";
-            lblSearch.Size = new Size(98, 19);
+            lblSearch.Size = new Size(78, 17);
             lblSearch.TabIndex = 0;
             lblSearch.Text = "البحث بواسطة:";
             // 
             // cmbSearchType
             // 
+            cmbSearchType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSearchType.Font = new Font("Segoe UI", 9.5F);
+            cmbSearchType.ForeColor = Color.FromArgb(30, 41, 59);
             cmbSearchType.FormattingEnabled = true;
             cmbSearchType.Items.AddRange(new object[] { "المعرف", "الرقم الوطني" });
-            cmbSearchType.Location = new Point(684, 3);
+            cmbSearchType.Location = new Point(668, 3);
+            cmbSearchType.Margin = new Padding(0, 3, 8, 3);
             cmbSearchType.Name = "cmbSearchType";
-            cmbSearchType.Size = new Size(121, 25);
+            cmbSearchType.Size = new Size(134, 25);
             cmbSearchType.TabIndex = 3;
             // 
             // txtSearchValue
             // 
             txtSearchValue.BorderStyle = BorderStyle.FixedSingle;
-            txtSearchValue.Font = new Font("Segoe UI", 10F);
-            txtSearchValue.Location = new Point(476, 3);
-            txtSearchValue.Margin = new Padding(5, 3, 10, 3);
+            txtSearchValue.Font = new Font("Segoe UI", 9.5F);
+            txtSearchValue.ForeColor = Color.FromArgb(30, 41, 59);
+            txtSearchValue.Location = new Point(440, 3);
+            txtSearchValue.Margin = new Padding(0, 3, 0, 3);
             txtSearchValue.Name = "txtSearchValue";
-            txtSearchValue.Size = new Size(200, 25);
+            txtSearchValue.Size = new Size(220, 24);
             txtSearchValue.TabIndex = 2;
             txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             // 
@@ -626,34 +642,35 @@ namespace ClinicManagementSystem
             dgvAppointments.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             dgvAppointments.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(26, 37, 51);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(26, 37, 51);
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(241, 245, 249);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = Color.FromArgb(71, 85, 105);
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(241, 245, 249);
+            dataGridViewCellStyle1.SelectionForeColor = Color.FromArgb(71, 85, 105);
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvAppointments.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvAppointments.ColumnHeadersHeight = 40;
+            dgvAppointments.ColumnHeadersHeight = 42;
             dgvAppointments.Columns.AddRange(new DataGridViewColumn[] { colAppointmentId, PatientNationalNumber, colPatientName, colDoctorName, colAppointmentDate, colStatusName });
             dgvAppointments.ContextMenuStrip = contextMenuStrip1;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
-            dataGridViewCellStyle2.ForeColor = Color.FromArgb(17, 24, 39);
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(243, 244, 246);
-            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(17, 24, 39);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle2.ForeColor = Color.FromArgb(30, 41, 59);
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(238, 242, 255);
+            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(30, 58, 138);
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             dgvAppointments.DefaultCellStyle = dataGridViewCellStyle2;
             dgvAppointments.Dock = DockStyle.Fill;
             dgvAppointments.EnableHeadersVisualStyles = false;
-            dgvAppointments.GridColor = Color.FromArgb(243, 244, 246);
-            dgvAppointments.Location = new Point(3, 113);
+            dgvAppointments.GridColor = Color.FromArgb(226, 232, 240);
+            dgvAppointments.Location = new Point(0, 85);
+            dgvAppointments.Margin = new Padding(0);
             dgvAppointments.Name = "dgvAppointments";
             dgvAppointments.ReadOnly = true;
             dgvAppointments.RowHeadersVisible = false;
-            dgvAppointments.RowTemplate.Height = 35;
+            dgvAppointments.RowTemplate.Height = 40;
             dgvAppointments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvAppointments.Size = new Size(910, 437);
+            dgvAppointments.Size = new Size(896, 446);
             dgvAppointments.TabIndex = 2;
             // 
             // colAppointmentId
@@ -662,7 +679,7 @@ namespace ClinicManagementSystem
             colAppointmentId.HeaderText = "رقم الموعد";
             colAppointmentId.Name = "colAppointmentId";
             colAppointmentId.ReadOnly = true;
-            colAppointmentId.Width = 87;
+            colAppointmentId.Width = 91;
             // 
             // PatientNationalNumber
             // 
@@ -704,43 +721,43 @@ namespace ClinicManagementSystem
             // contextMenuStrip1
             // 
             contextMenuStrip1.BackColor = Color.White;
-            contextMenuStrip1.Font = new Font("Segoe UI", 10F);
-            contextMenuStrip1.ForeColor = Color.FromArgb(17, 24, 39);
+            contextMenuStrip1.Font = new Font("Segoe UI", 9.5F);
+            contextMenuStrip1.ForeColor = Color.FromArgb(30, 41, 59);
             contextMenuStrip1.ImageScalingSize = new Size(20, 20);
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowInfoMenuItem, UpdateAppointmentMenuItem, DeleteAppointmentMenuItem, AddNewAppointmentMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RenderMode = ToolStripRenderMode.Professional;
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(210, 122);
+            contextMenuStrip1.Size = new Size(181, 114);
             // 
             // ShowInfoMenuItem
             // 
             ShowInfoMenuItem.Name = "ShowInfoMenuItem";
-            ShowInfoMenuItem.Size = new Size(209, 24);
-            ShowInfoMenuItem.Text = "  عرض تفاصيل الموعد";
+            ShowInfoMenuItem.Size = new Size(180, 22);
+            ShowInfoMenuItem.Text = "عرض تفاصيل الموعد";
             ShowInfoMenuItem.Click += ShowInfoMenuItem_Click;
             // 
             // UpdateAppointmentMenuItem
             // 
             UpdateAppointmentMenuItem.Name = "UpdateAppointmentMenuItem";
-            UpdateAppointmentMenuItem.Size = new Size(209, 24);
-            UpdateAppointmentMenuItem.Text = "  تعديل بيانات الموعد";
+            UpdateAppointmentMenuItem.Size = new Size(180, 22);
+            UpdateAppointmentMenuItem.Text = "تعديل بيانات الموعد";
             UpdateAppointmentMenuItem.Click += UpdateAppointmentMenuItem_Click;
             // 
             // DeleteAppointmentMenuItem
             // 
-            DeleteAppointmentMenuItem.ForeColor = Color.FromArgb(220, 38, 38);
+            DeleteAppointmentMenuItem.ForeColor = Color.FromArgb(225, 29, 72);
             DeleteAppointmentMenuItem.Name = "DeleteAppointmentMenuItem";
-            DeleteAppointmentMenuItem.Size = new Size(209, 24);
-            DeleteAppointmentMenuItem.Text = "  إلغاء / حذف الموعد";
+            DeleteAppointmentMenuItem.Size = new Size(180, 22);
+            DeleteAppointmentMenuItem.Text = "إلغاء / حذف الموعد";
             DeleteAppointmentMenuItem.Click += DeleteAppointmentMenuItem_Click;
             // 
             // AddNewAppointmentMenuItem
             // 
-            AddNewAppointmentMenuItem.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            AddNewAppointmentMenuItem.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold);
             AddNewAppointmentMenuItem.Name = "AddNewAppointmentMenuItem";
-            AddNewAppointmentMenuItem.Size = new Size(209, 24);
-            AddNewAppointmentMenuItem.Text = "  حجز موعد جديد...";
+            AddNewAppointmentMenuItem.Size = new Size(180, 22);
+            AddNewAppointmentMenuItem.Text = "حجز موعد جديد...";
             AddNewAppointmentMenuItem.Click += AddNewAppointmentMenuItem_Click;
             // 
             // errorProvider1
@@ -804,12 +821,10 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Label lblReason;
         private System.Windows.Forms.TextBox txtReason;
         private System.Windows.Forms.TableLayoutPanel tlpRow2Uniform;
-        // --- Doctor field: TextBox + Button بدلاً من ComboBox ---
         private System.Windows.Forms.Panel pnlDoctorField;
         private System.Windows.Forms.Label lblDoctor;
         private System.Windows.Forms.TextBox txtDoctorId;
         private System.Windows.Forms.Button btnChooseDoctor;
-        // --------------------------------------------------------
         private System.Windows.Forms.Panel pnlDateField;
         private System.Windows.Forms.Label lblDate;
         private System.Windows.Forms.DateTimePicker dtpAppointmentDate;

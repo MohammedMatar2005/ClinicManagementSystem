@@ -1,24 +1,22 @@
-﻿using ClinicBusiness.Services;
-using ClinicBusiness.Models; // الاعتماد على الموديلز الموحدة للبزنس
+﻿using ClinicBusiness.Models;
+using ClinicBusiness.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
-using System.Diagnostics;
-using ClinicManagementSystem;
 
 namespace ClinicManagementSystem.Appointments
 {
     public partial class frmChoosePatient : Form
     {
-        // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
         private BindingSource _patientsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
-
         private clsPatient _patientService;
 
-        // خصائص عامة لقراءة البيانات من فورم المواعيد
+        // خصائص عامة لقراءة البيانات عند اختيار مريض
         public int PatientId { get; private set; } = -1;
         public string PatientName { get; private set; } = string.Empty;
 
@@ -26,25 +24,19 @@ namespace ClinicManagementSystem.Appointments
         {
             InitializeComponent();
 
-            // حقن الـ Context مباشرة للفورم
             _context = new ClinicManagementSystemContext();
-            _patientService  = new clsPatient(_context);
+            _patientService = new clsPatient(_context);
         }
 
         private void frmChoosePatient_Load(object sender, EventArgs e)
         {
-            // منع توليد أعمدة عشوائية زائدة
             dgvPatients.AutoGenerateColumns = false;
 
-            // بناء وتنسيق هيكل الجدول بالترتيب الصحيح
             _BuildGridColumnsStructure();
-
             _LoadAllPatients();
 
-            _patientService = new clsPatient(_context);
-
             txtSearch.Text = "";
-            txtSearch.ForeColor = System.Drawing.Color.Black;
+            txtSearch.ForeColor = Color.Black;
         }
 
         private void _BuildGridColumnsStructure()
@@ -111,15 +103,14 @@ namespace ClinicManagementSystem.Appointments
         {
             try
             {
-                // تمرير الـ Context مباشرة للسيرفس بعد إلغاء الـ Repositories
-                clsPatient patientService = new clsPatient(_context);
-                var patientsList = await patientService.GetAllPatientsAsync();
+                this.Cursor = Cursors.WaitCursor;
+
+                var patientsList = await _patientService.GetAllPatientsAsync();
 
                 if (patientsList != null)
                 {
                     DataTable dtPatients = _ConvertToDataTable(patientsList);
 
-                    // 2. إسناد الـ DataTable للـ BindingSource وربطه بالـ DataGridView
                     _patientsBindingSource.DataSource = dtPatients;
                     dgvPatients.DataSource = _patientsBindingSource;
                 }
@@ -127,6 +118,10 @@ namespace ClinicManagementSystem.Appointments
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء تحميل بيانات المرضى: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
 
@@ -148,22 +143,34 @@ namespace ClinicManagementSystem.Appointments
             return table;
         }
 
+        // ==================== آلية البحث المحدثة والمعيارية ====================
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             if (_patientsBindingSource.DataSource == null) return;
 
             string filterText = txtSearch.Text.Trim().Replace("'", "''");
 
+            // في حال كانت الخانة فارغة أو تحتوي على النص التوضيحي الافتراضي
             if (string.IsNullOrEmpty(filterText) || filterText.Contains("🔍"))
             {
-                // 3. إلغاء الفلترة عبر الـ BindingSource
                 _patientsBindingSource.RemoveFilter();
                 return;
             }
 
-            // 4. الفلترة المباشرة اللحظية داخل الـ BindingSource بناءً على الرقم الوطني
-            _patientsBindingSource.Filter = string.Format("NationalNumber LIKE '{0}%'", filterText);
+            // الفلترة بالرقم الوطني أو بالاسم الكامل مطابقة لباقي الشاشات
+            _patientsBindingSource.Filter = string.Format(
+                "NationalNumber LIKE '%{0}%' OR PatientFullName LIKE '%{0}%'",
+                filterText
+            );
         }
+
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // السماح بالأرقام والحروف والتحكم (لتمكين البحث بالاسم أيضاً)
+            // إذا كنت تريد إبقاء البحث شاملاً للأرقام والأسماء لا نقيد الإدخال بالأرقام فقط
+        }
+
+        // ======================================================================
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
@@ -180,7 +187,6 @@ namespace ClinicManagementSystem.Appointments
 
         private void _SelectAndClose()
         {
-            // 5. قراءة السطر الحالي المختار من خلال الـ BindingSource بأمان وسرعة وبدون NullReference
             if (_patientsBindingSource.Current != null)
             {
                 DataRowView currentRow = (DataRowView)_patientsBindingSource.Current;
@@ -205,29 +211,30 @@ namespace ClinicManagementSystem.Appointments
 
         private void btnAddNewPatient_Click(object sender, EventArgs e)
         {
-            // يمكنك فتح شاشة إضافة مريض جديد هنا لاحقاً إذا أردت
-        }
-
-        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // منع إدخال أي شيء عدا الأرقام وأزرار التحكم في خانة البحث عن الرقم الوطني
-            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
+            _OpenAddPatientForm();
         }
 
         private void tsmiAddNewPatient_Click(object sender, EventArgs e)
         {
+            _OpenAddPatientForm();
+        }
+
+        private void _OpenAddPatientForm()
+        {
             using (Form frm = new frmAddUpdatePatient())
             {
-                frm.ShowDialog();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _LoadAllPatients();
+                }
             }
         }
 
         private void tsmiViewPatientDetails_Click(object sender, EventArgs e)
         {
-            var selectedPatientId = (int)dgvPatients.CurrentRow.Cells["PatientId"].Value;
+            if (dgvPatients.CurrentRow == null) return;
+
+            var selectedPatientId = Convert.ToInt32(dgvPatients.CurrentRow.Cells["PatientId"].Value);
 
             using (Form frm = new frmShowPatientInfo(selectedPatientId))
             {
@@ -239,10 +246,9 @@ namespace ClinicManagementSystem.Appointments
         {
             if (dgvPatients.CurrentRow == null) return;
 
-            int patientId = (int)dgvPatients.CurrentRow.Cells["PatientId"].Value;
+            int patientId = Convert.ToInt32(dgvPatients.CurrentRow.Cells["PatientId"].Value);
 
             if (patientId <= 0) return;
-
 
             DialogResult result = MessageBox.Show("هل أنت متأكد من حذف هذا المريض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -253,12 +259,27 @@ namespace ClinicManagementSystem.Appointments
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف المريض بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                    _LoadAllPatients(); // إعادة تحميل القائمة بعد الحذف مباشرة
                 }
                 else
                 {
                     MessageBox.Show("فشلت عملية الحذف، قد يكون المريض مرتبطاً ببيانات أخرى", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void cmbSearchType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtSearch.Visible = (cmbSearchType.Text != "بلا");
+
+            if (txtSearch.Visible)
+            {
+                txtSearch.Text = "";
+                txtSearch.Focus();
+            }
+            else
+            {
+                _patientsBindingSource.RemoveFilter();
             }
         }
     }

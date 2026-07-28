@@ -1,6 +1,6 @@
 ﻿namespace ClinicManagementSystem.Appointments
 {
-    partial class frmChooseDoctor : Form
+    partial class frmChooseDoctor
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
+            cmbSearchType = new ComboBox();
             txtSearch = new TextBox();
             dgvDoctors = new DataGridView();
             contextMenuStrip1 = new ContextMenuStrip(components);
@@ -69,18 +70,31 @@
             lblHeaderTitle.TabIndex = 0;
             lblHeaderTitle.Text = "البحث واختيار الطبيب";
             // 
+            // cmbSearchType
+            // 
+            cmbSearchType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSearchType.Font = new Font("Segoe UI", 11F);
+            cmbSearchType.FormattingEnabled = true;
+            cmbSearchType.Items.AddRange(new object[] { "بلا", "رقم الطبيب", "اسم الطبيب", "التخصص", "رقم الهاتف" });
+            cmbSearchType.Location = new Point(16, 75);
+            cmbSearchType.Name = "cmbSearchType";
+            cmbSearchType.Size = new Size(180, 28);
+            cmbSearchType.TabIndex = 1;
+            cmbSearchType.SelectedIndexChanged += cmbSearchType_SelectedIndexChanged;
+            // 
             // txtSearch
             // 
             txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSearch.BorderStyle = BorderStyle.FixedSingle;
             txtSearch.Font = new Font("Segoe UI", 11F);
-            txtSearch.ForeColor = Color.Gray;
-            txtSearch.Location = new Point(16, 75);
+            txtSearch.ForeColor = Color.Black;
+            txtSearch.Location = new Point(202, 75);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(818, 27);
-            txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
+            txtSearch.Size = new Size(632, 27);
+            txtSearch.TabIndex = 2;
+            txtSearch.Visible = false;
             txtSearch.TextChanged += txtSearch_TextChanged;
+            txtSearch.KeyPress += txtSearch_KeyPress;
             // 
             // dgvDoctors
             // 
@@ -122,7 +136,7 @@
             dgvDoctors.RowTemplate.Height = 35;
             dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDoctors.Size = new Size(818, 350);
-            dgvDoctors.TabIndex = 2;
+            dgvDoctors.TabIndex = 3;
             dgvDoctors.CellContentDoubleClick += dgvDoctors_CellDoubleClick;
             // 
             // contextMenuStrip1
@@ -157,6 +171,7 @@
             toolStripUpdateDoctorData.Name = "toolStripUpdateDoctorData";
             toolStripUpdateDoctorData.Size = new Size(208, 24);
             toolStripUpdateDoctorData.Text = "تحديث بيانات الطبيب";
+            toolStripUpdateDoctorData.Click += toolStripUpdateDoctorData_Click;
             // 
             // toolStripDeleteDoctor
             // 
@@ -177,7 +192,7 @@
             btnSelect.Location = new Point(720, 490);
             btnSelect.Name = "btnSelect";
             btnSelect.Size = new Size(114, 39);
-            btnSelect.TabIndex = 3;
+            btnSelect.TabIndex = 4;
             btnSelect.Text = "تأكيد الاختيار";
             btnSelect.UseVisualStyleBackColor = false;
             btnSelect.Click += btnSelect_Click;
@@ -193,7 +208,7 @@
             btnCancel.Location = new Point(598, 490);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(114, 39);
-            btnCancel.TabIndex = 4;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "إغلاق";
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
@@ -208,7 +223,7 @@
             btnAddNewDoctor.Location = new Point(16, 490);
             btnAddNewDoctor.Name = "btnAddNewDoctor";
             btnAddNewDoctor.Size = new Size(158, 39);
-            btnAddNewDoctor.TabIndex = 5;
+            btnAddNewDoctor.TabIndex = 6;
             btnAddNewDoctor.Text = "➕ إضافة طبيب جديد";
             btnAddNewDoctor.UseVisualStyleBackColor = false;
             btnAddNewDoctor.Click += btnAddNewDoctor_Click;
@@ -226,6 +241,7 @@
             Controls.Add(btnSelect);
             Controls.Add(dgvDoctors);
             Controls.Add(txtSearch);
+            Controls.Add(cmbSearchType);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
             Name = "frmChooseDoctor";
@@ -247,6 +263,7 @@
 
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
+        private System.Windows.Forms.ComboBox cmbSearchType;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dgvDoctors;
         private System.Windows.Forms.Button btnSelect;

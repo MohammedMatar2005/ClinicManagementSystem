@@ -119,11 +119,11 @@ namespace ClinicManagementSystem
             // 
             lblMainTitle.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lblMainTitle.AutoSize = true;
-            lblMainTitle.Font = new Font("Segoe UI", 42F, FontStyle.Bold);
+            lblMainTitle.Font = new Font("Segoe UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblMainTitle.ForeColor = Color.White;
-            lblMainTitle.Location = new Point(3, 150);
+            lblMainTitle.Location = new Point(11, 146);
             lblMainTitle.Name = "lblMainTitle";
-            lblMainTitle.Size = new Size(465, 74);
+            lblMainTitle.Size = new Size(308, 50);
             lblMainTitle.TabIndex = 1;
             lblMainTitle.Text = "عيادة الشفاء الذكية";
             lblMainTitle.TextAlign = ContentAlignment.MiddleLeft;
@@ -433,6 +433,7 @@ namespace ClinicManagementSystem
             // 
             // frmLogin
             // 
+            AcceptButton = btnLogin;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(15, 23, 42);
@@ -444,6 +445,7 @@ namespace ClinicManagementSystem
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "تسجيل الدخول";
+            Load += frmLogin_Load;
             mainContainerPanel.ResumeLayout(false);
             mainLayoutGrid.ResumeLayout(false);
             brandPanel.ResumeLayout(false);

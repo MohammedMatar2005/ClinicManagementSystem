@@ -3,7 +3,7 @@ using ClinicBusiness.Models;
 using ClinicBusiness.Services;
 using ClinicManagementSystem.Appointments;
 using ClinicManagementSystem.Invoices;
-using Microsoft.EntityFrameworkCore; // تأكد من وجودها
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,40 +24,65 @@ namespace ClinicManagementSystem.Finance
 
         private int _selectedInvoiceId = -1;
 
-        public frmPayments(clsPayment paymentService, clsInvoice invoiceService)
+        // 1. متغير لتحديد وضع الفورم (إضافة: -1، تعديل: أي رقم آخر)
+        private int _paymentId = -1;
+
+        // 2. تحديث الباني ليستقبل الـ Id كبارامتر اختياري
+        public frmPayments(clsPayment paymentService, clsInvoice invoiceService, int paymentId = -1)
         {
             InitializeComponent();
             _paymentService = paymentService;
             _invoiceService = invoiceService;
+            _paymentId = paymentId;
 
             txtSearchValue.TextChanged += txtSearchValue_TextChanged;
             btnExportPdf.Click += btnExportPdf_Click;
             btnExportThisPayment.Click += btnExportThisPayment_Click;
             btnChooseInvoice.Click += btnChooseInvoice_Click;
             btnNewPayment.Click += btnNewPayment_Click;
-            btnSavePayment.Click += btnSavePayment_Click_1;
+            
 
             txtAmountPaid.TextChanged += txtUpdateSummaryLabels_TextChanged;
             txtInvoiceTotal.TextChanged += txtUpdateSummaryLabels_TextChanged;
             txtAmountPaid.KeyPress += preventLetters_KeyPress;
+
+            ConfigureGridMapping();
         }
 
         private async void frmPayments_Load(object sender, EventArgs e)
         {
+
+            cmbPaymentMethod.SelectedIndex = 0;
             ConfigureGridMapping();
             await LoadPaymentsDataAsync();
+            LoadPaymentMethods();
+
+            // 3. الفحص عند تحميل الفورم: هل هو وضع تعديل أم إضافة؟
+            if (_paymentId != -1)
+            {
+                await LoadPaymentDataForUpdateAsync();
+            }
+            else
+            {
+                ClearAllFields(); // وضع الإضافة الافتراضي
+            }
         }
 
         private void ConfigureGridMapping()
         {
+            // منع إنشاء أعمدة تلقائية غير التي صممناها
             dgvPayments.AutoGenerateColumns = false;
 
+            // ربط الأعمدة بالخصائص الموجودة في PaymentViewDTO
             colPaymentId.DataPropertyName = "PaymentId";
+            colInvoiceId.DataPropertyName = "InvoiceId";
             colPatientName.DataPropertyName = "PatientFullName";
-            colInvoiceNumber.DataPropertyName = "InvoiceNumber";
-            colAmountPaid.DataPropertyName = "AmountPaid";
+            colDoctorName.DataPropertyName = "DoctorFullName";
+            colPaymentAmount.DataPropertyName = "PaymentAmount";
             colPaymentDate.DataPropertyName = "PaymentDate";
-            colPaymentMethod.DataPropertyName = "PaymentMethodName";
+            colPaymentMethod.DataPropertyName = "PaymentMethod";
+            colTransactionReference.DataPropertyName = "TransactionReference";
+            colPaymentStatusName.DataPropertyName = "PaymentStatusName";
         }
 
         private async Task LoadPaymentsDataAsync()
@@ -66,8 +91,7 @@ namespace ClinicManagementSystem.Finance
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // جلب البيانات بنسخة منفصلة للأمان التام أثناء التنقل في الواجهات
-                // في بيئة الـ Desktop يفضل دوماً جلب الـ Lists بنسخ سريعة غير مشتركة
+                // جلب قائمة الدفعات من نوع PaymentViewDTO
                 _originalPaymentsList = await _paymentService.GetAllPaymentsAsync();
 
                 _paymentsBindingSource.DataSource = _originalPaymentsList;
@@ -75,7 +99,66 @@ namespace ClinicManagementSystem.Finance
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ أثناء جلب الدفعات من السيرفر: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"حدث خطأ أثناء جلب الدفعات من السيرفر: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // 4. دالة جلب بيانات الدفعة الحالية وتحميلها للواجهة بغرض التعديل
+        private async Task LoadPaymentDataForUpdateAsync()
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+
+                PaymentDetailsDTO payment = await _paymentService.GetPaymentByIdAsync(_paymentId);
+
+                if (payment == null)
+                {
+                    MessageBox.Show("عذراً، لم يتم العثور على بيانات الدفعة المالية المطلوبة.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                    return;
+                }
+
+                // ملء عناصر التحكم بالبيانات المسترجعة
+                _selectedInvoiceId = payment.InvoiceId;
+                txtInvoiceId.Text = _selectedInvoiceId.ToString();
+
+                // جلب قيمة الفاتورة الكلية بشكل آمن ومباشر
+                decimal invoiceFinalAmount = await _invoiceService.GetInvoiceFinalAmountAsync(_selectedInvoiceId);
+                txtInvoiceTotal.Text = invoiceFinalAmount.ToString();
+
+                txtAmountPaid.Text = payment.PaymentAmount.ToString();
+                dtpPaymentDate.Value = payment.PaymentDate;
+                txtNotes.Text = payment.Notes;
+
+                // محاولة اختيار طريقة الدفع الصحيحة في الكومبو بوكس
+                if (cmbPaymentMethod.DataSource != null)
+                {
+                    cmbPaymentMethod.SelectedValue = payment.PaymentMethod;
+                }
+                else
+                {
+                    cmbPaymentMethod.Text = payment.PaymentMethod;
+                }
+
+                // تحديث الحسابات والتسميات تلقائياً
+                UpdateSummaryAmountsLabels();
+
+                // تحسين هوية العرض وتجربة المستخدم
+                if (tabNewPayment != null) tabNewPayment.Text = "تعديل الدفعة المالية الحالية";
+                btnSavePayment.Text = "تحديث الدفعة";
+
+                // قفل زر اختيار الفاتورة أثناء التعديل لمنع ترحيل دفعة من فاتورة لأخرى
+                btnChooseInvoice.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"حدث خطأ أثناء تحميل بيانات السداد للتعديل: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -186,7 +269,6 @@ namespace ClinicManagementSystem.Finance
                     _selectedInvoiceId = frm.InvoiceId;
                     txtInvoiceId.Text = _selectedInvoiceId.ToString();
 
-                    // هنا قراءة آمنة للقيمة الكلية
                     decimal invoiceFinalAmount = await _invoiceService.GetInvoiceFinalAmountAsync(_selectedInvoiceId);
                     txtInvoiceTotal.Text = invoiceFinalAmount.ToString();
 
@@ -215,6 +297,12 @@ namespace ClinicManagementSystem.Finance
 
         private void btnNewPayment_Click(object sender, EventArgs e)
         {
+            // إعادة الواجهة للوضع الافتراضي (الإضافة)
+            _paymentId = -1;
+            if (tabNewPayment != null) tabNewPayment.Text = "إصدار دفعة مالية جديدة";
+            btnSavePayment.Text = "حفظ الدفعة";
+            btnChooseInvoice.Enabled = true;
+
             ClearAllFields();
         }
 
@@ -261,9 +349,29 @@ namespace ClinicManagementSystem.Finance
             UpdateSummaryAmountsLabels();
         }
 
-        // 🛠️ تم تعديل دالة الحفظ بالكامل لحل مشكلة الـ DbContext الـ Multi-threaded والتصادم التزامني
-        private async void btnSavePayment_Click_1(object sender, EventArgs e)
+        // 5. تعديل ميثود الحفظ ليدعم الحالتين داخل الـ isolatedContext النظيف
+     
+        private void LoadPaymentMethods()
         {
+            // يمكنك جلبها من الـ Service الخاصة بك أو تعبئتها يدوياً هكذا مؤقتاً بما يتطابق مع قاعدة البيانات
+            DataTable dtMethods = new DataTable();
+            dtMethods.Columns.Add("Id", typeof(int));
+            dtMethods.Columns.Add("Name", typeof(string));
+
+            dtMethods.Rows.Add(1, "نقداً");
+            dtMethods.Rows.Add(2, "بطاقة ائتمان");
+            dtMethods.Rows.Add(3, "تحويل بنكي");
+            dtMethods.Rows.Add(4, "تأمين");
+
+            cmbPaymentMethod.DataSource = dtMethods;
+            cmbPaymentMethod.DisplayMember = "Name";
+            cmbPaymentMethod.ValueMember = "Id";
+            cmbPaymentMethod.SelectedIndex = 0;
+        }
+
+        private async void btnSavePayment_Click(object sender, EventArgs e)
+        {
+        
             if (!IsFormValid()) return;
 
             if (_selectedInvoiceId == -1 || txtInvoiceId.Text.Trim() == "")
@@ -280,58 +388,85 @@ namespace ClinicManagementSystem.Finance
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 💡 الحل الجذري: نفتح نفق اتصال طازج ومعزول (freshContext) لكل العمليات داخل زر الحفظ
+                // فتح اتصال طازج ومعزول تماماً لتجنب مشاكل التصادم التزامني للملفات
                 using (var freshContext = new ClinicManagementSystemContext())
                 {
-                    // 1. ننشئ نسخ مؤقتة محلياً مبنية على الـ Context النظيف
                     var isolatedInvoiceService = new clsInvoice(freshContext);
                     var isolatedPaymentService = new clsPayment(freshContext);
 
-                    // 2. فحص البزنس المالي بشكل آمن تماماً وبدون تداخل
-                    bool isPaid = await isolatedInvoiceService.IsInvoiceFullyPaidAsync(invoiceId);
-                    if (isPaid)
+                    
+                    if (_paymentId == -1)
                     {
-                        MessageBox.Show("هذه الفاتورة مسددة بالكامل بالفعل ولا داعي لإضافة دفعة جديدة عليها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        bool isPaid = await isolatedInvoiceService.IsInvoiceFullyPaidAsync(invoiceId);
+                        if (isPaid)
+                        {
+                            MessageBox.Show("هذه الفاتورة مسددة بالكامل بالفعل ولا داعي لإضافة دفعة جديدة عليها.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
 
-                    // 3. بناء كائن الحفظ DTO
+                    // بناء كائن الـ DTO وتمرير الـ _paymentId الحالي له
                     PaymentSaveDTO saveDto = new PaymentSaveDTO
                     {
-                        PaymentId = 0,
+                        PaymentId = _paymentId == -1 ? 0 : _paymentId,
                         InvoiceId = invoiceId,
                         PaymentAmount = Convert.ToDecimal(txtAmountPaid.Text.Trim()),
                         PaymentDate = dtpPaymentDate.Value,
                         PaymentMethod = paymentMethod?.ToString() ?? "نقداً",
                         Notes = txtNotes.Text.Trim(),
-                        TransactionReference = "TXN-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+                        TransactionReference = _paymentId == -1 ? "TXN-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper() : null, // نحتفظ بالقديم أو نتركه للبزنس في التحديث
                         IsActive = true
                     };
 
-                    // 4. تنفيذ الحفظ على نفس الاتصال النظيف
-                    int newPaymentId = await isolatedPaymentService.AddNewPaymentAsync(saveDto);
-
-                    if (newPaymentId > 0)
+                    if (_paymentId == -1)
                     {
-                        MessageBox.Show("تم حفظ الدفعة المالية وإصدار السداد بنجاح!", "نجاح عملية الدفع", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ClearAllFields();
-                        await LoadPaymentsDataAsync(); // تحديث الجدول (هذه الدالة تستخدم دالتها الخاصة الآمنة)
+                        // ================= وضع الإضافة =================
+                        int newPaymentId = await isolatedPaymentService.AddNewPaymentAsync(saveDto);
+
+                        if (newPaymentId > 0)
+                        {
+                            MessageBox.Show("تم حفظ الدفعة المالية وإصدار السداد بنجاح!", "نجاح عملية الدفع", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            ClearAllFields();
+                            await LoadPaymentsDataAsync();
+                        }
+                        else
+                        {
+                            MessageBox.Show("حدث خطأ أثناء معالجة عملية الدفع. حاول مرة أخرى.", "خطأ مالي", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("حدث خطأ أثناء معالجة عملية الدفع. حاول مرة أخرى.", "خطأ مالي", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // ================= وضع التعديل =================
+                        // استدعاء خدمة التحديث المعزولة (افترضنا وجود UpdatePaymentAsync في البزنس)
+                        bool isUpdated = await isolatedPaymentService.UpdatePaymentAsync(saveDto);
+
+                        if (isUpdated)
+                        {
+                            MessageBox.Show("تم تحديث الدفعة المالية بنجاح!", "نجاح التعديل", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // إعادة تهيئة الواجهة لوضع الإضافة الأصلي
+                            btnNewPayment_Click(this, EventArgs.Empty);
+                            await LoadPaymentsDataAsync();
+                        }
+                        else
+                        {
+                            MessageBox.Show("حدث خطأ أثناء تحديث بيانات الدفعة، يرجى التحقق من المدخلات.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"حدث خطأ برمي أثناء معالجة السداد:\n{ex.Message}", "خطأ في النظام", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"حدث خطأ برمي أثناء معالجة العملية:\n{ex.Message}", "خطأ في النظام", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 btnSavePayment.Enabled = true;
                 this.Cursor = Cursors.Default;
             }
+
+            
         }
+    
     }
 }

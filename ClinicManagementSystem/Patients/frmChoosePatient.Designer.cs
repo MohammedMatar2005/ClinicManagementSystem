@@ -1,6 +1,6 @@
 ﻿namespace ClinicManagementSystem.Appointments
 {
-    partial class frmChoosePatient : Form
+    partial class frmChoosePatient
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
             lblHeaderTitle = new Label();
+            cmbSearchType = new ComboBox();
             txtSearch = new TextBox();
             dgvPatients = new DataGridView();
             cmsOptions = new ContextMenuStrip(components);
@@ -69,17 +70,29 @@
             lblHeaderTitle.TabIndex = 0;
             lblHeaderTitle.Text = "البحث واختيار المريض";
             // 
+            // cmbSearchType
+            // 
+            cmbSearchType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSearchType.Font = new Font("Segoe UI", 11F);
+            cmbSearchType.FormattingEnabled = true;
+            cmbSearchType.Items.AddRange(new object[] { "بلا", "رقم المريض", "الاسم الكامل", "الرقم الوطني", "رقم الجوال" });
+            cmbSearchType.Location = new Point(16, 75);
+            cmbSearchType.Name = "cmbSearchType";
+            cmbSearchType.Size = new Size(180, 28);
+            cmbSearchType.TabIndex = 1;
+            cmbSearchType.SelectedIndexChanged += cmbSearchType_SelectedIndexChanged;
+            // 
             // txtSearch
             // 
             txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtSearch.BorderStyle = BorderStyle.FixedSingle;
             txtSearch.Font = new Font("Segoe UI", 11F);
-            txtSearch.ForeColor = Color.Gray;
-            txtSearch.Location = new Point(16, 75);
+            txtSearch.ForeColor = Color.Black;
+            txtSearch.Location = new Point(202, 75);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(818, 27);
-            txtSearch.TabIndex = 1;
-            txtSearch.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
+            txtSearch.Size = new Size(632, 27);
+            txtSearch.TabIndex = 2;
+            txtSearch.Visible = false;
             txtSearch.TextChanged += txtSearch_TextChanged;
             txtSearch.KeyPress += txtSearch_KeyPress;
             // 
@@ -123,7 +136,7 @@
             dgvPatients.RowTemplate.Height = 35;
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPatients.Size = new Size(818, 350);
-            dgvPatients.TabIndex = 2;
+            dgvPatients.TabIndex = 3;
             dgvPatients.CellDoubleClick += dgvPatients_CellDoubleClick;
             // 
             // cmsOptions
@@ -138,28 +151,28 @@
             // 
             tsmiViewPatientDetails.Name = "tsmiViewPatientDetails";
             tsmiViewPatientDetails.Size = new Size(163, 22);
-            tsmiViewPatientDetails.Text = "👁️   عرض البيانات";
+            tsmiViewPatientDetails.Text = "👁️    عرض البيانات";
             tsmiViewPatientDetails.Click += tsmiViewPatientDetails_Click;
             // 
             // tsmiAddNewPatient
             // 
             tsmiAddNewPatient.Name = "tsmiAddNewPatient";
             tsmiAddNewPatient.Size = new Size(163, 22);
-            tsmiAddNewPatient.Text = "➕   إضافة مريض";
+            tsmiAddNewPatient.Text = "➕    إضافة مريض";
             tsmiAddNewPatient.Click += tsmiAddNewPatient_Click;
             // 
             // tsmiUpdatePatientInfo
             // 
             tsmiUpdatePatientInfo.Name = "tsmiUpdatePatientInfo";
             tsmiUpdatePatientInfo.Size = new Size(163, 22);
-            tsmiUpdatePatientInfo.Text = "✏️   تعديل البيانات";
+            tsmiUpdatePatientInfo.Text = "✏️    تعديل البيانات";
             // 
             // tsmiDeletePatient
             // 
             tsmiDeletePatient.ForeColor = Color.DarkRed;
             tsmiDeletePatient.Name = "tsmiDeletePatient";
             tsmiDeletePatient.Size = new Size(163, 22);
-            tsmiDeletePatient.Text = "❌   حذف المريض";
+            tsmiDeletePatient.Text = "❌    حذف المريض";
             tsmiDeletePatient.Click += tsmiDeletePatient_Click;
             // 
             // btnSelect
@@ -172,7 +185,7 @@
             btnSelect.Location = new Point(720, 490);
             btnSelect.Name = "btnSelect";
             btnSelect.Size = new Size(114, 39);
-            btnSelect.TabIndex = 3;
+            btnSelect.TabIndex = 4;
             btnSelect.Text = "تأكيد الاختيار";
             btnSelect.UseVisualStyleBackColor = false;
             btnSelect.Click += btnSelect_Click;
@@ -188,7 +201,7 @@
             btnCancel.Location = new Point(598, 490);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(114, 39);
-            btnCancel.TabIndex = 4;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "إغلاق";
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
@@ -203,7 +216,7 @@
             btnAddNewPatient.Location = new Point(16, 490);
             btnAddNewPatient.Name = "btnAddNewPatient";
             btnAddNewPatient.Size = new Size(158, 39);
-            btnAddNewPatient.TabIndex = 5;
+            btnAddNewPatient.TabIndex = 6;
             btnAddNewPatient.Text = "➕ إضافة مريض جديد";
             btnAddNewPatient.UseVisualStyleBackColor = false;
             btnAddNewPatient.Click += btnAddNewPatient_Click;
@@ -221,6 +234,7 @@
             Controls.Add(btnSelect);
             Controls.Add(dgvPatients);
             Controls.Add(txtSearch);
+            Controls.Add(cmbSearchType);
             Controls.Add(pnlTopHeader);
             MinimumSize = new Size(750, 500);
             Name = "frmChoosePatient";
@@ -242,15 +256,13 @@
 
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblHeaderTitle;
+        private System.Windows.Forms.ComboBox cmbSearchType;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dgvPatients;
         private System.Windows.Forms.Button btnSelect;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnAddNewPatient;
-        private ContextMenuStrip cmsOptions;
-
-        
-        // الأزرار الأربعة الجديدة:
+        private System.Windows.Forms.ContextMenuStrip cmsOptions;
         private System.Windows.Forms.ToolStripMenuItem tsmiViewPatientDetails;
         private System.Windows.Forms.ToolStripMenuItem tsmiAddNewPatient;
         private System.Windows.Forms.ToolStripMenuItem tsmiUpdatePatientInfo;

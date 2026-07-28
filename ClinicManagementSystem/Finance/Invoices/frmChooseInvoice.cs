@@ -5,22 +5,21 @@ using ClinicBusiness.Utils;
 using ClinicManagementSystem.Finance;
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ClinicManagementSystem.Invoices
 {
     public partial class frmChooseInvoice : Form
     {
-        // BindingSource على مستوى الكلاس لتفعيل الفلترة السريعة أثناء البحث
         private BindingSource _invoicesBindingSource = new BindingSource();
-        private clsInvoice _invoiceService;
-        private clsPatientVisit _visitsService;
+        private readonly clsInvoice _invoiceService;
+        private readonly clsPatientVisit _visitsService;
         private readonly ClinicManagementSystemContext _context;
 
-
-        public int InvoiceId { get; private set; }
-        public string InvoiceNumber { get; private set; }
-        public string PatientName { get; private set; }
+        public int InvoiceId { get; private set; } = -1;
+        public string InvoiceNumber { get; private set; } = string.Empty;
+        public string PatientName { get; private set; } = string.Empty;
         public decimal TotalAmount { get; private set; }
         public decimal RemainingAmount { get; private set; }
 
@@ -28,7 +27,6 @@ namespace ClinicManagementSystem.Invoices
         {
             InitializeComponent();
             _context = new ClinicManagementSystemContext();
-
             _invoiceService = new clsInvoice(_context);
             _visitsService = new clsPatientVisit(_context);
         }
@@ -36,16 +34,16 @@ namespace ClinicManagementSystem.Invoices
         private void frmChooseInvoice_Load(object sender, EventArgs e)
         {
             _ConfigureDataGridView();
+            cmbSearchType.SelectedIndex = 0; // "بلا" كإعداد افتراضي
             _LoadAllInvoices();
-
-            txtSearch.ForeColor = System.Drawing.Color.Black;
         }
 
         private void _ConfigureDataGridView()
         {
             dgvInvoices.AutoGenerateColumns = false;
+            dgvInvoices.Columns.Clear();
 
-            // 1. معرف الفاتورة (العمود الأول من اليمين)
+            // 1. معرف الفاتورة
             dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "InvoiceId",
@@ -85,7 +83,7 @@ namespace ClinicManagementSystem.Invoices
                 DataPropertyName = "InvoiceDate"
             });
 
-            // 6. الإجمالي (تعديل الـ DataPropertyName ليطابق القادم من السيرفر: FinalAmount)
+            // 6. الإجمالي
             dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "FinalAmount",
@@ -101,7 +99,7 @@ namespace ClinicManagementSystem.Invoices
                 DataPropertyName = "RemainingAmount"
             });
 
-            // 8. حالة السداد (تعديل الـ Name والـ DataPropertyName ليطابق الحسبة الديناميكية: PaymentStatusName)
+            // 8. حالة السداد
             dgvInvoices.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "PaymentStatusName",
@@ -109,28 +107,26 @@ namespace ClinicManagementSystem.Invoices
                 DataPropertyName = "PaymentStatusName"
             });
 
-            // إعدادات أحجام الأعمدة (تم تعديل الأسماء هنا لتطابق الأعمدة الجديدة وتمنع خطأ الـ NullReferenceException)
+            // قياسات العرض للأعمدة
             dgvInvoices.Columns["InvoiceId"].Width = 90;
             dgvInvoices.Columns["PatientNationalNumber"].Width = 110;
             dgvInvoices.Columns["PaymentStatusName"].Width = 110;
 
-            // ربط حدث التلوين أو التنسيق
+            // تلوين خانات حالة السداد
             dgvInvoices.CellFormatting += dgvInvoices_CellFormatting;
         }
+
         private async void _LoadAllInvoices()
         {
             try
             {
-                clsInvoice invoiceService = new clsInvoice(_context);
-                var invoicesList = await invoiceService.GetAllInvoicesAsync();
+                var invoicesList = await _invoiceService.GetAllInvoicesAsync();
 
                 if (invoicesList != null)
                 {
-                    // تحويل الـ List إلى DataTable لتفعيل ميزة الـ Filter داخل الـ BindingSource
+                    // استخدام المحول لاستبدال القائمة بـ DataTable مجهزة لسرعة الفلترة داخل الذاكرة
                     DataTable dtInvoices = ConvertToDataTable._ConvertToDataTable(invoicesList);
-
                     _invoicesBindingSource.DataSource = dtInvoices;
-
                     dgvInvoices.DataSource = _invoicesBindingSource;
                 }
             }
@@ -141,26 +137,89 @@ namespace ClinicManagementSystem.Invoices
             }
         }
 
+        private void ClearAllFields()
+        {
+            txtSearch.Text = string.Empty;
+            _invoicesBindingSource.RemoveFilter();
+        }
+
+        private void cmbSearchType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ClearAllFields();
+
+            if (cmbSearchType.Text == "بلا")
+            {
+                txtSearch.Visible = false;
+            }
+            else
+            {
+                txtSearch.Visible = true;
+                txtSearch.Focus();
+            }
+        }
+
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // السماح بالأرقام فقط في الحقول الرقمية الصريحة المقيدة (مثل معرف الفاتورة)
+            if (cmbSearchType.Text == "معرف الفاتورة")
+            {
+                if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             if (_invoicesBindingSource.DataSource == null) return;
-            if (txtSearch.Text == "🔍 أدخل اسم المريض أو رقم الفاتورة للبحث...") return;
 
-            string filterText = txtSearch.Text.Trim().Replace("'", "''");
+            string searchValue = txtSearch.Text.Trim().Replace("'", "''");
 
-            if (string.IsNullOrEmpty(filterText))
+            if (string.IsNullOrEmpty(searchValue) || cmbSearchType.Text == "بلا")
             {
                 _invoicesBindingSource.RemoveFilter();
                 return;
             }
 
-            _invoicesBindingSource.Filter = string.Format("PatientFullName LIKE '%{0}%' OR InvoiceNumber LIKE '%{0}%'", filterText);
+            switch (cmbSearchType.Text)
+            {
+                case "معرف الفاتورة":
+                    if (int.TryParse(searchValue, out int id))
+                    {
+                        _invoicesBindingSource.Filter = $"InvoiceId = {id}";
+                    }
+                    else
+                    {
+                        _invoicesBindingSource.RemoveFilter();
+                    }
+                    break;
+
+                case "رقم الفاتورة":
+                    _invoicesBindingSource.Filter = $"InvoiceNumber LIKE '%{searchValue}%'";
+                    break;
+
+                case "اسم المريض":
+                    _invoicesBindingSource.Filter = $"PatientFullName LIKE '%{searchValue}%'";
+                    break;
+
+                case "الرقم الوطني":
+                    _invoicesBindingSource.Filter = $"PatientNationalNumber LIKE '%{searchValue}%'";
+                    break;
+
+                case "حالة السداد":
+                    _invoicesBindingSource.Filter = $"PaymentStatusName LIKE '%{searchValue}%'";
+                    break;
+
+                default:
+                    _invoicesBindingSource.RemoveFilter();
+                    break;
+            }
         }
 
-        // تلوين خلية "حالة السداد": أحمر لغير مدفوعة، برتقالي لمدفوعة جزئياً، أخضر لمدفوعة بالكامل
         private void dgvInvoices_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (dgvInvoices.Columns[e.ColumnIndex].Name != "StatusTitle" || e.Value == null) return;
+            if (dgvInvoices.Columns[e.ColumnIndex].Name != "PaymentStatusName" || e.Value == null) return;
 
             string status = e.Value.ToString();
 
@@ -181,16 +240,6 @@ namespace ClinicManagementSystem.Invoices
             }
         }
 
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            _SelectAndClose();
-        }
-
-        private void dgvInvoices_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            _SelectAndClose();
-        }
-
         private void _SelectAndClose()
         {
             if (_invoicesBindingSource.Current != null)
@@ -200,7 +249,7 @@ namespace ClinicManagementSystem.Invoices
                 InvoiceId = Convert.ToInt32(currentRow["InvoiceId"]);
                 InvoiceNumber = Convert.ToString(currentRow["InvoiceNumber"]);
                 PatientName = Convert.ToString(currentRow["PatientFullName"]);
-                TotalAmount = Convert.ToDecimal(currentRow["TotalAmount"]);
+                TotalAmount = Convert.ToDecimal(currentRow["FinalAmount"]);
                 RemainingAmount = Convert.ToDecimal(currentRow["RemainingAmount"]);
 
                 this.DialogResult = DialogResult.OK;
@@ -212,48 +261,27 @@ namespace ClinicManagementSystem.Invoices
             }
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void btnSelect_Click(object sender, EventArgs e)
         {
-            this.Close();
+            _SelectAndClose();
         }
 
-        private void btnAddNewInvoice_Click(object sender, EventArgs e)
+        private void dgvInvoices_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            //using (frmInvoices frm = new frmInvoices())
-            //{
-            //    frm.ShowDialog();
-            //}
+            if (e.RowIndex >= 0)
+                _SelectAndClose();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
 
         private void toolStripShowInvoiceInfo_Click(object sender, EventArgs e)
         {
-            //int _selectedInvoiceId = 0;
+            if (dgvInvoices.CurrentRow == null) return;
 
-            //_selectedInvoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
-
-            //using (frmShowInvoiceInfo frm = new frmShowInvoiceInfo(_selectedInvoiceId))
-            //{
-            //    frm.ShowDialog();
-            //}
-        }
-
-        private void toolStripUpdateInvoice_Click(object sender, EventArgs e)
-        {
-            //int _selectedInvoiceId = 0;
-
-            //_selectedInvoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
-
-            //using (frmUpdateInvoice frm = new frmUpdateInvoice(_selectedInvoiceId))
-            //{
-            //    frm.ShowDialog();
-            //}
-        }
-
-
-
-
-        private void toolStripShowInvoiceInfo_Click_1(object sender, EventArgs e)
-        {
             int invoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
 
             using (frmShowInvoiceInfo frm = new frmShowInvoiceInfo(invoiceId))
@@ -262,16 +290,20 @@ namespace ClinicManagementSystem.Invoices
             }
         }
 
-        private void toolStripAddNewInvoice_Click_1(object sender, EventArgs e)
+        private void toolStripAddNewInvoice_Click(object sender, EventArgs e)
         {
             using (frmInvoices frm = new frmInvoices(_invoiceService, _visitsService))
             {
                 frm.ShowDialog();
             }
+
+            _LoadAllInvoices();
         }
 
-        private async void toolStripDeleteInvoice_Click_1(object sender, EventArgs e)
+        private async void toolStripDeleteInvoice_Click(object sender, EventArgs e)
         {
+            if (dgvInvoices.CurrentRow == null) return;
+
             int invoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
 
             DialogResult result = MessageBox.Show(
@@ -284,6 +316,7 @@ namespace ClinicManagementSystem.Invoices
             if (result == DialogResult.Yes)
             {
                 bool isDeleted = await _invoiceService.DeleteInvoiceAsync(invoiceId);
+
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف الفاتورة بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -296,28 +329,19 @@ namespace ClinicManagementSystem.Invoices
             }
         }
 
-        private void toolStripUpdateInvoice_Click_1(object sender, EventArgs e)
+        private void toolStripUpdateInvoice_Click(object sender, EventArgs e)
         {
-
+            // إضافة كود فتح نافذة التعديل هنا عند توفر الشاشة المناسبة
         }
 
-        private void btnSelect_Click_1(object sender, EventArgs e)
+        private void btnAddNewInvoice_Click(object sender, EventArgs e)
         {
-            if (dgvInvoices.CurrentRow != null)
+            using (frmInvoices frm = new frmInvoices(_invoiceService, _visitsService))
             {
-                // جلب قيمة الـ Id من العمود المخصص له في السطر المحدد
-                InvoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
-
-                // تحديد نتيجة الفورم على أنها OK لإعلام الفورم الأصلي بالنجاح
-                this.DialogResult = DialogResult.OK;
-
-                // إغلاق الفورم الحالي تلقائياً
-                this.Close();
+                frm.ShowDialog();
             }
-            else
-            {
-                MessageBox.Show("الرجاء اختيار فاتورة أولاً.");
-            }
+
+            _LoadAllInvoices();
         }
     }
 }

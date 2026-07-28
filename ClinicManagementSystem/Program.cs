@@ -4,6 +4,7 @@ using ClinicBusiness.Services;
 using ClinicManagementSystem.Appointments;
 using ClinicManagementSystem.Finance;
 using ClinicManagementSystem.Invoices;
+using ClinicManagementSystem.PatientVisits;
 
 namespace ClinicManagementSystem
 {
@@ -27,18 +28,21 @@ namespace ClinicManagementSystem
             {
                 UserId = 1,
                 Username = "MM11MM",
-                FullName = "مهندس محمد أحمد", // اسم العميل للترحيب به في الشاشة الرئيسية
-                RoleName = "Admin",          // الصلاحية لتجربة إخفاء/إظهار الشاشات
+                FullName = "مهندس محمد أحمد",
+                RoleName = "Admin",
                 IsActive = true,
                 CreatedDate = DateTime.Now.AddMonths(-5),
                 LastLoginDate = DateTime.Now
             };
 
 
+        
+
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmAddUpdatePatient(23));
+            Application.Run(new frmLogin());
 
 
           

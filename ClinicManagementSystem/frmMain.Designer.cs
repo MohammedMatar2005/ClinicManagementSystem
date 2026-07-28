@@ -90,6 +90,7 @@ namespace ClinicManagementSystem
             lblIconRevenue = new Label();
             lblTitleRevenue = new Label();
             lblValueRevenue = new Label();
+            btnPatientVisits = new Button();
             mainLayoutGrid.SuspendLayout();
             sidebarPanel.SuspendLayout();
             logoContainer.SuspendLayout();
@@ -298,9 +299,10 @@ namespace ClinicManagementSystem
             // 
             menuStackPanel.Controls.Add(lblMainMenuHeader);
             menuStackPanel.Controls.Add(btnHome);
+            menuStackPanel.Controls.Add(btnDoctors);
             menuStackPanel.Controls.Add(btnPatients);
             menuStackPanel.Controls.Add(btnAppointments);
-            menuStackPanel.Controls.Add(btnDoctors);
+            menuStackPanel.Controls.Add(btnPatientVisits);
             menuStackPanel.Controls.Add(btnPharmacy);
             menuStackPanel.Controls.Add(btnBilling);
             menuStackPanel.Controls.Add(btnPayment);
@@ -354,7 +356,7 @@ namespace ClinicManagementSystem
             btnPatients.FlatStyle = FlatStyle.Flat;
             btnPatients.Font = new Font("Segoe UI", 10F);
             btnPatients.ForeColor = Color.FromArgb(189, 195, 199);
-            btnPatients.Location = new Point(-7, 95);
+            btnPatients.Location = new Point(-7, 141);
             btnPatients.Margin = new Padding(10, 3, 10, 3);
             btnPatients.Name = "btnPatients";
             btnPatients.Size = new Size(215, 40);
@@ -371,7 +373,7 @@ namespace ClinicManagementSystem
             btnAppointments.FlatStyle = FlatStyle.Flat;
             btnAppointments.Font = new Font("Segoe UI", 10F);
             btnAppointments.ForeColor = Color.FromArgb(189, 195, 199);
-            btnAppointments.Location = new Point(-7, 141);
+            btnAppointments.Location = new Point(-7, 187);
             btnAppointments.Margin = new Padding(10, 3, 10, 3);
             btnAppointments.Name = "btnAppointments";
             btnAppointments.Size = new Size(215, 40);
@@ -388,7 +390,7 @@ namespace ClinicManagementSystem
             btnDoctors.FlatStyle = FlatStyle.Flat;
             btnDoctors.Font = new Font("Segoe UI", 10F);
             btnDoctors.ForeColor = Color.FromArgb(189, 195, 199);
-            btnDoctors.Location = new Point(-7, 187);
+            btnDoctors.Location = new Point(-7, 95);
             btnDoctors.Margin = new Padding(10, 3, 10, 3);
             btnDoctors.Name = "btnDoctors";
             btnDoctors.Size = new Size(215, 40);
@@ -405,7 +407,7 @@ namespace ClinicManagementSystem
             btnPharmacy.FlatStyle = FlatStyle.Flat;
             btnPharmacy.Font = new Font("Segoe UI", 10F);
             btnPharmacy.ForeColor = Color.FromArgb(189, 195, 199);
-            btnPharmacy.Location = new Point(-7, 233);
+            btnPharmacy.Location = new Point(-7, 279);
             btnPharmacy.Margin = new Padding(10, 3, 10, 3);
             btnPharmacy.Name = "btnPharmacy";
             btnPharmacy.Size = new Size(215, 40);
@@ -422,7 +424,7 @@ namespace ClinicManagementSystem
             btnBilling.FlatStyle = FlatStyle.Flat;
             btnBilling.Font = new Font("Segoe UI", 10F);
             btnBilling.ForeColor = Color.FromArgb(189, 195, 199);
-            btnBilling.Location = new Point(-7, 279);
+            btnBilling.Location = new Point(-7, 325);
             btnBilling.Margin = new Padding(10, 3, 10, 3);
             btnBilling.Name = "btnBilling";
             btnBilling.Size = new Size(215, 40);
@@ -439,7 +441,7 @@ namespace ClinicManagementSystem
             btnPayment.FlatStyle = FlatStyle.Flat;
             btnPayment.Font = new Font("Segoe UI", 10F);
             btnPayment.ForeColor = Color.FromArgb(189, 195, 199);
-            btnPayment.Location = new Point(-7, 325);
+            btnPayment.Location = new Point(-7, 371);
             btnPayment.Margin = new Padding(10, 3, 10, 3);
             btnPayment.Name = "btnPayment";
             btnPayment.Size = new Size(215, 40);
@@ -452,7 +454,7 @@ namespace ClinicManagementSystem
             // menuSeparator
             // 
             menuSeparator.BackColor = Color.FromArgb(38, 54, 71);
-            menuSeparator.Location = new Point(3, 382);
+            menuSeparator.Location = new Point(3, 428);
             menuSeparator.Margin = new Padding(20, 14, 20, 14);
             menuSeparator.Name = "menuSeparator";
             menuSeparator.Size = new Size(195, 1);
@@ -462,7 +464,7 @@ namespace ClinicManagementSystem
             // 
             lblAdminHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblAdminHeader.ForeColor = Color.FromArgb(61, 90, 114);
-            lblAdminHeader.Location = new Point(7, 397);
+            lblAdminHeader.Location = new Point(7, 443);
             lblAdminHeader.Margin = new Padding(0, 0, 24, 8);
             lblAdminHeader.Name = "lblAdminHeader";
             lblAdminHeader.Size = new Size(211, 20);
@@ -477,7 +479,7 @@ namespace ClinicManagementSystem
             btnSettings.FlatStyle = FlatStyle.Flat;
             btnSettings.Font = new Font("Segoe UI", 10F);
             btnSettings.ForeColor = Color.FromArgb(189, 195, 199);
-            btnSettings.Location = new Point(-7, 428);
+            btnSettings.Location = new Point(-7, 474);
             btnSettings.Margin = new Padding(10, 3, 10, 3);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(215, 40);
@@ -494,7 +496,7 @@ namespace ClinicManagementSystem
             btnSupport.FlatStyle = FlatStyle.Flat;
             btnSupport.Font = new Font("Segoe UI", 10F);
             btnSupport.ForeColor = Color.FromArgb(189, 195, 199);
-            btnSupport.Location = new Point(-7, 474);
+            btnSupport.Location = new Point(-7, 520);
             btnSupport.Margin = new Padding(10, 3, 10, 3);
             btnSupport.Name = "btnSupport";
             btnSupport.Size = new Size(215, 40);
@@ -510,7 +512,7 @@ namespace ClinicManagementSystem
             lnkSystemLogs.Font = new Font("Segoe UI", 9.5F);
             lnkSystemLogs.LinkBehavior = LinkBehavior.HoverUnderline;
             lnkSystemLogs.LinkColor = Color.FromArgb(189, 195, 199);
-            lnkSystemLogs.Location = new Point(0, 517);
+            lnkSystemLogs.Location = new Point(0, 563);
             lnkSystemLogs.Name = "lnkSystemLogs";
             lnkSystemLogs.Size = new Size(215, 30);
             lnkSystemLogs.TabIndex = 8;
@@ -1026,6 +1028,23 @@ namespace ClinicManagementSystem
             lblValueRevenue.Text = "1,250 $";
             lblValueRevenue.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // btnPatientVisits
+            // 
+            btnPatientVisits.BackColor = Color.Transparent;
+            btnPatientVisits.FlatAppearance.BorderSize = 0;
+            btnPatientVisits.FlatStyle = FlatStyle.Flat;
+            btnPatientVisits.Font = new Font("Segoe UI", 10F);
+            btnPatientVisits.ForeColor = Color.FromArgb(189, 195, 199);
+            btnPatientVisits.Location = new Point(-7, 233);
+            btnPatientVisits.Margin = new Padding(10, 3, 10, 3);
+            btnPatientVisits.Name = "btnPatientVisits";
+            btnPatientVisits.Size = new Size(215, 40);
+            btnPatientVisits.TabIndex = 14;
+            btnPatientVisits.Text = "زيارات المرضى           👥";
+            btnPatientVisits.TextAlign = ContentAlignment.MiddleRight;
+            btnPatientVisits.UseVisualStyleBackColor = false;
+            btnPatientVisits.Click += btnPatientVisits_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1143,5 +1162,6 @@ namespace ClinicManagementSystem
         private Label lblBrandingTitle;
         private Label lblBrandingSubtitle;
         private LinkLabel lnkSystemLogs;
+        private Button btnPatientVisits;
     }
 }

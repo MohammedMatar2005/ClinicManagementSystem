@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 using ClinicBusiness.Utils;
+using ClinicManagementSystem.PatientVisits;
 
 namespace ClinicManagementSystem.Appointments
 {
@@ -13,6 +14,8 @@ namespace ClinicManagementSystem.Appointments
         // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
         private BindingSource _visitsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
+
+        private clsPatientVisit _patientVisitService;
 
         // خصائص عامة لقراءة البيانات من فورم المواعيد بعد الإغلاق
         public int PatientVisitId { get; private set; } = -1;
@@ -26,6 +29,7 @@ namespace ClinicManagementSystem.Appointments
 
             // حقن الـ Context مباشرة للفورم
             _context = new ClinicManagementSystemContext();
+            _patientVisitService = new clsPatientVisit(_context);
         }
 
         private void frmChoosePatientVisit_Load(object sender, EventArgs e)
@@ -178,6 +182,75 @@ namespace ClinicManagementSystem.Appointments
             if (!char.IsLetter(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != ' ')
             {
                 e.Handled = true;
+            }
+        }
+
+        private void tsmiAddNewPatientVisit_Click(object sender, EventArgs e)
+        {
+            using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void tsmiViewPatientVisitDetails_Click(object sender, EventArgs e)
+        {
+            var selectedVisitPatientId = (int)dgvVisits.CurrentRow.Cells[0].Value;
+
+            using (Form frm = new frmShowPatientVisitInfo(selectedVisitPatientId))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private async void tsmiDeletePatientVisit_Click(object sender, EventArgs e)
+        {
+            if (dgvVisits.CurrentRow == null) return;
+
+            int patientVisitId = (int)dgvVisits.CurrentRow.Cells[0].Value;
+
+            if (patientVisitId <= 0) return;
+
+
+            DialogResult result = MessageBox.Show("هل أنت متأكد من حذف زيارة هذا المريض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                bool isDeleted = await _patientVisitService.DeletePatientVisitAsync(patientVisitId);
+
+                if (isDeleted)
+                {
+                    MessageBox.Show("تم حذف زيارة المريض بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    frmChoosePatientVisit_Load(this, EventArgs.Empty); // إعادة تحميل البيانات بعد الحذف
+                }
+                else
+                {
+                    MessageBox.Show("فشلت عملية الحذف، قد يكون المريض مرتبطاً ببيانات أخرى", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void tsmiAddNewPatientVisit_Click_1(object sender, EventArgs e)
+        {
+            using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+        private void tsmiUpdatePatientVisitInfo_Click(object sender, EventArgs e)
+        {
+            int selectedVisitPatientId = (int)dgvVisits.CurrentRow.Cells[0].Value; 
+
+            if (selectedVisitPatientId <= 0)
+            {
+                MessageBox.Show("الرجاء اختيار زيارة من القائمة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService, selectedVisitPatientId))
+            {
+                frm.ShowDialog();
             }
         }
     }

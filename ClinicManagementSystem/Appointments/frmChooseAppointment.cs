@@ -3,14 +3,15 @@ using ClinicBusiness.Models;
 using ClinicBusiness.Services;
 using ClinicBusiness.Utils;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ClinicManagementSystem.Appointments
 {
     public partial class frmChooseAppointment : Form
     {
-        // 1. تعريف الـ BindingSource على مستوى الكلاس بدلاً من DataView
         private BindingSource _appointmentsBindingSource = new BindingSource();
         private clsAppointment _appointmentService;
         private readonly ClinicManagementSystemContext _context;
@@ -22,21 +23,20 @@ namespace ClinicManagementSystem.Appointments
         {
             InitializeComponent();
             _context = new ClinicManagementSystemContext();
-
             _appointmentService = new clsAppointment(_context);
         }
 
-        private void frmChooseAppointment_Load(object sender, EventArgs e)
+        private async void frmChooseAppointment_Load(object sender, EventArgs e)
         {
             _ConfigureDataGridView();
-            _LoadAllAppointments();
-
-            txtSearch.ForeColor = System.Drawing.Color.Black;
+            cmbSearchType.SelectedIndex = 0; // الخيار الافتراضي: "بلا"
+            await _LoadAllAppointmentsAsync();
         }
 
         private void _ConfigureDataGridView()
         {
             dgvAppointments.AutoGenerateColumns = false;
+            dgvAppointments.Columns.Clear();
 
             dgvAppointments.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -85,22 +85,16 @@ namespace ClinicManagementSystem.Appointments
             dgvAppointments.Columns["StatusTitle"].Width = 100;
         }
 
-        private async void _LoadAllAppointments()
+        private async Task _LoadAllAppointmentsAsync()
         {
             try
             {
-                clsAppointment appointmentService = new clsAppointment(_context);
-                var appointmentsList = await appointmentService.GetAllAppointmentsAsync();
+                List<AppointmentViewDTO> appointmentsList = await _appointmentService.GetAllAppointmentsAsync();
 
                 if (appointmentsList != null)
                 {
-                    // تحويل الـ List إلى DataTable لتفعيل ميزة الـ Filter داخل الـ BindingSource
                     DataTable dtAppointments = ConvertToDataTable._ConvertToDataTable(appointmentsList);
-
-                    // 2. إسناد الـ DataTable للـ BindingSource
                     _appointmentsBindingSource.DataSource = dtAppointments;
-
-                    // 3. ربط الـ DataGridView بالـ BindingSource مباشرة
                     dgvAppointments.DataSource = _appointmentsBindingSource;
                 }
             }
@@ -111,22 +105,84 @@ namespace ClinicManagementSystem.Appointments
             }
         }
 
+        private void ClearAllFields()
+        {
+            txtSearch.Text = string.Empty;
+            _appointmentsBindingSource.RemoveFilter();
+        }
+
+        private void cmbSearchType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ClearAllFields();
+
+            if (cmbSearchType.Text == "بلا")
+            {
+                txtSearch.Visible = false;
+            }
+            else
+            {
+                txtSearch.Visible = true;
+                txtSearch.Focus();
+            }
+        }
+
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // السماح بالأرقام وفتاح التحكم (Backspace) فقط عند اختيار "رقم الموعد"
+            if (cmbSearchType.Text == "رقم الموعد")
+            {
+                if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             if (_appointmentsBindingSource.DataSource == null) return;
-            if (txtSearch.Text == "🔍 أدخل اسم المريض أو الطبيب للبحث...") return;
 
-            string filterText = txtSearch.Text.Trim().Replace("'", "''");
+            string searchValue = txtSearch.Text.Trim().Replace("'", "''");
 
-            if (string.IsNullOrEmpty(filterText))
+            if (string.IsNullOrEmpty(searchValue) || cmbSearchType.Text == "بلا")
             {
-                // إلغاء الفلترة ببساطة
                 _appointmentsBindingSource.RemoveFilter();
                 return;
             }
 
-            // 4. استخدام خاصية الـ Filter الخاصة بالـ BindingSource مباشرة
-            _appointmentsBindingSource.Filter = string.Format("PatientFullName LIKE '%{0}%' OR DoctorFullName LIKE '%{0}%'", filterText);
+            switch (cmbSearchType.Text)
+            {
+                case "رقم الموعد":
+                    if (int.TryParse(searchValue, out int id))
+                    {
+                        _appointmentsBindingSource.Filter = $"AppointmentId = {id}";
+                    }
+                    else
+                    {
+                        _appointmentsBindingSource.RemoveFilter();
+                    }
+                    break;
+
+                case "الرقم الوطني":
+                    _appointmentsBindingSource.Filter = $"PatientNationalNumber LIKE '%{searchValue}%'";
+                    break;
+
+                case "اسم المريض":
+                    _appointmentsBindingSource.Filter = $"PatientFullName LIKE '%{searchValue}%'";
+                    break;
+
+                case "الطبيب المعالج":
+                    _appointmentsBindingSource.Filter = $"DoctorFullName LIKE '%{searchValue}%'";
+                    break;
+
+                case "حالة الموعد":
+                    _appointmentsBindingSource.Filter = $"StatusTitle LIKE '%{searchValue}%'";
+                    break;
+
+                default:
+                    _appointmentsBindingSource.RemoveFilter();
+                    break;
+            }
         }
 
         private void btnSelect_Click(object sender, EventArgs e)
@@ -136,12 +192,14 @@ namespace ClinicManagementSystem.Appointments
 
         private void dgvAppointments_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            _SelectAndClose();
+            if (e.RowIndex >= 0)
+            {
+                _SelectAndClose();
+            }
         }
 
         private void _SelectAndClose()
         {
-            // 5. استخدام الـ Current الخاص بالـ BindingSource للوصول السريع للـ Row الحالي والمختار بأمان
             if (_appointmentsBindingSource.Current != null)
             {
                 DataRowView currentRow = (DataRowView)_appointmentsBindingSource.Current;
@@ -163,51 +221,46 @@ namespace ClinicManagementSystem.Appointments
             this.Close();
         }
 
-        private void btnAddNewAppointment_Click(object sender, EventArgs e)
+        private async void btnAddNewAppointment_Click(object sender, EventArgs e)
         {
             using (frmAppointments frm = new frmAppointments())
             {
-                // 2. فتح الفورم بشكل حواري (سيجعل الفورم الصغير خلفه مباشرة وغير قابل للنقر)
                 frm.ShowDialog();
-
-                // 3. (اختياري) إذا كنت تريد تحديث البيانات في الفورم الحالي بعد إغلاق فورم المواعيد:
-                // _RefreshData(); 
+                await _LoadAllAppointmentsAsync();
             }
         }
 
         private void toolStripShowAppointmentInfo_Click(object sender, EventArgs e)
         {
-            int _selectedAppointmentId = 0;
+            if (dgvAppointments.CurrentRow == null) return;
 
-            _selectedAppointmentId = Convert.ToInt32(dgvAppointments.CurrentRow.Cells["AppointmentId"].Value);
+            int selectedAppointmentId = Convert.ToInt32(dgvAppointments.CurrentRow.Cells["AppointmentId"].Value);
 
-            using (frmShowAppointmentInfo frm = new frmShowAppointmentInfo(_selectedAppointmentId))
+            using (frmShowAppointmentInfo frm = new frmShowAppointmentInfo(selectedAppointmentId))
             {
                 frm.ShowDialog();
             }
         }
 
-        private void toolStripUpdateAppointment_Click(object sender, EventArgs e)
+        private async void toolStripUpdateAppointment_Click(object sender, EventArgs e)
         {
-            int _selectedAppointmentId = 0;
+            if (dgvAppointments.CurrentRow == null) return;
 
-            _selectedAppointmentId = Convert.ToInt32(dgvAppointments.CurrentRow.Cells["AppointmentId"].Value);
+            int selectedAppointmentId = Convert.ToInt32(dgvAppointments.CurrentRow.Cells["AppointmentId"].Value);
 
-            using (frmUpdateAppointment frm = new frmUpdateAppointment(_selectedAppointmentId))
+            using (frmUpdateAppointment frm = new frmUpdateAppointment(selectedAppointmentId))
             {
                 frm.ShowDialog();
+                await _LoadAllAppointmentsAsync();
             }
         }
 
-        private void toolStripAddNewAppointment_Click(object sender, EventArgs e)
+        private async void toolStripAddNewAppointment_Click(object sender, EventArgs e)
         {
             using (frmAppointments frm = new frmAppointments())
             {
-                // 2. فتح الفورم بشكل حواري (سيجعل الفورم الصغير خلفه مباشرة وغير قابل للنقر)
                 frm.ShowDialog();
-
-                // 3. (اختياري) إذا كنت تريد تحديث البيانات في الفورم الحالي بعد إغلاق فورم المواعيد:
-                // _RefreshData(); 
+                await _LoadAllAppointmentsAsync();
             }
         }
 
@@ -215,7 +268,7 @@ namespace ClinicManagementSystem.Appointments
         {
             if (dgvAppointments.SelectedRows.Count == 0) return;
 
-            int appointmentId = (int)dgvAppointments.SelectedRows[0].Cells["AppointmentId"].Value;
+            int appointmentId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["AppointmentId"].Value);
             if (appointmentId == 0) return;
 
             DialogResult result = MessageBox.Show(
@@ -232,56 +285,13 @@ namespace ClinicManagementSystem.Appointments
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف الموعد بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    await LoadAppointmentsDataAsync();
+                    await _LoadAllAppointmentsAsync();
                 }
                 else
                 {
                     MessageBox.Show("حدث خطأ أثناء حذف الموعد. حاول مرة أخرى.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
-            
         }
-
-        private async Task LoadAppointmentsDataAsync()
-        {
-            try
-            {
-                // 1. جلب القائمة مباشرة من السيرفس التي تتعامل مع الـ DbContext
-                List<AppointmentViewDTO> appointmentsList = await _appointmentService.GetAllAppointmentsAsync();
-
-                // 2. بناء الـ DataTable لعمل الفلترة السريعة في الذاكرة
-                DataTable dt = new DataTable();
-                dt.Columns.Add("AppointmentId", typeof(int));
-                dt.Columns.Add("PatientFullName", typeof(string));
-                dt.Columns.Add("PatientNationalNumber", typeof(string));
-                dt.Columns.Add("DoctorFullName", typeof(string));
-                dt.Columns.Add("AppointmentDate", typeof(DateTime));
-                dt.Columns.Add("StatusTitle", typeof(string));
-
-                foreach (var item in appointmentsList)
-                {
-                    dt.Rows.Add(
-                        item.AppointmentId,
-                        item.PatientFullName,
-                        item.PatientNationalNumber,
-                        item.DoctorFullName,
-                        item.AppointmentDate,
-                        item.StatusTitle
-                    );
-                }
-
-
-              
-
-                // 3. ربط الـ DataGridView بالـ BindingSource مباشرة
-                dgvAppointments.DataSource = _appointmentsBindingSource;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"حدث خطأ أثناء جلب المواعيد: {ex.Message}", "خطأ في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
     }
 }

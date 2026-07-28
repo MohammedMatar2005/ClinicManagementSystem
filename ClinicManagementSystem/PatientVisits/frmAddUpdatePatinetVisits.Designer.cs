@@ -2,7 +2,7 @@
 
 namespace ClinicManagementSystem
 {
-    partial class frmPatinetVisits : Form
+    partial class frmAddUpdatePatinetVisits : Form
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -730,6 +730,7 @@ namespace ClinicManagementSystem
             btnSaveVisit.TabIndex = 0;
             btnSaveVisit.Text = "💾 حفظ الزيارة";
             btnSaveVisit.UseVisualStyleBackColor = false;
+            btnSaveVisit.Click += btnSaveVisit_Click;
             // 
             // btnClearFields
             // 
@@ -858,7 +859,7 @@ namespace ClinicManagementSystem
             dgvVisitsHistory.Size = new Size(1026, 581);
             dgvVisitsHistory.TabIndex = 1;
             // 
-            // frmPatinetVisits
+            // frmAddUpdatePatinetVisits
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -869,7 +870,7 @@ namespace ClinicManagementSystem
             ClientSize = new Size(1100, 749);
             Controls.Add(pnlMainBackground);
             Font = new Font("Segoe UI", 9.75F);
-            Name = "frmPatinetVisits";
+            Name = "frmAddUpdatePatinetVisits";
             RightToLeft = RightToLeft.Yes;
             Text = "الزيارات الطبية";
             WindowState = FormWindowState.Maximized;

@@ -160,7 +160,7 @@ namespace ClinicManagementSystem
             wizardTabs.SelectedIndex = 0;
         }
 
-        // ✅ الكود الصحيح لـ UpdateButtonStates
+        
         private void UpdateButtonStates()
         {
             int currentStep = wizardTabs.SelectedIndex;
@@ -237,7 +237,7 @@ namespace ClinicManagementSystem
                     User = new UserSaveDTO
                     {
                         Username = txtUsername.Text.Trim(),
-                        PasswordHash = txtPassword.Text.Trim(),
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(txtPassword.Text.Trim()), 
                         IsActive = chkUserIsActive.Checked,
                         RoleId = 1
                     }
@@ -503,7 +503,6 @@ namespace ClinicManagementSystem
                 _errorProvider.SetError(txtEmail, string.Empty); // إزالة الخطأ
             }
         }
-
 
         private void wizardTabs_Selecting(object sender, TabControlCancelEventArgs e)
         {

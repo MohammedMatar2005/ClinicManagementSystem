@@ -1,32 +1,27 @@
 ﻿using ClinicBusiness.DTO.DoctorsDTOs;
+using ClinicBusiness.Models;
 using ClinicBusiness.Services;
-using ClinicBusiness.Models; // الاعتماد على الموديلز الجديدة الموحدة
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace ClinicManagementSystem.Appointments
 {
     public partial class frmChooseDoctor : Form
     {
-        // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
         private BindingSource _doctorsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
+        private clsDoctor _doctorService;
 
-        clsDoctor _doctorService;
-
-        // خصائص عامة لقراءة البيانات من الفورم
         public int DoctorId { get; private set; } = -1;
         public string DoctorName { get; private set; } = string.Empty;
 
         public frmChooseDoctor()
         {
             InitializeComponent();
-
-
             _context = new ClinicManagementSystemContext();
             _doctorService = new clsDoctor(_context);
         }
@@ -34,15 +29,14 @@ namespace ClinicManagementSystem.Appointments
         private void frmChooseDoctor_Load(object sender, EventArgs e)
         {
             _ConfigureDataGridView();
+            cmbSearchType.SelectedIndex = 0; // الخيار الافتراضي: "بلا"
             _LoadAllDoctors();
-
-            txtSearch.ForeColor = System.Drawing.Color.Black;
         }
 
         private void _ConfigureDataGridView()
         {
-            // 🛠️ منع توليد أعمدة عشوائية زائدة
             dgvDoctors.AutoGenerateColumns = false;
+            dgvDoctors.Columns.Clear();
 
             dgvDoctors.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -78,9 +72,11 @@ namespace ClinicManagementSystem.Appointments
                 HeaderText = "نشط",
                 DataPropertyName = "IsActive"
             });
+
+            dgvDoctors.Columns["DoctorId"].Width = 90;
+            dgvDoctors.Columns["IsActive"].Width = 60;
         }
 
-        // دالة مساعدة لتحويل الـ List إلى DataTable لتشغيل الـ Filter في الـ BindingSource
         private DataTable _ConvertToDataTable<T>(IEnumerable<T> data)
         {
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
@@ -105,15 +101,11 @@ namespace ClinicManagementSystem.Appointments
         {
             try
             {
-                // تمرير الـ Context مباشرة للسيرفس بعد إلغاء الـ Repositories
-                clsDoctor doctorService = new clsDoctor(_context);
-                var doctorsList = await doctorService.GetAllDoctorsAsync();
+                var doctorsList = await _doctorService.GetAllDoctorsAsync();
 
                 if (doctorsList != null)
                 {
                     DataTable dtDoctors = _ConvertToDataTable(doctorsList);
-
-                    // 2. إسناد الـ DataTable للـ BindingSource وربطه بالـ DataGridView
                     _doctorsBindingSource.DataSource = dtDoctors;
                     dgvDoctors.DataSource = _doctorsBindingSource;
                 }
@@ -125,26 +117,84 @@ namespace ClinicManagementSystem.Appointments
             }
         }
 
+        private void ClearAllFields()
+        {
+            txtSearch.Text = string.Empty;
+            _doctorsBindingSource.RemoveFilter();
+        }
+
+        private void cmbSearchType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ClearAllFields();
+
+            if (cmbSearchType.Text == "بلا")
+            {
+                txtSearch.Visible = false;
+            }
+            else
+            {
+                txtSearch.Visible = true;
+                txtSearch.Focus();
+            }
+        }
+
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // تقييد إدخال الأرقام فقط في الحقول الرقمية الصريحة مثل رقم الطبيب
+            if (cmbSearchType.Text == "رقم الطبيب")
+            {
+                if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             if (_doctorsBindingSource.DataSource == null) return;
 
-            string filterText = txtSearch.Text.Trim().Replace("'", "''");
+            string searchValue = txtSearch.Text.Trim().Replace("'", "''");
 
-            if (string.IsNullOrEmpty(filterText))
+            if (string.IsNullOrEmpty(searchValue) || cmbSearchType.Text == "بلا")
             {
-                // 3. إلغاء الفلترة عبر الـ BindingSource
                 _doctorsBindingSource.RemoveFilter();
                 return;
             }
 
-            // 4. الفلترة المباشرة داخل الـ BindingSource
-            _doctorsBindingSource.Filter = string.Format("DoctorFullName LIKE '%{0}%'", filterText);
+            switch (cmbSearchType.Text)
+            {
+                case "رقم الطبيب":
+                    if (int.TryParse(searchValue, out int id))
+                    {
+                        _doctorsBindingSource.Filter = $"DoctorId = {id}";
+                    }
+                    else
+                    {
+                        _doctorsBindingSource.RemoveFilter();
+                    }
+                    break;
+
+                case "اسم الطبيب":
+                    _doctorsBindingSource.Filter = $"DoctorFullName LIKE '%{searchValue}%'";
+                    break;
+
+                case "التخصص":
+                    _doctorsBindingSource.Filter = $"Specialization LIKE '%{searchValue}%'";
+                    break;
+
+                case "رقم الهاتف":
+                    _doctorsBindingSource.Filter = $"PhoneNumber LIKE '%{searchValue}%'";
+                    break;
+
+                default:
+                    _doctorsBindingSource.RemoveFilter();
+                    break;
+            }
         }
 
         private void _SelectAndClose()
         {
-            // 5. قراءة السطر الحالي المختار من خلال الـ BindingSource بأمان وسرعة
             if (_doctorsBindingSource.Current != null)
             {
                 DataRowView currentRow = (DataRowView)_doctorsBindingSource.Current;
@@ -190,7 +240,9 @@ namespace ClinicManagementSystem.Appointments
 
         private void toolStripShowDoctorInfo_Click(object sender, EventArgs e)
         {
-            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
+            if (dgvDoctors.CurrentRow == null) return;
+
+            int doctorId = Convert.ToInt32(dgvDoctors.CurrentRow.Cells["DoctorId"].Value);
 
             using (frmShowDoctorInfo frm = new frmShowDoctorInfo(doctorId))
             {
@@ -204,19 +256,39 @@ namespace ClinicManagementSystem.Appointments
             {
                 frm.ShowDialog();
             }
+
+            _LoadAllDoctors();
+        }
+
+        private void toolStripUpdateDoctorData_Click(object sender, EventArgs e)
+        {
+            if (dgvDoctors.CurrentRow == null) return;
+
+            int doctorId = Convert.ToInt32(dgvDoctors.CurrentRow.Cells["DoctorId"].Value);
+            if (doctorId <= 0) return;
+
+            using (frmAddUpdateDoctor frm = new frmAddUpdateDoctor(doctorId))
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _LoadAllDoctors();
+                }
+            }
         }
 
         private async void toolStripDeleteDoctor_Click(object sender, EventArgs e)
         {
-
             if (dgvDoctors.CurrentRow == null) return;
 
-            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
-
+            int doctorId = Convert.ToInt32(dgvDoctors.CurrentRow.Cells["DoctorId"].Value);
             if (doctorId <= 0) return;
 
-
-            DialogResult result = MessageBox.Show("هل أنت متأكد من حذف هذا الطبيب؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = MessageBox.Show(
+                $"هل أنت متأكد من حذف الطبيب رقم ({doctorId})؟",
+                "تأكيد الحذف",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
 
             if (result == DialogResult.Yes)
             {
@@ -225,7 +297,7 @@ namespace ClinicManagementSystem.Appointments
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف الطبيب بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                    _LoadAllDoctors();
                 }
                 else
                 {
@@ -236,25 +308,11 @@ namespace ClinicManagementSystem.Appointments
 
         private void btnAddNewDoctor_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private async Task toolStripUpdateDoctorData_Click(object sender, EventArgs e)
-        {
-            if (dgvDoctors.CurrentRow == null) return;
-
-            // جلب معرف الطبيب من السطر الحالي للـ Grid
-            int doctorId = (int)dgvDoctors.CurrentRow.Cells["DoctorId"].Value;
-            if (doctorId <= 0) return;
-
-            // فتح فورم التعديل مع تمرير الـ ID المختار
-            using (frmAddUpdateDoctor frm = new frmAddUpdateDoctor(doctorId))
+            using (frmAddUpdateDoctor frm = new frmAddUpdateDoctor())
             {
-                // إذا تمت عملية التحديث بنجاح وضغط المستخدم حفظ، سيعود الـ DialogResult بـ OK
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    // تحديث قائمة الأطباء في الـ Grid لتعكس التعديلات الجديدة فوراً
-                    frmChooseDoctor_Load(null, null);
+                    _LoadAllDoctors();
                 }
             }
         }

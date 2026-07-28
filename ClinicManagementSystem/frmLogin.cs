@@ -11,6 +11,7 @@ namespace ClinicManagementSystem
         private readonly ClinicManagementSystemContext _context;
         private readonly clsUser _userService;
         private readonly clsLoggingService _loggingService;
+        private readonly clsClinicSettings _clinicSettings;
 
         public frmLogin()
         {
@@ -20,11 +21,36 @@ namespace ClinicManagementSystem
             _context = new ClinicManagementSystemContext();
             _userService = new clsUser(_context);
             _loggingService = new clsLoggingService(_context);
+            _clinicSettings = new clsClinicSettings(_context);
         }
 
-        private void frmLogin_Load(object sender, EventArgs e)
+        private async void frmLogin_Load(object sender, EventArgs e)
         {
-            // أي تهيئة إضافية للواجهة (مثل تصفير الخانات)
+            // عرض التاريخ والوقت فور فتح الشاشة
+            _UpdateDateTime();
+
+            // إعداد التايمر لتحديث الوقت كل ثانية
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 1000; // 1000 ميلي ثانية = 1 ثانية
+            timer.Tick += Timer_Tick;
+            timer.Start();
+           
+
+            lblMainTitle.Text = await _clinicSettings.GetClinicName();
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            _UpdateDateTime();
+        }
+
+        private void _UpdateDateTime()
+        {
+            // عرض التاريخ بتنسيق (سنة-شهر-يوم)
+            lblDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // عرض الوقت بتنسيق (ساعة:دقيقة:ثانية ص/م)
+            lblTime.Text = DateTime.Now.ToString("hh:mm:ss tt");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -77,15 +103,18 @@ namespace ClinicManagementSystem
                     return;
                 }
 
-                // 4. نجاح تسجيل الدخول
-                MessageBox.Show($"أهلاً بك مجدداً، {loggedInUser.Username}!", "تم تسجيل الدخول بنجاح",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+             
 
                 // فتح شاشة النظام الرئيسية وتمرير بيانات المستخدم الحالي لها
                 frmMain mainMenu = new frmMain(loggedInUser);
                 mainMenu.Show();
                 this.Hide();
+
+   // 4. نجاح تسجيل الدخول
+                MessageBox.Show($"أهلاً بك مجدداً، {loggedInUser.Username}!", "تم تسجيل الدخول بنجاح",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+
 
                 await _loggingService.LogAsync("تسجيل دخول", enLogSeverity.Information, loggedInUser.UserId);
             }

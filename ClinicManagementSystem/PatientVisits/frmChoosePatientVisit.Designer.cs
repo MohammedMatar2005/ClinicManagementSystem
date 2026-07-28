@@ -1,31 +1,31 @@
-﻿using System.Transactions;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using System.Windows.Forms;
-using System.Drawing.Drawing2D;
-using System.Drawing;
+﻿    using System.Transactions;
+    using System.Xml.Linq;
+    using static System.Net.Mime.MediaTypeNames;
+    using System.Windows.Forms;
+    using System.Drawing.Drawing2D;
+    using System.Drawing;
 
-namespace ClinicManagementSystem.Appointments
-{
-    public partial class frmChoosePatientVisit : Form
+    namespace ClinicManagementSystem.Appointments
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        public partial class frmChoosePatientVisit : Form
         {
-            if (disposing && (components != null))
+            /// <summary>
+            /// Required designer variable.
+            /// </summary>
+            private System.ComponentModel.IContainer components = null;
+
+            /// <summary>
+            /// Clean up any resources being used.
+            /// </summary>
+            /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+            protected override void Dispose(bool disposing)
             {
-                components.Dispose();
+                if (disposing && (components != null))
+                {
+                    components.Dispose();
+                }
+                base.Dispose(disposing);
             }
-            base.Dispose(disposing);
-        }
 
         #region Windows Form Designer generated code
 
@@ -35,6 +35,7 @@ namespace ClinicManagementSystem.Appointments
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlTopHeader = new Panel();
@@ -43,8 +44,14 @@ namespace ClinicManagementSystem.Appointments
             dgvVisits = new DataGridView();
             btnSelect = new Button();
             btnCancel = new Button();
+            cmsOptions = new ContextMenuStrip(components);
+            tsmiViewPatientVisitDetails = new ToolStripMenuItem();
+            tsmiAddNewPatientVisit = new ToolStripMenuItem();
+            tsmiUpdatePatientVisitInfo = new ToolStripMenuItem();
+            tsmiDeletePatientVisit = new ToolStripMenuItem();
             pnlTopHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvVisits).BeginInit();
+            cmsOptions.SuspendLayout();
             SuspendLayout();
             // 
             // pnlTopHeader
@@ -102,6 +109,7 @@ namespace ClinicManagementSystem.Appointments
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dgvVisits.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvVisits.ColumnHeadersHeight = 40;
+            dgvVisits.ContextMenuStrip = cmsOptions;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.White;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -155,6 +163,43 @@ namespace ClinicManagementSystem.Appointments
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
             // 
+            // cmsOptions
+            // 
+            cmsOptions.ImageScalingSize = new Size(20, 20);
+            cmsOptions.Items.AddRange(new ToolStripItem[] { tsmiViewPatientVisitDetails, tsmiAddNewPatientVisit, tsmiUpdatePatientVisitInfo, tsmiDeletePatientVisit });
+            cmsOptions.Name = "cmsOptions";
+            cmsOptions.RightToLeft = RightToLeft.Yes;
+            cmsOptions.Size = new Size(190, 92);
+            // 
+            // tsmiViewPatientVisitDetails
+            // 
+            tsmiViewPatientVisitDetails.Name = "tsmiViewPatientVisitDetails";
+            tsmiViewPatientVisitDetails.Size = new Size(189, 22);
+            tsmiViewPatientVisitDetails.Text = "👁️   عرض البيانات";
+            tsmiViewPatientVisitDetails.Click += tsmiViewPatientVisitDetails_Click;
+            // 
+            // tsmiAddNewPatientVisit
+            // 
+            tsmiAddNewPatientVisit.Name = "tsmiAddNewPatientVisit";
+            tsmiAddNewPatientVisit.Size = new Size(189, 22);
+            tsmiAddNewPatientVisit.Text = "➕   إضافة زيارة مريض";
+            tsmiAddNewPatientVisit.Click += tsmiAddNewPatientVisit_Click_1;
+            // 
+            // tsmiUpdatePatientVisitInfo
+            // 
+            tsmiUpdatePatientVisitInfo.Name = "tsmiUpdatePatientVisitInfo";
+            tsmiUpdatePatientVisitInfo.Size = new Size(189, 22);
+            tsmiUpdatePatientVisitInfo.Text = "✏️   تعديل البيانات";
+            tsmiUpdatePatientVisitInfo.Click += tsmiUpdatePatientVisitInfo_Click;
+            // 
+            // tsmiDeletePatientVisit
+            // 
+            tsmiDeletePatientVisit.ForeColor = Color.DarkRed;
+            tsmiDeletePatientVisit.Name = "tsmiDeletePatientVisit";
+            tsmiDeletePatientVisit.Size = new Size(189, 22);
+            tsmiDeletePatientVisit.Text = "❌   حذف زيارة المريض";
+            tsmiDeletePatientVisit.Click += tsmiDeletePatientVisit_Click;
+            // 
             // frmChoosePatientVisit
             // 
             AcceptButton = btnSelect;
@@ -174,10 +219,12 @@ namespace ClinicManagementSystem.Appointments
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "شاشة اختيار زيارة المريض";
+            WindowState = FormWindowState.Maximized;
             Load += frmChoosePatientVisit_Load;
             pnlTopHeader.ResumeLayout(false);
             pnlTopHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvVisits).EndInit();
+            cmsOptions.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -185,10 +232,15 @@ namespace ClinicManagementSystem.Appointments
         #endregion
 
         private System.Windows.Forms.Panel pnlTopHeader;
-        private System.Windows.Forms.Label lblHeaderTitle;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dgvVisits;
-        private System.Windows.Forms.Button btnSelect;
-        private System.Windows.Forms.Button btnCancel;
+            private System.Windows.Forms.Label lblHeaderTitle;
+            private System.Windows.Forms.TextBox txtSearch;
+            private System.Windows.Forms.DataGridView dgvVisits;
+            private System.Windows.Forms.Button btnSelect;
+            private System.Windows.Forms.Button btnCancel;
+            private ContextMenuStrip cmsOptions;
+            private ToolStripMenuItem tsmiViewPatientVisitDetails;
+            private ToolStripMenuItem tsmiAddNewPatientVisit;
+            private ToolStripMenuItem tsmiUpdatePatientVisitInfo;
+            private ToolStripMenuItem tsmiDeletePatientVisit;
+        }
     }
-}
