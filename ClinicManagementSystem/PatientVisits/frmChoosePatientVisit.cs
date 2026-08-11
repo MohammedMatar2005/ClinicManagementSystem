@@ -1,21 +1,28 @@
 ﻿using ClinicBusiness.Services;
 using ClinicBusiness.Models; // الاعتماد على الموديلز الموحدة للبزنس
+using ClinicBusiness.DTO.PatientVisitsDTOs;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClinicBusiness.Utils;
 using ClinicManagementSystem.PatientVisits;
 
 namespace ClinicManagementSystem.Appointments
 {
     public partial class frmChoosePatientVisit : Form
     {
-        // 1. استخدام الـ BindingSource للتحكم بالفلترة والسطر الحالي
+        // 1. استخدام الـ BindingSource للتحكم بالعرض، مربوط مباشرة بـ List<PatientVisitViewDTO>
+        //    (بدون تحويل وسيط لـ DataTable كما كان سابقاً، للحفاظ على الأنواع القوية Type-Safety)
         private BindingSource _visitsBindingSource = new BindingSource();
         private readonly ClinicManagementSystemContext _context;
 
         private clsPatientVisit _patientVisitService;
+
+        // نحتفظ بالقائمة الكاملة الأصلية بذاكرة البرنامج لتطبيق الفلترة عليها يدوياً عند البحث
+        private List<PatientVisitViewDTO> _originalVisitsList = new List<PatientVisitViewDTO>();
 
         // خصائص عامة لقراءة البيانات من فورم المواعيد بعد الإغلاق
         public int PatientVisitId { get; private set; } = -1;
@@ -32,12 +39,12 @@ namespace ClinicManagementSystem.Appointments
             _patientVisitService = new clsPatientVisit(_context);
         }
 
-        private void frmChoosePatientVisit_Load(object sender, EventArgs e)
+        private async void frmChoosePatientVisit_Load(object sender, EventArgs e)
         {
             dgvVisits.AutoGenerateColumns = false;
 
             _BuildGridColumnsStructure();
-            _LoadAllVisits();
+            await _LoadAllVisitsAsync();
 
             txtSearch.Text = "";
             txtSearch.ForeColor = System.Drawing.Color.Black;
@@ -52,7 +59,7 @@ namespace ClinicManagementSystem.Appointments
                 Name = "VisitId",
                 DataPropertyName = "VisitId",
                 HeaderText = "رقم الزيارة",
-                Width = 90
+                Width = 80
             });
 
             dgvVisits.Columns.Add(new DataGridViewTextBoxColumn
@@ -68,7 +75,8 @@ namespace ClinicManagementSystem.Appointments
                 Name = "VisitDate",
                 DataPropertyName = "VisitDate",
                 HeaderText = "تاريخ الزيارة",
-                Width = 130
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "yyyy-MM-dd HH:mm" }
             });
 
             dgvVisits.Columns.Add(new DataGridViewTextBoxColumn
@@ -76,7 +84,7 @@ namespace ClinicManagementSystem.Appointments
                 Name = "DoctorFullName",
                 DataPropertyName = "DoctorFullName",
                 HeaderText = "اسم الطبيب المعالج",
-                Width = 200
+                Width = 180
             });
 
             dgvVisits.Columns.Add(new DataGridViewTextBoxColumn
@@ -84,7 +92,7 @@ namespace ClinicManagementSystem.Appointments
                 Name = "AppointmentReason",
                 DataPropertyName = "AppointmentReason",
                 HeaderText = "سبب الموعد",
-                Width = 180
+                Width = 160
             });
 
             dgvVisits.Columns.Add(new DataGridViewTextBoxColumn
@@ -92,50 +100,65 @@ namespace ClinicManagementSystem.Appointments
                 Name = "Diagnosis",
                 DataPropertyName = "Diagnosis",
                 HeaderText = "التشخيص الطبي",
-                Width = 220
+                Width = 200
+            });
+
+            // العمود الجديد: حالة الزيارة (موجود بالـ DTO الجديد ولم يكن معروضاً سابقاً)
+            dgvVisits.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "VisitStatusTitle",
+                DataPropertyName = "VisitStatusTitle",
+                HeaderText = "حالة الزيارة",
+                Width = 110
             });
         }
 
-        private async void _LoadAllVisits()
+        /// <summary>
+        /// جلب كل الزيارات (بدل الزيارات غير المفوترة فقط سابقاً) وربطها مباشرة بالـ GridView
+        /// عبر BindingSource بدون تحويل لـ DataTable.
+        /// </summary>
+        private async Task _LoadAllVisitsAsync()
         {
             try
             {
-                // تمرير الـ Context مباشرة للسيرفس بعد إلغاء الـ Repositories
-                clsPatientVisit patientVisitService = new clsPatientVisit(_context);
-                var visitsList = await patientVisitService.GetAllPatientVisitsAsync();
+                this.Cursor = Cursors.WaitCursor;
 
-                if (visitsList != null)
-                {
-                    // تحويل الـ List إلى DataTable لتفعيل خاصية الـ Filter في الـ BindingSource
-                    DataTable dtVisits = ConvertToDataTable._ConvertToDataTable(visitsList);
+                _originalVisitsList = await _patientVisitService.GetAllPatientVisitsAsync();
 
-                    // 2. إسناد الـ DataTable للـ BindingSource وربطه بالـ DataGridView
-                    _visitsBindingSource.DataSource = dtVisits;
-                    dgvVisits.DataSource = _visitsBindingSource;
-                }
+                _visitsBindingSource.DataSource = _originalVisitsList;
+                dgvVisits.DataSource = _visitsBindingSource;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء تحميل بيانات الزيارات: {ex.Message}",
                     "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            if (_visitsBindingSource.DataSource == null) return;
-
-            string filterText = txtSearch.Text.Trim().Replace("'", "''");
+            string filterText = txtSearch.Text.Trim();
 
             if (string.IsNullOrEmpty(filterText))
             {
-                // 3. إلغاء الفلترة عبر الـ BindingSource
-                _visitsBindingSource.RemoveFilter();
+                // إعادة القائمة الكاملة بدون فلترة
+                _visitsBindingSource.DataSource = _originalVisitsList;
                 return;
             }
 
-            // 4. الفلترة المباشرة اللحظية داخل الـ BindingSource بناءً على اسم الدكتور
-            _visitsBindingSource.Filter = string.Format("DoctorFullName LIKE '%{0}%'", filterText);
+            // فلترة يدوية بالذاكرة على اسم الطبيب أو اسم المريض
+            // (List<T> لا يدعم BindingSource.Filter مباشرة كما كان يدعمه DataTable، لذلك نفلتر يدوياً)
+            var filtered = _originalVisitsList
+                .Where(v =>
+                    (v.DoctorFullName != null && v.DoctorFullName.Contains(filterText, StringComparison.OrdinalIgnoreCase)) ||
+                    (v.PatientFullName != null && v.PatientFullName.Contains(filterText, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            _visitsBindingSource.DataSource = filtered;
         }
 
         private void btnSelect_Click(object sender, EventArgs e)
@@ -153,13 +176,11 @@ namespace ClinicManagementSystem.Appointments
 
         private void _SelectAndClose()
         {
-            // 5. قراءة السطر الحالي المختار من خلال الـ BindingSource بأمان وسرعة وبدون تجميد الواجهة
-            if (_visitsBindingSource.Current != null)
+            // قراءة السطر الحالي المختار مباشرة كـ PatientVisitViewDTO (Type-Safe بدون Convert)
+            if (_visitsBindingSource.Current is PatientVisitViewDTO currentVisit)
             {
-                DataRowView currentRow = (DataRowView)_visitsBindingSource.Current;
-
-                PatientVisitId = Convert.ToInt32(currentRow["VisitId"]);
-                DoctorName = Convert.ToString(currentRow["DoctorFullName"]);
+                PatientVisitId = currentVisit.VisitId;
+                DoctorName = currentVisit.DoctorFullName;
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -185,19 +206,26 @@ namespace ClinicManagementSystem.Appointments
             }
         }
 
-        private void tsmiAddNewPatientVisit_Click(object sender, EventArgs e)
+        private void tsmiAddNewPatientVisit_Click_1(object sender, EventArgs e)
         {
             using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService))
             {
-                frm.ShowDialog();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _ = _LoadAllVisitsAsync(); // إعادة تحميل القائمة بعد الإضافة
+                }
             }
         }
 
         private void tsmiViewPatientVisitDetails_Click(object sender, EventArgs e)
         {
-            var selectedVisitPatientId = (int)dgvVisits.CurrentRow.Cells[0].Value;
+            if (!(dgvVisits.CurrentRow?.DataBoundItem is PatientVisitViewDTO selectedVisit))
+            {
+                MessageBox.Show("الرجاء اختيار زيارة من القائمة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-            using (Form frm = new frmShowPatientVisitInfo(selectedVisitPatientId))
+            using (Form frm = new frmShowPatientVisitInfo(selectedVisit.VisitId))
             {
                 frm.ShowDialog();
             }
@@ -205,23 +233,22 @@ namespace ClinicManagementSystem.Appointments
 
         private async void tsmiDeletePatientVisit_Click(object sender, EventArgs e)
         {
-            if (dgvVisits.CurrentRow == null) return;
-
-            int patientVisitId = (int)dgvVisits.CurrentRow.Cells[0].Value;
-
-            if (patientVisitId <= 0) return;
-
+            if (!(dgvVisits.CurrentRow?.DataBoundItem is PatientVisitViewDTO selectedVisit))
+            {
+                MessageBox.Show("الرجاء اختيار زيارة من القائمة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             DialogResult result = MessageBox.Show("هل أنت متأكد من حذف زيارة هذا المريض؟", "تأكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
-                bool isDeleted = await _patientVisitService.DeletePatientVisitAsync(patientVisitId);
+                bool isDeleted = await _patientVisitService.DeletePatientVisitAsync(selectedVisit.VisitId);
 
                 if (isDeleted)
                 {
                     MessageBox.Show("تم حذف زيارة المريض بنجاح", "معلومة", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    frmChoosePatientVisit_Load(this, EventArgs.Empty); // إعادة تحميل البيانات بعد الحذف
+                    await _LoadAllVisitsAsync(); // إعادة تحميل البيانات بعد الحذف
                 }
                 else
                 {
@@ -230,27 +257,20 @@ namespace ClinicManagementSystem.Appointments
             }
         }
 
-        private void tsmiAddNewPatientVisit_Click_1(object sender, EventArgs e)
-        {
-            using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService))
-            {
-                frm.ShowDialog();
-            }
-        }
-
         private void tsmiUpdatePatientVisitInfo_Click(object sender, EventArgs e)
         {
-            int selectedVisitPatientId = (int)dgvVisits.CurrentRow.Cells[0].Value; 
-
-            if (selectedVisitPatientId <= 0)
+            if (!(dgvVisits.CurrentRow?.DataBoundItem is PatientVisitViewDTO selectedVisit))
             {
                 MessageBox.Show("الرجاء اختيار زيارة من القائمة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            using (Form frm = new frmAddUpdatePatinetVisits(_patientVisitService, selectedVisitPatientId))
+            using (Form frm = new frmUpdatePatientVisitInfo(selectedVisit.VisitId))
             {
-                frm.ShowDialog();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _ = _LoadAllVisitsAsync(); // إعادة تحميل القائمة بعد التعديل
+                }
             }
         }
     }

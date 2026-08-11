@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace ClinicManagementSystem
 {
@@ -19,11 +20,7 @@ namespace ClinicManagementSystem
 
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             pnlMainBackground = new Panel();
-            tabControlVisits = new TabControl();
-            tabNewVisit = new TabPage();
             scrollContainer = new Panel();
             tlpNewVisitMain = new TableLayoutPanel();
             lblVisitHeader = new Label();
@@ -72,16 +69,7 @@ namespace ClinicManagementSystem
             flpActionButtons = new FlowLayoutPanel();
             btnSaveVisit = new Button();
             btnClearFields = new Button();
-            tabVisitHistory = new TabPage();
-            pnlHistoryCard = new Panel();
-            tlpHistoryMain = new TableLayoutPanel();
-            tlpHistoryHeader = new TableLayoutPanel();
-            lblHistoryTitle = new Label();
-            txtSearchPatient = new TextBox();
-            dgvVisitsHistory = new DataGridView();
             pnlMainBackground.SuspendLayout();
-            tabControlVisits.SuspendLayout();
-            tabNewVisit.SuspendLayout();
             scrollContainer.SuspendLayout();
             tlpNewVisitMain.SuspendLayout();
             tlpColumnsContainer.SuspendLayout();
@@ -103,17 +91,12 @@ namespace ClinicManagementSystem
             pnlNotesCard.SuspendLayout();
             tlpNotes.SuspendLayout();
             flpActionButtons.SuspendLayout();
-            tabVisitHistory.SuspendLayout();
-            pnlHistoryCard.SuspendLayout();
-            tlpHistoryMain.SuspendLayout();
-            tlpHistoryHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvVisitsHistory).BeginInit();
             SuspendLayout();
             // 
             // pnlMainBackground
             // 
             pnlMainBackground.BackColor = Color.FromArgb(244, 247, 250);
-            pnlMainBackground.Controls.Add(tabControlVisits);
+            pnlMainBackground.Controls.Add(scrollContainer);
             pnlMainBackground.Dock = DockStyle.Fill;
             pnlMainBackground.Location = new Point(0, 0);
             pnlMainBackground.Name = "pnlMainBackground";
@@ -121,37 +104,14 @@ namespace ClinicManagementSystem
             pnlMainBackground.Size = new Size(1100, 749);
             pnlMainBackground.TabIndex = 0;
             // 
-            // tabControlVisits
-            // 
-            tabControlVisits.Controls.Add(tabNewVisit);
-            tabControlVisits.Controls.Add(tabVisitHistory);
-            tabControlVisits.Dock = DockStyle.Fill;
-            tabControlVisits.Font = new Font("Segoe UI", 11.25F);
-            tabControlVisits.Location = new Point(10, 10);
-            tabControlVisits.Name = "tabControlVisits";
-            tabControlVisits.Padding = new Point(20, 10);
-            tabControlVisits.SelectedIndex = 0;
-            tabControlVisits.Size = new Size(1080, 729);
-            tabControlVisits.TabIndex = 0;
-            // 
-            // tabNewVisit
-            // 
-            tabNewVisit.BackColor = Color.Transparent;
-            tabNewVisit.Controls.Add(scrollContainer);
-            tabNewVisit.Location = new Point(4, 43);
-            tabNewVisit.Name = "tabNewVisit";
-            tabNewVisit.Size = new Size(1072, 682);
-            tabNewVisit.TabIndex = 0;
-            tabNewVisit.Text = "تسجيل زيارة جديدة";
-            // 
             // scrollContainer
             // 
             scrollContainer.AutoScroll = true;
             scrollContainer.Controls.Add(tlpNewVisitMain);
             scrollContainer.Dock = DockStyle.Fill;
-            scrollContainer.Location = new Point(0, 0);
+            scrollContainer.Location = new Point(10, 10);
             scrollContainer.Name = "scrollContainer";
-            scrollContainer.Size = new Size(1072, 682);
+            scrollContainer.Size = new Size(1080, 729);
             scrollContainer.TabIndex = 0;
             // 
             // tlpNewVisitMain
@@ -171,7 +131,7 @@ namespace ClinicManagementSystem
             tlpNewVisitMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
             tlpNewVisitMain.RowStyles.Add(new RowStyle());
             tlpNewVisitMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-            tlpNewVisitMain.Size = new Size(1055, 700);
+            tlpNewVisitMain.Size = new Size(1080, 700);
             tlpNewVisitMain.TabIndex = 0;
             // 
             // lblVisitHeader
@@ -183,7 +143,7 @@ namespace ClinicManagementSystem
             lblVisitHeader.Location = new Point(10, 10);
             lblVisitHeader.Margin = new Padding(10, 0, 0, 15);
             lblVisitHeader.Name = "lblVisitHeader";
-            lblVisitHeader.Size = new Size(1025, 41);
+            lblVisitHeader.Size = new Size(1050, 41);
             lblVisitHeader.TabIndex = 0;
             lblVisitHeader.Text = "بيانات الزيارة الطبية";
             lblVisitHeader.TextAlign = ContentAlignment.MiddleLeft;
@@ -200,7 +160,7 @@ namespace ClinicManagementSystem
             tlpColumnsContainer.Name = "tlpColumnsContainer";
             tlpColumnsContainer.RowCount = 1;
             tlpColumnsContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpColumnsContainer.Size = new Size(1029, 550);
+            tlpColumnsContainer.Size = new Size(1054, 550);
             tlpColumnsContainer.TabIndex = 1;
             tlpColumnsContainer.Paint += tlpColumnsContainer_Paint;
             // 
@@ -209,11 +169,11 @@ namespace ClinicManagementSystem
             pnlGeneralDataCard.BackColor = Color.White;
             pnlGeneralDataCard.Controls.Add(tlpGeneralData);
             pnlGeneralDataCard.Dock = DockStyle.Fill;
-            pnlGeneralDataCard.Location = new Point(353, 10);
+            pnlGeneralDataCard.Location = new Point(362, 10);
             pnlGeneralDataCard.Margin = new Padding(10);
             pnlGeneralDataCard.Name = "pnlGeneralDataCard";
             pnlGeneralDataCard.Padding = new Padding(20);
-            pnlGeneralDataCard.Size = new Size(666, 530);
+            pnlGeneralDataCard.Size = new Size(682, 530);
             pnlGeneralDataCard.TabIndex = 0;
             // 
             // tlpGeneralData
@@ -242,7 +202,7 @@ namespace ClinicManagementSystem
             tlpGeneralData.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             tlpGeneralData.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             tlpGeneralData.RowStyles.Add(new RowStyle(SizeType.Absolute, 72F));
-            tlpGeneralData.Size = new Size(626, 490);
+            tlpGeneralData.Size = new Size(642, 490);
             tlpGeneralData.TabIndex = 0;
             // 
             // lblGeneralDataTitle
@@ -250,7 +210,7 @@ namespace ClinicManagementSystem
             lblGeneralDataTitle.AutoSize = true;
             lblGeneralDataTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblGeneralDataTitle.ForeColor = Color.FromArgb(46, 125, 50);
-            lblGeneralDataTitle.Location = new Point(473, 0);
+            lblGeneralDataTitle.Location = new Point(489, 0);
             lblGeneralDataTitle.Margin = new Padding(0, 0, 0, 15);
             lblGeneralDataTitle.Name = "lblGeneralDataTitle";
             lblGeneralDataTitle.Size = new Size(153, 32);
@@ -269,7 +229,7 @@ namespace ClinicManagementSystem
             tlpPatientDoctorGrid.Name = "tlpPatientDoctorGrid";
             tlpPatientDoctorGrid.RowCount = 1;
             tlpPatientDoctorGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpPatientDoctorGrid.Size = new Size(626, 67);
+            tlpPatientDoctorGrid.Size = new Size(642, 67);
             tlpPatientDoctorGrid.TabIndex = 1;
             // 
             // pnlPatientGroup
@@ -277,10 +237,10 @@ namespace ClinicManagementSystem
             pnlPatientGroup.Controls.Add(txtAppointmentId);
             pnlPatientGroup.Controls.Add(btnChooseAppointment);
             pnlPatientGroup.Dock = DockStyle.Fill;
-            pnlPatientGroup.Location = new Point(318, 5);
+            pnlPatientGroup.Location = new Point(326, 5);
             pnlPatientGroup.Margin = new Padding(5);
             pnlPatientGroup.Name = "pnlPatientGroup";
-            pnlPatientGroup.Size = new Size(303, 57);
+            pnlPatientGroup.Size = new Size(311, 57);
             pnlPatientGroup.TabIndex = 0;
             // 
             // txtAppointmentId
@@ -288,7 +248,7 @@ namespace ClinicManagementSystem
             txtAppointmentId.Dock = DockStyle.Fill;
             txtAppointmentId.Location = new Point(120, 0);
             txtAppointmentId.Name = "txtAppointmentId";
-            txtAppointmentId.Size = new Size(183, 27);
+            txtAppointmentId.Size = new Size(191, 25);
             txtAppointmentId.TabIndex = 10;
             // 
             // btnChooseAppointment
@@ -314,7 +274,7 @@ namespace ClinicManagementSystem
             pnlSeparator.Location = new Point(0, 128);
             pnlSeparator.Margin = new Padding(0, 10, 0, 9);
             pnlSeparator.Name = "pnlSeparator";
-            pnlSeparator.Size = new Size(626, 2);
+            pnlSeparator.Size = new Size(642, 2);
             pnlSeparator.TabIndex = 2;
             // 
             // lblSymptoms
@@ -322,7 +282,7 @@ namespace ClinicManagementSystem
             lblSymptoms.AutoSize = true;
             lblSymptoms.Font = new Font("Segoe UI", 12F);
             lblSymptoms.ForeColor = Color.FromArgb(143, 163, 184);
-            lblSymptoms.Location = new Point(469, 139);
+            lblSymptoms.Location = new Point(485, 139);
             lblSymptoms.Margin = new Padding(5, 0, 0, 5);
             lblSymptoms.Name = "lblSymptoms";
             lblSymptoms.Size = new Size(152, 21);
@@ -338,7 +298,7 @@ namespace ClinicManagementSystem
             txtSymptoms.Multiline = true;
             txtSymptoms.Name = "txtSymptoms";
             txtSymptoms.ScrollBars = ScrollBars.Vertical;
-            txtSymptoms.Size = new Size(620, 82);
+            txtSymptoms.Size = new Size(636, 82);
             txtSymptoms.TabIndex = 4;
             // 
             // lblDiagnosis
@@ -346,7 +306,7 @@ namespace ClinicManagementSystem
             lblDiagnosis.AutoSize = true;
             lblDiagnosis.Font = new Font("Segoe UI", 12F);
             lblDiagnosis.ForeColor = Color.FromArgb(143, 163, 184);
-            lblDiagnosis.Location = new Point(467, 255);
+            lblDiagnosis.Location = new Point(483, 255);
             lblDiagnosis.Margin = new Padding(5, 0, 0, 5);
             lblDiagnosis.Name = "lblDiagnosis";
             lblDiagnosis.Size = new Size(154, 21);
@@ -362,7 +322,7 @@ namespace ClinicManagementSystem
             txtDiagnosis.Multiline = true;
             txtDiagnosis.Name = "txtDiagnosis";
             txtDiagnosis.ScrollBars = ScrollBars.Vertical;
-            txtDiagnosis.Size = new Size(620, 84);
+            txtDiagnosis.Size = new Size(636, 84);
             txtDiagnosis.TabIndex = 6;
             // 
             // lblTreatmentPlan
@@ -370,7 +330,7 @@ namespace ClinicManagementSystem
             lblTreatmentPlan.AutoSize = true;
             lblTreatmentPlan.Font = new Font("Segoe UI", 12F);
             lblTreatmentPlan.ForeColor = Color.FromArgb(143, 163, 184);
-            lblTreatmentPlan.Location = new Point(423, 373);
+            lblTreatmentPlan.Location = new Point(439, 373);
             lblTreatmentPlan.Margin = new Padding(5, 0, 0, 5);
             lblTreatmentPlan.Name = "lblTreatmentPlan";
             lblTreatmentPlan.Size = new Size(198, 21);
@@ -386,7 +346,7 @@ namespace ClinicManagementSystem
             txtTreatmentPlan.Multiline = true;
             txtTreatmentPlan.Name = "txtTreatmentPlan";
             txtTreatmentPlan.ScrollBars = ScrollBars.Vertical;
-            txtTreatmentPlan.Size = new Size(620, 81);
+            txtTreatmentPlan.Size = new Size(636, 81);
             txtTreatmentPlan.TabIndex = 8;
             // 
             // tlpRightSideCards
@@ -401,7 +361,7 @@ namespace ClinicManagementSystem
             tlpRightSideCards.RowCount = 2;
             tlpRightSideCards.RowStyles.Add(new RowStyle(SizeType.Absolute, 330F));
             tlpRightSideCards.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpRightSideCards.Size = new Size(337, 544);
+            tlpRightSideCards.Size = new Size(346, 544);
             tlpRightSideCards.TabIndex = 1;
             // 
             // pnlVitalsCard
@@ -414,7 +374,7 @@ namespace ClinicManagementSystem
             pnlVitalsCard.Margin = new Padding(10);
             pnlVitalsCard.Name = "pnlVitalsCard";
             pnlVitalsCard.Padding = new Padding(20);
-            pnlVitalsCard.Size = new Size(317, 310);
+            pnlVitalsCard.Size = new Size(326, 310);
             pnlVitalsCard.TabIndex = 0;
             // 
             // tlpVitals
@@ -433,7 +393,7 @@ namespace ClinicManagementSystem
             tlpVitals.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
             tlpVitals.RowStyles.Add(new RowStyle(SizeType.Absolute, 79F));
             tlpVitals.RowStyles.Add(new RowStyle(SizeType.Absolute, 33F));
-            tlpVitals.Size = new Size(275, 268);
+            tlpVitals.Size = new Size(284, 268);
             tlpVitals.TabIndex = 0;
             // 
             // flpVitalsHeader
@@ -444,14 +404,14 @@ namespace ClinicManagementSystem
             flpVitalsHeader.Location = new Point(0, 0);
             flpVitalsHeader.Margin = new Padding(0, 0, 0, 15);
             flpVitalsHeader.Name = "flpVitalsHeader";
-            flpVitalsHeader.Size = new Size(275, 39);
+            flpVitalsHeader.Size = new Size(284, 39);
             flpVitalsHeader.TabIndex = 0;
             // 
             // lblVitalsIcon
             // 
             lblVitalsIcon.AutoSize = true;
             lblVitalsIcon.Font = new Font("Segoe UI", 20F);
-            lblVitalsIcon.Location = new Point(221, 0);
+            lblVitalsIcon.Location = new Point(230, 0);
             lblVitalsIcon.Margin = new Padding(0, 0, 10, 0);
             lblVitalsIcon.Name = "lblVitalsIcon";
             lblVitalsIcon.Size = new Size(54, 37);
@@ -463,7 +423,7 @@ namespace ClinicManagementSystem
             lblVitalsTitle.AutoSize = true;
             lblVitalsTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblVitalsTitle.ForeColor = Color.FromArgb(46, 125, 50);
-            lblVitalsTitle.Location = new Point(33, 0);
+            lblVitalsTitle.Location = new Point(42, 0);
             lblVitalsTitle.Name = "lblVitalsTitle";
             lblVitalsTitle.Size = new Size(175, 32);
             lblVitalsTitle.TabIndex = 1;
@@ -477,7 +437,7 @@ namespace ClinicManagementSystem
             pnlBPGroup.Location = new Point(0, 59);
             pnlBPGroup.Margin = new Padding(0, 5, 0, 5);
             pnlBPGroup.Name = "pnlBPGroup";
-            pnlBPGroup.Size = new Size(275, 54);
+            pnlBPGroup.Size = new Size(284, 54);
             pnlBPGroup.TabIndex = 1;
             // 
             // lblBloodPressure
@@ -495,9 +455,9 @@ namespace ClinicManagementSystem
             // 
             txtBloodPressure.BorderStyle = BorderStyle.FixedSingle;
             txtBloodPressure.Dock = DockStyle.Bottom;
-            txtBloodPressure.Location = new Point(0, 27);
+            txtBloodPressure.Location = new Point(0, 29);
             txtBloodPressure.Name = "txtBloodPressure";
-            txtBloodPressure.Size = new Size(275, 27);
+            txtBloodPressure.Size = new Size(284, 25);
             txtBloodPressure.TabIndex = 1;
             // 
             // tlpTempPulseGrid
@@ -513,7 +473,7 @@ namespace ClinicManagementSystem
             tlpTempPulseGrid.Name = "tlpTempPulseGrid";
             tlpTempPulseGrid.RowCount = 1;
             tlpTempPulseGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpTempPulseGrid.Size = new Size(275, 79);
+            tlpTempPulseGrid.Size = new Size(284, 79);
             tlpTempPulseGrid.TabIndex = 2;
             // 
             // pnlTempGroup
@@ -521,10 +481,10 @@ namespace ClinicManagementSystem
             pnlTempGroup.Controls.Add(lblTemperature);
             pnlTempGroup.Controls.Add(txtTemperature);
             pnlTempGroup.Dock = DockStyle.Fill;
-            pnlTempGroup.Location = new Point(143, 5);
+            pnlTempGroup.Location = new Point(147, 5);
             pnlTempGroup.Margin = new Padding(0, 5, 5, 5);
             pnlTempGroup.Name = "pnlTempGroup";
-            pnlTempGroup.Size = new Size(132, 69);
+            pnlTempGroup.Size = new Size(137, 69);
             pnlTempGroup.TabIndex = 0;
             // 
             // lblTemperature
@@ -542,9 +502,9 @@ namespace ClinicManagementSystem
             // 
             txtTemperature.BorderStyle = BorderStyle.FixedSingle;
             txtTemperature.Dock = DockStyle.Bottom;
-            txtTemperature.Location = new Point(0, 42);
+            txtTemperature.Location = new Point(0, 44);
             txtTemperature.Name = "txtTemperature";
-            txtTemperature.Size = new Size(132, 27);
+            txtTemperature.Size = new Size(137, 25);
             txtTemperature.TabIndex = 1;
             // 
             // pnlPulseGroup
@@ -555,7 +515,7 @@ namespace ClinicManagementSystem
             pnlPulseGroup.Location = new Point(0, 5);
             pnlPulseGroup.Margin = new Padding(5, 5, 0, 5);
             pnlPulseGroup.Name = "pnlPulseGroup";
-            pnlPulseGroup.Size = new Size(133, 69);
+            pnlPulseGroup.Size = new Size(137, 69);
             pnlPulseGroup.TabIndex = 1;
             // 
             // lblHeartRate
@@ -573,9 +533,9 @@ namespace ClinicManagementSystem
             // 
             txtHeartRate.BorderStyle = BorderStyle.FixedSingle;
             txtHeartRate.Dock = DockStyle.Bottom;
-            txtHeartRate.Location = new Point(0, 42);
+            txtHeartRate.Location = new Point(0, 44);
             txtHeartRate.Name = "txtHeartRate";
-            txtHeartRate.Size = new Size(133, 27);
+            txtHeartRate.Size = new Size(137, 25);
             txtHeartRate.TabIndex = 1;
             // 
             // tlpWeightHeightGrid
@@ -591,7 +551,7 @@ namespace ClinicManagementSystem
             tlpWeightHeightGrid.Name = "tlpWeightHeightGrid";
             tlpWeightHeightGrid.RowCount = 1;
             tlpWeightHeightGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpWeightHeightGrid.Size = new Size(275, 61);
+            tlpWeightHeightGrid.Size = new Size(284, 61);
             tlpWeightHeightGrid.TabIndex = 3;
             // 
             // pnlWeightGroup
@@ -599,10 +559,10 @@ namespace ClinicManagementSystem
             pnlWeightGroup.Controls.Add(lblWeight);
             pnlWeightGroup.Controls.Add(txtWeight);
             pnlWeightGroup.Dock = DockStyle.Fill;
-            pnlWeightGroup.Location = new Point(143, 0);
+            pnlWeightGroup.Location = new Point(147, 0);
             pnlWeightGroup.Margin = new Padding(0, 0, 5, 0);
             pnlWeightGroup.Name = "pnlWeightGroup";
-            pnlWeightGroup.Size = new Size(132, 61);
+            pnlWeightGroup.Size = new Size(137, 61);
             pnlWeightGroup.TabIndex = 0;
             // 
             // lblWeight
@@ -620,9 +580,9 @@ namespace ClinicManagementSystem
             // 
             txtWeight.BorderStyle = BorderStyle.FixedSingle;
             txtWeight.Dock = DockStyle.Bottom;
-            txtWeight.Location = new Point(0, 34);
+            txtWeight.Location = new Point(0, 36);
             txtWeight.Name = "txtWeight";
-            txtWeight.Size = new Size(132, 27);
+            txtWeight.Size = new Size(137, 25);
             txtWeight.TabIndex = 1;
             // 
             // pnlHeightGroup
@@ -633,7 +593,7 @@ namespace ClinicManagementSystem
             pnlHeightGroup.Location = new Point(0, 0);
             pnlHeightGroup.Margin = new Padding(5, 0, 0, 0);
             pnlHeightGroup.Name = "pnlHeightGroup";
-            pnlHeightGroup.Size = new Size(133, 61);
+            pnlHeightGroup.Size = new Size(137, 61);
             pnlHeightGroup.TabIndex = 1;
             // 
             // lblHeight
@@ -651,9 +611,9 @@ namespace ClinicManagementSystem
             // 
             txtHeight.BorderStyle = BorderStyle.FixedSingle;
             txtHeight.Dock = DockStyle.Bottom;
-            txtHeight.Location = new Point(0, 34);
+            txtHeight.Location = new Point(0, 36);
             txtHeight.Name = "txtHeight";
-            txtHeight.Size = new Size(133, 27);
+            txtHeight.Size = new Size(137, 25);
             txtHeight.TabIndex = 1;
             // 
             // pnlNotesCard
@@ -665,7 +625,7 @@ namespace ClinicManagementSystem
             pnlNotesCard.Margin = new Padding(10);
             pnlNotesCard.Name = "pnlNotesCard";
             pnlNotesCard.Padding = new Padding(20);
-            pnlNotesCard.Size = new Size(317, 194);
+            pnlNotesCard.Size = new Size(326, 194);
             pnlNotesCard.TabIndex = 1;
             // 
             // tlpNotes
@@ -680,7 +640,7 @@ namespace ClinicManagementSystem
             tlpNotes.RowCount = 2;
             tlpNotes.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F));
             tlpNotes.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpNotes.Size = new Size(277, 154);
+            tlpNotes.Size = new Size(286, 154);
             tlpNotes.TabIndex = 0;
             // 
             // lblNotes
@@ -688,7 +648,7 @@ namespace ClinicManagementSystem
             lblNotes.AutoSize = true;
             lblNotes.Font = new Font("Segoe UI", 12F);
             lblNotes.ForeColor = Color.FromArgb(143, 163, 184);
-            lblNotes.Location = new Point(159, 0);
+            lblNotes.Location = new Point(168, 0);
             lblNotes.Margin = new Padding(0, 0, 0, 5);
             lblNotes.Name = "lblNotes";
             lblNotes.Size = new Size(118, 20);
@@ -703,7 +663,7 @@ namespace ClinicManagementSystem
             txtNotes.Location = new Point(3, 28);
             txtNotes.Multiline = true;
             txtNotes.Name = "txtNotes";
-            txtNotes.Size = new Size(271, 123);
+            txtNotes.Size = new Size(280, 123);
             txtNotes.TabIndex = 1;
             // 
             // flpActionButtons
@@ -714,7 +674,7 @@ namespace ClinicManagementSystem
             flpActionButtons.Location = new Point(20, 632);
             flpActionButtons.Margin = new Padding(10);
             flpActionButtons.Name = "flpActionButtons";
-            flpActionButtons.Size = new Size(1015, 48);
+            flpActionButtons.Size = new Size(1040, 48);
             flpActionButtons.TabIndex = 2;
             // 
             // btnSaveVisit
@@ -723,7 +683,7 @@ namespace ClinicManagementSystem
             btnSaveVisit.FlatStyle = FlatStyle.Flat;
             btnSaveVisit.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
             btnSaveVisit.ForeColor = Color.White;
-            btnSaveVisit.Location = new Point(835, 0);
+            btnSaveVisit.Location = new Point(860, 0);
             btnSaveVisit.Margin = new Padding(0, 0, 15, 0);
             btnSaveVisit.Name = "btnSaveVisit";
             btnSaveVisit.Size = new Size(180, 45);
@@ -738,126 +698,13 @@ namespace ClinicManagementSystem
             btnClearFields.FlatStyle = FlatStyle.Flat;
             btnClearFields.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
             btnClearFields.ForeColor = Color.White;
-            btnClearFields.Location = new Point(667, 3);
+            btnClearFields.Location = new Point(692, 3);
             btnClearFields.Name = "btnClearFields";
             btnClearFields.Size = new Size(150, 45);
             btnClearFields.TabIndex = 1;
             btnClearFields.Text = "🔄 مسح الحقول";
             btnClearFields.UseVisualStyleBackColor = false;
             btnClearFields.Click += btnClearFields_Click;
-            // 
-            // tabVisitHistory
-            // 
-            tabVisitHistory.BackColor = Color.Transparent;
-            tabVisitHistory.Controls.Add(pnlHistoryCard);
-            tabVisitHistory.Location = new Point(4, 43);
-            tabVisitHistory.Name = "tabVisitHistory";
-            tabVisitHistory.Size = new Size(1072, 682);
-            tabVisitHistory.TabIndex = 1;
-            tabVisitHistory.Text = "سجل الزيارات السابقة";
-            // 
-            // pnlHistoryCard
-            // 
-            pnlHistoryCard.BackColor = Color.White;
-            pnlHistoryCard.Controls.Add(tlpHistoryMain);
-            pnlHistoryCard.Dock = DockStyle.Fill;
-            pnlHistoryCard.Location = new Point(0, 0);
-            pnlHistoryCard.Margin = new Padding(10);
-            pnlHistoryCard.Name = "pnlHistoryCard";
-            pnlHistoryCard.Padding = new Padding(20);
-            pnlHistoryCard.Size = new Size(1072, 682);
-            pnlHistoryCard.TabIndex = 0;
-            // 
-            // tlpHistoryMain
-            // 
-            tlpHistoryMain.ColumnCount = 1;
-            tlpHistoryMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tlpHistoryMain.Controls.Add(tlpHistoryHeader, 0, 0);
-            tlpHistoryMain.Controls.Add(dgvVisitsHistory, 0, 1);
-            tlpHistoryMain.Dock = DockStyle.Fill;
-            tlpHistoryMain.Location = new Point(20, 20);
-            tlpHistoryMain.Name = "tlpHistoryMain";
-            tlpHistoryMain.RowCount = 2;
-            tlpHistoryMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 55F));
-            tlpHistoryMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryMain.Size = new Size(1032, 642);
-            tlpHistoryMain.TabIndex = 0;
-            // 
-            // tlpHistoryHeader
-            // 
-            tlpHistoryHeader.ColumnCount = 2;
-            tlpHistoryHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tlpHistoryHeader.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 280F));
-            tlpHistoryHeader.Controls.Add(lblHistoryTitle, 0, 0);
-            tlpHistoryHeader.Controls.Add(txtSearchPatient, 1, 0);
-            tlpHistoryHeader.Dock = DockStyle.Fill;
-            tlpHistoryHeader.Location = new Point(0, 0);
-            tlpHistoryHeader.Margin = new Padding(0, 0, 0, 20);
-            tlpHistoryHeader.Name = "tlpHistoryHeader";
-            tlpHistoryHeader.RowCount = 1;
-            tlpHistoryHeader.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryHeader.Size = new Size(1032, 35);
-            tlpHistoryHeader.TabIndex = 0;
-            // 
-            // lblHistoryTitle
-            // 
-            lblHistoryTitle.AutoSize = true;
-            lblHistoryTitle.Dock = DockStyle.Fill;
-            lblHistoryTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            lblHistoryTitle.ForeColor = Color.FromArgb(26, 37, 51);
-            lblHistoryTitle.Location = new Point(283, 0);
-            lblHistoryTitle.Name = "lblHistoryTitle";
-            lblHistoryTitle.Size = new Size(746, 35);
-            lblHistoryTitle.TabIndex = 0;
-            lblHistoryTitle.Text = "قائمة زيارات المرضى";
-            lblHistoryTitle.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // txtSearchPatient
-            // 
-            txtSearchPatient.Anchor = AnchorStyles.None;
-            txtSearchPatient.BackColor = Color.FromArgb(249, 250, 251);
-            txtSearchPatient.BorderStyle = BorderStyle.FixedSingle;
-            txtSearchPatient.Location = new Point(0, 4);
-            txtSearchPatient.Margin = new Padding(30, 0, 0, 0);
-            txtSearchPatient.Name = "txtSearchPatient";
-            txtSearchPatient.Size = new Size(250, 27);
-            txtSearchPatient.TabIndex = 1;
-            txtSearchPatient.Text = "بحث باسم المريض...";
-            // 
-            // dgvVisitsHistory
-            // 
-            dgvVisitsHistory.AllowUserToOrderColumns = true;
-            dgvVisitsHistory.BackgroundColor = Color.White;
-            dgvVisitsHistory.BorderStyle = BorderStyle.None;
-            dgvVisitsHistory.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvVisitsHistory.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = Color.FromArgb(64, 64, 64);
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvVisitsHistory.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvVisitsHistory.ColumnHeadersHeight = 45;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 11.25F);
-            dataGridViewCellStyle2.ForeColor = Color.FromArgb(40, 40, 40);
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(232, 245, 233);
-            dataGridViewCellStyle2.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dgvVisitsHistory.DefaultCellStyle = dataGridViewCellStyle2;
-            dgvVisitsHistory.Dock = DockStyle.Fill;
-            dgvVisitsHistory.EnableHeadersVisualStyles = false;
-            dgvVisitsHistory.GridColor = Color.FromArgb(240, 240, 240);
-            dgvVisitsHistory.Location = new Point(3, 58);
-            dgvVisitsHistory.Name = "dgvVisitsHistory";
-            dgvVisitsHistory.RowHeadersVisible = false;
-            dgvVisitsHistory.RowTemplate.Height = 40;
-            dgvVisitsHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvVisitsHistory.Size = new Size(1026, 581);
-            dgvVisitsHistory.TabIndex = 1;
             // 
             // frmAddUpdatePatinetVisits
             // 
@@ -876,8 +723,6 @@ namespace ClinicManagementSystem
             WindowState = FormWindowState.Maximized;
             Load += frmPatinetVisits_Load;
             pnlMainBackground.ResumeLayout(false);
-            tabControlVisits.ResumeLayout(false);
-            tabNewVisit.ResumeLayout(false);
             scrollContainer.ResumeLayout(false);
             tlpNewVisitMain.ResumeLayout(false);
             tlpNewVisitMain.PerformLayout();
@@ -909,19 +754,12 @@ namespace ClinicManagementSystem
             tlpNotes.ResumeLayout(false);
             tlpNotes.PerformLayout();
             flpActionButtons.ResumeLayout(false);
-            tabVisitHistory.ResumeLayout(false);
-            pnlHistoryCard.ResumeLayout(false);
-            tlpHistoryMain.ResumeLayout(false);
-            tlpHistoryHeader.ResumeLayout(false);
-            tlpHistoryHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvVisitsHistory).EndInit();
             ResumeLayout(false);
         }
+
         #endregion
 
         private System.Windows.Forms.Panel pnlMainBackground;
-        private System.Windows.Forms.TabControl tabControlVisits;
-        private System.Windows.Forms.TabPage tabNewVisit;
         private System.Windows.Forms.Panel scrollContainer;
         private System.Windows.Forms.TableLayoutPanel tlpNewVisitMain;
         private System.Windows.Forms.Label lblVisitHeader;
@@ -931,7 +769,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Label lblGeneralDataTitle;
         private System.Windows.Forms.TableLayoutPanel tlpPatientDoctorGrid;
         private System.Windows.Forms.Panel pnlPatientGroup;
-        private System.Windows.Forms.Panel pnlDoctorGroup;
         private System.Windows.Forms.Panel pnlSeparator;
         private System.Windows.Forms.Label lblSymptoms;
         private System.Windows.Forms.TextBox txtSymptoms;
@@ -969,17 +806,7 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.FlowLayoutPanel flpActionButtons;
         private System.Windows.Forms.Button btnSaveVisit;
         private System.Windows.Forms.Button btnClearFields;
-        private System.Windows.Forms.TabPage tabVisitHistory;
-        private System.Windows.Forms.Panel pnlHistoryCard;
-        private System.Windows.Forms.TableLayoutPanel tlpHistoryMain;
-        private System.Windows.Forms.TableLayoutPanel tlpHistoryHeader;
-        private System.Windows.Forms.Label lblHistoryTitle;
-        private System.Windows.Forms.TextBox txtSearchPatient;
-        private System.Windows.Forms.DataGridView dgvVisitsHistory;
-        private TextBox txtAppointmentId;
-        private Button btnChooseAppointment;
-        private Label lblPatient;
-        private TextBox txtDoctorId;
-        private Button btnChooseDoctor;
+        private System.Windows.Forms.TextBox txtAppointmentId;
+        private System.Windows.Forms.Button btnChooseAppointment;
     }
 }

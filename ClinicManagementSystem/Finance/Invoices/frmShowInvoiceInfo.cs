@@ -80,6 +80,9 @@ namespace ClinicManagementSystem.Finance
                 txtRemainingAmount.Text = remainingAmount.ToString("N2");
                 txtStatusName.Text = invoice.Status?.StatusName ?? "غير محدد";
 
+
+                
+
                 if (invoice.Status != null)
                 {
                     _ApplyStatusColor(invoice.Status.StatusName);

@@ -141,40 +141,39 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            contextMenuStrip1.ImageScalingSize = new Size(20, 20);
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowAppointmentInfo, toolStripUpdateAppointment, toolStripAddNewAppointment, toolStripDeleteAppointmen });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(206, 108);
+            contextMenuStrip1.Size = new Size(164, 92);
             // 
             // toolStripShowAppointmentInfo
             // 
             toolStripShowAppointmentInfo.Name = "toolStripShowAppointmentInfo";
-            toolStripShowAppointmentInfo.Size = new Size(205, 26);
-            toolStripShowAppointmentInfo.Text = "عرض بيانات الموعد";
+            toolStripShowAppointmentInfo.Size = new Size(163, 22);
+            toolStripShowAppointmentInfo.Text = "👁️    عرض بيانات الموعد";
             toolStripShowAppointmentInfo.Click += toolStripShowAppointmentInfo_Click;
             // 
             // toolStripUpdateAppointment
             // 
             toolStripUpdateAppointment.Name = "toolStripUpdateAppointment";
-            toolStripUpdateAppointment.Size = new Size(205, 26);
-            toolStripUpdateAppointment.Text = "تحديث الموعد";
+            toolStripUpdateAppointment.Size = new Size(163, 22);
+            toolStripUpdateAppointment.Text = "✏️    تحديث الموعد";
             toolStripUpdateAppointment.Click += toolStripUpdateAppointment_Click;
             // 
             // toolStripAddNewAppointment
             // 
-            toolStripAddNewAppointment.ForeColor = Color.Green;
             toolStripAddNewAppointment.Name = "toolStripAddNewAppointment";
-            toolStripAddNewAppointment.Size = new Size(205, 26);
-            toolStripAddNewAppointment.Text = "حجز موعد جديد";
+            toolStripAddNewAppointment.Size = new Size(163, 22);
+            toolStripAddNewAppointment.Text = "➕    حجز موعد جديد";
             toolStripAddNewAppointment.Click += toolStripAddNewAppointment_Click;
             // 
             // toolStripDeleteAppointmen
             // 
-            toolStripDeleteAppointmen.ForeColor = Color.Red;
+            toolStripDeleteAppointmen.ForeColor = Color.DarkRed;
             toolStripDeleteAppointmen.Name = "toolStripDeleteAppointmen";
-            toolStripDeleteAppointmen.Size = new Size(205, 26);
-            toolStripDeleteAppointmen.Text = "إلغاء الموعد";
+            toolStripDeleteAppointmen.Size = new Size(163, 22);
+            toolStripDeleteAppointmen.Text = "❌    إلغاء الموعد";
             toolStripDeleteAppointmen.Click += toolStripDeleteAppointmen_Click;
             // 
             // btnSelect

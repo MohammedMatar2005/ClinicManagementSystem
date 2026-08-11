@@ -35,23 +35,23 @@
             // 
             // txtHardwareId
             // 
-            txtHardwareId.Location = new Point(337, 68);
+            txtHardwareId.Location = new Point(367, 82);
             txtHardwareId.Name = "txtHardwareId";
             txtHardwareId.ReadOnly = true;
-            txtHardwareId.Size = new Size(100, 23);
+            txtHardwareId.Size = new Size(150, 23);
             txtHardwareId.TabIndex = 0;
             // 
             // txtLicenseKey
             // 
-            txtLicenseKey.Location = new Point(337, 233);
+            txtLicenseKey.Location = new Point(367, 213);
             txtLicenseKey.Name = "txtLicenseKey";
             txtLicenseKey.ReadOnly = true;
-            txtLicenseKey.Size = new Size(100, 23);
+            txtLicenseKey.Size = new Size(150, 23);
             txtLicenseKey.TabIndex = 1;
             // 
             // btnActivate
             // 
-            btnActivate.Location = new Point(337, 326);
+            btnActivate.Location = new Point(367, 288);
             btnActivate.Name = "btnActivate";
             btnActivate.Size = new Size(150, 44);
             btnActivate.TabIndex = 2;

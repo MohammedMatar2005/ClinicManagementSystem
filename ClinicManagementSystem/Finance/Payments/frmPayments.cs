@@ -27,6 +27,9 @@ namespace ClinicManagementSystem.Finance
         // 1. متغير لتحديد وضع الفورم (إضافة: -1، تعديل: أي رقم آخر)
         private int _paymentId = -1;
 
+        // نحتفظ برقم العملية القديم عند فتح وضع التعديل، لعرضه/الاحتفاظ به بدون فقدانه
+        private string _originalTransactionReference = null;
+
         // 2. تحديث الباني ليستقبل الـ Id كبارامتر اختياري
         public frmPayments(clsPayment paymentService, clsInvoice invoiceService, int paymentId = -1)
         {
@@ -40,7 +43,7 @@ namespace ClinicManagementSystem.Finance
             btnExportThisPayment.Click += btnExportThisPayment_Click;
             btnChooseInvoice.Click += btnChooseInvoice_Click;
             btnNewPayment.Click += btnNewPayment_Click;
-            
+
 
             txtAmountPaid.TextChanged += txtUpdateSummaryLabels_TextChanged;
             txtInvoiceTotal.TextChanged += txtUpdateSummaryLabels_TextChanged;
@@ -128,6 +131,9 @@ namespace ClinicManagementSystem.Finance
                 _selectedInvoiceId = payment.InvoiceId;
                 txtInvoiceId.Text = _selectedInvoiceId.ToString();
 
+                // نحتفظ برقم العملية الأصلي حتى لا نفقده لو الحقل ما انبعتش صح لاحقاً
+                _originalTransactionReference = payment.TransactionReference;
+
                 // جلب قيمة الفاتورة الكلية بشكل آمن ومباشر
                 decimal invoiceFinalAmount = await _invoiceService.GetInvoiceFinalAmountAsync(_selectedInvoiceId);
                 txtInvoiceTotal.Text = invoiceFinalAmount.ToString();
@@ -136,15 +142,8 @@ namespace ClinicManagementSystem.Finance
                 dtpPaymentDate.Value = payment.PaymentDate;
                 txtNotes.Text = payment.Notes;
 
-                // محاولة اختيار طريقة الدفع الصحيحة في الكومبو بوكس
-                if (cmbPaymentMethod.DataSource != null)
-                {
-                    cmbPaymentMethod.SelectedValue = payment.PaymentMethod;
-                }
-                else
-                {
-                    cmbPaymentMethod.Text = payment.PaymentMethod;
-                }
+                // طريقة الدفع مخزّنة كنص (اسم الطريقة) دائماً، لذلك نختارها بالاسم مباشرة في القائمة النصية
+                cmbPaymentMethod.Text = payment.PaymentMethod;
 
                 // تحديث الحسابات والتسميات تلقائياً
                 UpdateSummaryAmountsLabels();
@@ -219,6 +218,11 @@ namespace ClinicManagementSystem.Finance
                 {
                     try
                     {
+                        // TODO: يجب استدعاء دالة التصدير الفعلية هنا، تماماً كما في شاشة الفواتير:
+                        // ClinicBusiness.Utils.ExportPDF.GenerateAllPaymentsTablePDF(currentList, sfd.FileName);
+                        // حالياً لا يوجد استدعاء فعلي، لذلك لن يُنشأ أي ملف رغم رسالة النجاح.
+                        // أضف دالة GenerateAllPaymentsTablePDF في ExportPDF ثم فعّل السطر أعلاه.
+
                         MessageBox.Show("تم تصدير التقرير بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
@@ -241,14 +245,22 @@ namespace ClinicManagementSystem.Finance
             {
                 PaymentViewDTO selectedPayment = (PaymentViewDTO)dgvPayments.SelectedRows[0].DataBoundItem;
 
+                // حماية من NullReferenceException لو اسم المريض فارغ
+                string safePatientName = string.IsNullOrWhiteSpace(selectedPayment.PatientFullName)
+                    ? "غير_معروف"
+                    : selectedPayment.PatientFullName.Replace(" ", "_");
+
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
                     sfd.Filter = "PDF Files (*.pdf)|*.pdf";
-                    sfd.FileName = $"إيصال_دفع_{selectedPayment.PaymentId}_{selectedPayment.PatientFullName.Replace(" ", "_")}";
+                    sfd.FileName = $"إيصال_دفع_{selectedPayment.PaymentId}_{safePatientName}";
                     sfd.Title = "حفظ إيصال السداد بصيغة PDF";
 
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
+                        // TODO: استدعِ دالة توليد إيصال PDF فردي هنا مثل:
+                        // ClinicBusiness.Utils.ExportPDF.GenerateSinglePaymentPDF(selectedPayment, sfd.FileName);
+
                         MessageBox.Show("تم تصدير إيصال السداد بنجاح!", "نجاح العملية", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -299,6 +311,7 @@ namespace ClinicManagementSystem.Finance
         {
             // إعادة الواجهة للوضع الافتراضي (الإضافة)
             _paymentId = -1;
+            _originalTransactionReference = null;
             if (tabNewPayment != null) tabNewPayment.Text = "إصدار دفعة مالية جديدة";
             btnSavePayment.Text = "حفظ الدفعة";
             btnChooseInvoice.Enabled = true;
@@ -314,7 +327,10 @@ namespace ClinicManagementSystem.Finance
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtAmountPaid.Text) || Convert.ToDecimal(txtAmountPaid.Text) <= 0)
+            // استخدام TryParse بدل Convert.ToDecimal لمنع تعطل البرنامج عند إدخال نص غير صالح
+            if (string.IsNullOrWhiteSpace(txtAmountPaid.Text) ||
+                !decimal.TryParse(txtAmountPaid.Text, out decimal amountPaid) ||
+                amountPaid <= 0)
             {
                 MessageBox.Show("الرجاء إدخل مبلغ دفع صحيح أكبر من صفر.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -350,7 +366,7 @@ namespace ClinicManagementSystem.Finance
         }
 
         // 5. تعديل ميثود الحفظ ليدعم الحالتين داخل الـ isolatedContext النظيف
-     
+
         private void LoadPaymentMethods()
         {
             // يمكنك جلبها من الـ Service الخاصة بك أو تعبئتها يدوياً هكذا مؤقتاً بما يتطابق مع قاعدة البيانات
@@ -371,7 +387,7 @@ namespace ClinicManagementSystem.Finance
 
         private async void btnSavePayment_Click(object sender, EventArgs e)
         {
-        
+
             if (!IsFormValid()) return;
 
             if (_selectedInvoiceId == -1 || txtInvoiceId.Text.Trim() == "")
@@ -380,9 +396,15 @@ namespace ClinicManagementSystem.Finance
                 return;
             }
 
+            decimal amountToPay = Convert.ToDecimal(txtAmountPaid.Text.Trim()); // آمن هنا لأن IsFormValid تحققت مسبقاً
+
             btnSavePayment.Enabled = false;
             int invoiceId = Convert.ToInt32(txtInvoiceId.Text.Trim());
-            int? paymentMethod = cmbPaymentMethod.SelectedValue != null ? Convert.ToInt32(cmbPaymentMethod.SelectedValue) : 1;
+
+            // طريقة الدفع تُحفظ دائماً كاسم نصي (وليس كرقم) لتطابق ما يُقرأ عند التعديل
+            string paymentMethodName = cmbPaymentMethod.SelectedItem is DataRowView row
+                ? row["Name"].ToString()
+                : cmbPaymentMethod.Text;
 
             try
             {
@@ -394,7 +416,7 @@ namespace ClinicManagementSystem.Finance
                     var isolatedInvoiceService = new clsInvoice(freshContext);
                     var isolatedPaymentService = new clsPayment(freshContext);
 
-                    
+
                     if (_paymentId == -1)
                     {
                         bool isPaid = await isolatedInvoiceService.IsInvoiceFullyPaidAsync(invoiceId);
@@ -405,16 +427,36 @@ namespace ClinicManagementSystem.Finance
                         }
                     }
 
+                    // منع الدفع الزائد (Overpayment): المبلغ المدخل يجب ألا يتجاوز المتبقي الفعلي على الفاتورة.
+                    // في وضع التعديل، نستثني الدفعة الحالية نفسها من حساب "المدفوع سابقاً".
+                    decimal remainingBeforeThisPayment = await isolatedInvoiceService.GetInvoiceRemainingAmountAsync(
+                        invoiceId,
+                        excludePaymentId: _paymentId == -1 ? -1 : _paymentId);
+
+                    if (amountToPay > remainingBeforeThisPayment)
+                    {
+                        MessageBox.Show(
+                            $"المبلغ المدخل ({amountToPay:N2}$) أكبر من المتبقي الفعلي على الفاتورة ({remainingBeforeThisPayment:N2}$).",
+                            "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     // بناء كائن الـ DTO وتمرير الـ _paymentId الحالي له
                     PaymentSaveDTO saveDto = new PaymentSaveDTO
                     {
                         PaymentId = _paymentId == -1 ? 0 : _paymentId,
                         InvoiceId = invoiceId,
-                        PaymentAmount = Convert.ToDecimal(txtAmountPaid.Text.Trim()),
+                        PaymentAmount = amountToPay,
                         PaymentDate = dtpPaymentDate.Value,
-                        PaymentMethod = paymentMethod?.ToString() ?? "نقداً",
+                        PaymentMethod = paymentMethodName,
                         Notes = txtNotes.Text.Trim(),
-                        TransactionReference = _paymentId == -1 ? "TXN-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper() : null, // نحتفظ بالقديم أو نتركه للبزنس في التحديث
+                        // في الإضافة: نولّد رقم عملية جديد.
+                        // في التعديل: نحتفظ بالرقم الأصلي القديم بدل إرسال null (لمنع مسحه في UpdatePaymentAsync).
+                        TransactionReference = _paymentId == -1
+                            ? "TXN-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper()
+                            : _originalTransactionReference,
+                        // حالة الدفعة: تُعتبر "مكتملة" افتراضياً عند التسجيل اليدوي من الموظف
+                        PaymentStatusId = 2,
                         IsActive = true
                     };
 
@@ -465,8 +507,8 @@ namespace ClinicManagementSystem.Finance
                 this.Cursor = Cursors.Default;
             }
 
-            
+
         }
-    
+
     }
 }

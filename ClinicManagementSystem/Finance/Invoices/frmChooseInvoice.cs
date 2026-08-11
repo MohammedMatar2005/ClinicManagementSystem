@@ -331,7 +331,13 @@ namespace ClinicManagementSystem.Invoices
 
         private void toolStripUpdateInvoice_Click(object sender, EventArgs e)
         {
-            // إضافة كود فتح نافذة التعديل هنا عند توفر الشاشة المناسبة
+            int invoiceId = Convert.ToInt32(dgvInvoices.CurrentRow.Cells["InvoiceId"].Value);
+
+            using (frmShowInvoiceInfo frm = new frmShowInvoiceInfo(invoiceId))
+            {
+                
+                frm.ShowDialog();
+            }
         }
 
         private void btnAddNewInvoice_Click(object sender, EventArgs e)

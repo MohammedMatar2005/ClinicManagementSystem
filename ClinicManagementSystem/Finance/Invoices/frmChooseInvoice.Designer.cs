@@ -141,40 +141,39 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Font = new Font("Segoe UI", 11.25F);
+            contextMenuStrip1.ImageScalingSize = new Size(20, 20);
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowInvoiceInfo, toolStripUpdateInvoice, toolStripAddNewInvoice, toolStripDeleteInvoice });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(201, 100);
+            contextMenuStrip1.Size = new Size(164, 92);
             // 
             // toolStripShowInvoiceInfo
             // 
             toolStripShowInvoiceInfo.Name = "toolStripShowInvoiceInfo";
-            toolStripShowInvoiceInfo.Size = new Size(200, 24);
-            toolStripShowInvoiceInfo.Text = "عرض بيانات الفاتورة";
+            toolStripShowInvoiceInfo.Size = new Size(163, 22);
+            toolStripShowInvoiceInfo.Text = "👁️    عرض بيانات الفاتورة";
             toolStripShowInvoiceInfo.Click += toolStripShowInvoiceInfo_Click;
             // 
             // toolStripUpdateInvoice
             // 
             toolStripUpdateInvoice.Name = "toolStripUpdateInvoice";
-            toolStripUpdateInvoice.Size = new Size(200, 24);
-            toolStripUpdateInvoice.Text = "تحديث الفاتورة";
+            toolStripUpdateInvoice.Size = new Size(163, 22);
+            toolStripUpdateInvoice.Text = "✏️    تحديث الفاتورة";
             toolStripUpdateInvoice.Click += toolStripUpdateInvoice_Click;
             // 
             // toolStripAddNewInvoice
             // 
-            toolStripAddNewInvoice.ForeColor = Color.Green;
             toolStripAddNewInvoice.Name = "toolStripAddNewInvoice";
-            toolStripAddNewInvoice.Size = new Size(200, 24);
-            toolStripAddNewInvoice.Text = "إنشاء فاتورة جديدة";
+            toolStripAddNewInvoice.Size = new Size(163, 22);
+            toolStripAddNewInvoice.Text = "➕    إنشاء فاتورة جديدة";
             toolStripAddNewInvoice.Click += toolStripAddNewInvoice_Click;
             // 
             // toolStripDeleteInvoice
             // 
-            toolStripDeleteInvoice.ForeColor = Color.Red;
+            toolStripDeleteInvoice.ForeColor = Color.DarkRed;
             toolStripDeleteInvoice.Name = "toolStripDeleteInvoice";
-            toolStripDeleteInvoice.Size = new Size(200, 24);
-            toolStripDeleteInvoice.Text = "حذف الفاتورة";
+            toolStripDeleteInvoice.Size = new Size(163, 22);
+            toolStripDeleteInvoice.Text = "❌    حذف الفاتورة";
             toolStripDeleteInvoice.Click += toolStripDeleteInvoice_Click;
             // 
             // btnSelect

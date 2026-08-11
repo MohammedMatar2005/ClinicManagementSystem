@@ -28,9 +28,7 @@ namespace ClinicManagementSystem
 
             // إعدادات الواجهة
             pnlMainBackground.Dock = DockStyle.Fill;
-            tabControlVisits.Dock = DockStyle.Fill;
-            tlpNewVisitMain.Dock = DockStyle.Fill;
-            tlpHistoryMain.Dock = DockStyle.Fill;
+           
 
             lblBloodPressure.BringToFront();
             lblTemperature.BringToFront();
@@ -45,7 +43,7 @@ namespace ClinicManagementSystem
 
         private async void frmPatinetVisits_Load(object sender, EventArgs e)
         {
-            ConfigureGridMapping();
+            
             await _LoadAllVisits();
 
             // 🌟 تحديد وضع الفورم (إضافة أو تعديل) بشكل آمن
@@ -62,21 +60,7 @@ namespace ClinicManagementSystem
             }
         }
 
-        private void ConfigureGridMapping()
-        {
-            dgvVisitsHistory.AutoGenerateColumns = false;
-
-            if (dgvVisitsHistory.Columns.Count >= 7)
-            {
-                dgvVisitsHistory.Columns[0].DataPropertyName = "VisitId";
-                dgvVisitsHistory.Columns[1].DataPropertyName = "PatientFullName";
-                dgvVisitsHistory.Columns[2].DataPropertyName = "DoctorFullName";
-                dgvVisitsHistory.Columns[3].DataPropertyName = "VisitDate";
-                dgvVisitsHistory.Columns[4].DataPropertyName = "AppointmentReason";
-                dgvVisitsHistory.Columns[5].DataPropertyName = "Diagnosis";
-                dgvVisitsHistory.Columns[6].DataPropertyName = "VisitStatusTitle";
-            }
-        }
+        
 
         private async Task _LoadAllVisits()
         {
@@ -85,7 +69,7 @@ namespace ClinicManagementSystem
                 this.Cursor = Cursors.WaitCursor;
                 List<PatientVisitViewDTO> visitsList = await _patientVisitService.GetAllPatientVisitsAsync();
                 _dtVisitsHistory = ConvertDTOListToDataTable(visitsList);
-                dgvVisitsHistory.DataSource = _dtVisitsHistory;
+               
             }
             catch (Exception ex)
             {
@@ -132,6 +116,10 @@ namespace ClinicManagementSystem
         {
             using (frmChooseAppointment frm = new frmChooseAppointment())
             {
+
+                frm.WindowState = FormWindowState.Normal;
+                frm.StartPosition = FormStartPosition.CenterParent;
+
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     _selectedAppointmentId = frm.AppointmentId;
@@ -285,7 +273,7 @@ namespace ClinicManagementSystem
                 txtHeartRate.Text = view.HeartRate?.ToString();
                 txtHeight.Text = view.Height?.ToString("0.0");
                 txtNotes.Text = view.Notes;
-                txtSearchPatient.Text = view.PatientFullName;
+            
                 txtSymptoms.Text = view.Symptoms;
                 txtTemperature.Text = view.Temperature?.ToString("0.0");
                 txtTreatmentPlan.Text = view.TreatmentPlan;

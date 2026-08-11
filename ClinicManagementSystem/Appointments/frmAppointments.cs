@@ -71,19 +71,30 @@ namespace ClinicManagementSystem
                 dt.Columns.Add("AppointmentDate", typeof(DateTime));
                 dt.Columns.Add("StatusTitle", typeof(string));
 
-                foreach (var item in appointmentsList)
+                if (appointmentsList != null)
                 {
-                    dt.Rows.Add(
-                        item.AppointmentId,
-                        item.PatientFullName,
-                        item.PatientNationalNumber,
-                        item.DoctorFullName,
-                        item.AppointmentDate,
-                        item.StatusTitle
-                    );
+                    foreach (var item in appointmentsList)
+                    {
+                        dt.Rows.Add(
+                            item.AppointmentId,
+                            item.PatientFullName,
+                            item.PatientNationalNumber,
+                            item.DoctorFullName,
+                            item.AppointmentDate,
+                            item.StatusTitle
+                        );
+                    }
                 }
 
+                // 1. الاحتفاظ بشرط الفلترة الحالي (في حال كان المستخدم يبحث في شريط البحث)
+                string currentFilter = _appointmentsDataView?.RowFilter ?? string.Empty;
+
+                // 2. إنشائ كائن DataView جديد من البيانات المحدثة
                 _appointmentsDataView = dt.DefaultView;
+                _appointmentsDataView.RowFilter = currentFilter;
+
+                // 3. قطع الربط القديم أولاً ثم إعادتها لإجبار DataGridView على إعادة بناء الصفوف
+                dgvAppointments.DataSource = null;
                 dgvAppointments.DataSource = _appointmentsDataView;
             }
             catch (Exception ex)
@@ -92,7 +103,6 @@ namespace ClinicManagementSystem
                 await _loggingService.LogAsync($"خطأ جلب المواعيد: {ex.Message}", (enLogSeverity)2);
             }
         }
-
         private void txtSearchValue_TextChanged(object sender, EventArgs e)
         {
             string searchValue = txtSearchValue.Text.Trim().Replace("'", "''");
@@ -204,6 +214,9 @@ namespace ClinicManagementSystem
         {
             using (frmChoosePatient frm = new frmChoosePatient())
             {
+                frm.WindowState = FormWindowState.Normal;
+                frm.StartPosition = FormStartPosition.CenterParent;
+
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     _selectedPatientId = frm.PatientId;
@@ -214,8 +227,15 @@ namespace ClinicManagementSystem
 
         private void btnChooseDoctor_Click(object sender, EventArgs e)
         {
+
+            
+
             using (frmChooseDoctor frm = new frmChooseDoctor())
             {
+
+                frm.WindowState = FormWindowState.Normal;
+                frm.StartPosition = FormStartPosition.CenterParent;
+
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     _selectedDoctorId = frm.DoctorId;

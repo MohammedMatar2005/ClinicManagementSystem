@@ -141,45 +141,39 @@
             // 
             // contextMenuStrip1
             // 
+            contextMenuStrip1.ImageScalingSize = new Size(20, 20);
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { toolStripShowDoctorInfo, toolStripAddNewDoctor, toolStripUpdateDoctorData, toolStripDeleteDoctor });
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.RightToLeft = RightToLeft.Yes;
-            contextMenuStrip1.Size = new Size(209, 100);
+            contextMenuStrip1.Size = new Size(164, 92);
             // 
             // toolStripShowDoctorInfo
             // 
-            toolStripShowDoctorInfo.Font = new Font("Segoe UI", 11.25F);
-            toolStripShowDoctorInfo.ForeColor = Color.Black;
             toolStripShowDoctorInfo.Name = "toolStripShowDoctorInfo";
-            toolStripShowDoctorInfo.Size = new Size(208, 24);
-            toolStripShowDoctorInfo.Text = "عرض بيانات الطبيب";
+            toolStripShowDoctorInfo.Size = new Size(163, 22);
+            toolStripShowDoctorInfo.Text = "👁️    عرض بيانات الطبيب";
             toolStripShowDoctorInfo.Click += toolStripShowDoctorInfo_Click;
             // 
             // toolStripAddNewDoctor
             // 
-            toolStripAddNewDoctor.Font = new Font("Segoe UI", 11.25F);
-            toolStripAddNewDoctor.ForeColor = Color.Green;
             toolStripAddNewDoctor.Name = "toolStripAddNewDoctor";
-            toolStripAddNewDoctor.Size = new Size(208, 24);
-            toolStripAddNewDoctor.Text = "إضافة طبيب جديد";
+            toolStripAddNewDoctor.Size = new Size(163, 22);
+            toolStripAddNewDoctor.Text = "➕    إضافة طبيب جديد";
             toolStripAddNewDoctor.Click += toolStripAddNewDoctor_Click;
             // 
             // toolStripUpdateDoctorData
             // 
-            toolStripUpdateDoctorData.Font = new Font("Segoe UI", 11.25F);
-            toolStripUpdateDoctorData.ForeColor = Color.Blue;
             toolStripUpdateDoctorData.Name = "toolStripUpdateDoctorData";
-            toolStripUpdateDoctorData.Size = new Size(208, 24);
-            toolStripUpdateDoctorData.Text = "تحديث بيانات الطبيب";
+            toolStripUpdateDoctorData.Size = new Size(163, 22);
+            toolStripUpdateDoctorData.Text = "✏️    تعديل بيانات الطبيب";
             toolStripUpdateDoctorData.Click += toolStripUpdateDoctorData_Click;
             // 
             // toolStripDeleteDoctor
             // 
-            toolStripDeleteDoctor.Font = new Font("Segoe UI", 11.25F);
-            toolStripDeleteDoctor.ForeColor = Color.Red;
+            toolStripDeleteDoctor.ForeColor = Color.DarkRed;
             toolStripDeleteDoctor.Name = "toolStripDeleteDoctor";
-            toolStripDeleteDoctor.Size = new Size(208, 24);
-            toolStripDeleteDoctor.Text = "حذف الطبيب";
+            toolStripDeleteDoctor.Size = new Size(163, 22);
+            toolStripDeleteDoctor.Text = "❌    حذف الطبيب";
             toolStripDeleteDoctor.Click += toolStripDeleteDoctor_Click;
             // 
             // btnSelect

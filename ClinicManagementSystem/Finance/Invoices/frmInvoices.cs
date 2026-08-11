@@ -28,6 +28,10 @@ namespace ClinicManagementSystem
         // 1. متغير لتحديد وضع الفورم (إضافة: -1، تعديل: أي رقم آخر)
         private int _invoiceId = -1;
 
+        // نحتفظ برقم الفاتورة وحالتها الأصليين عند فتح وضع التعديل، حتى لا يتغيرا بالخطأ
+        private string _originalInvoiceNumber = null;
+        private byte _originalStatusId = 4;
+
         // 2. تحديث الباني ليستقبل الـ Id كبارامتر اختياري
         public frmInvoices(clsInvoice invoiceService, clsPatientVisit patientVisitService, int invoiceId = -1)
         {
@@ -99,6 +103,10 @@ namespace ClinicManagementSystem
                     this.Close();
                     return;
                 }
+
+                // نحتفظ برقم الفاتورة وحالتها الأصليين لإرسالهما دون تغيير عند الحفظ لاحقاً
+                _originalInvoiceNumber = invoice.InvoiceNumber;
+                _originalStatusId = invoice.StatusId;
 
                 // تعبئة عناصر التحكم بالبيانات القادمة من السيرفر
                 _selectedPatientId = invoice.VisitId;
@@ -215,10 +223,15 @@ namespace ClinicManagementSystem
             {
                 InvoiceViewDTO selectedInvoice = (InvoiceViewDTO)dgvInvoices.SelectedRows[0].DataBoundItem;
 
+                // حماية من NullReferenceException لو اسم المريض فارغ
+                string safePatientName = string.IsNullOrWhiteSpace(selectedInvoice.PatientFullName)
+                    ? "غير_معروف"
+                    : selectedInvoice.PatientFullName.Replace(" ", "_");
+
                 using (SaveFileDialog sfd = new SaveFileDialog())
                 {
                     sfd.Filter = "PDF Files (*.pdf)|*.pdf";
-                    sfd.FileName = $"فاتورة_{selectedInvoice.InvoiceNumber}_{selectedInvoice.PatientFullName.Replace(" ", "_")}";
+                    sfd.FileName = $"فاتورة_{selectedInvoice.InvoiceNumber}_{safePatientName}";
                     sfd.Title = "حفظ الفاتورة التفصيلية بصيغة PDF";
 
                     if (sfd.ShowDialog() == DialogResult.OK)
@@ -238,8 +251,13 @@ namespace ClinicManagementSystem
         {
             using (frmChoosePatientVisit frm = new frmChoosePatientVisit())
             {
+
+                frm.StartPosition = FormStartPosition.CenterParent;
+                frm.WindowState = FormWindowState.Normal;
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
+
+
                     _selectedPatientId = frm.PatientVisitId;
                     txtPatientVisitId.Text = _selectedPatientId.ToString();
                 }
@@ -268,6 +286,8 @@ namespace ClinicManagementSystem
         {
             // إعادة الفورم لوضع الإضافة الأصلي
             _invoiceId = -1;
+            _originalInvoiceNumber = null;
+            _originalStatusId = 4;
             if (tabNewInvoice != null) tabNewInvoice.Text = "إصدار فاتورة جديدة";
             btnSaveInvoice.Text = "حفظ الفاتورة";
             btnChooseVisit.Enabled = true;
@@ -282,6 +302,41 @@ namespace ClinicManagementSystem
                 MessageBox.Show("الرجاء اختيار زيارة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+
+            // التحقق من صحة الحقول الرقمية بدل الاعتماد على Convert.ToDecimal لاحقاً بدون فحص
+            if (!string.IsNullOrWhiteSpace(txtConsultationFee.Text) && !decimal.TryParse(txtConsultationFee.Text, out _))
+            {
+                MessageBox.Show("قيمة رسوم الاستشارة غير صحيحة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (!string.IsNullOrWhiteSpace(txtLabTestFee.Text) && !decimal.TryParse(txtLabTestFee.Text, out _))
+            {
+                MessageBox.Show("قيمة رسوم التحاليل غير صحيحة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (!string.IsNullOrWhiteSpace(txtProcedureFee.Text) && !decimal.TryParse(txtProcedureFee.Text, out _))
+            {
+                MessageBox.Show("قيمة رسوم الإجراء غير صحيحة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (!string.IsNullOrWhiteSpace(txtOtherCharges.Text) && !decimal.TryParse(txtOtherCharges.Text, out _))
+            {
+                MessageBox.Show("قيمة الرسوم الأخرى غير صحيحة.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            // نسب الخصم والضريبة يجب أن تكون منطقية بين 0 و100
+            if (!decimal.TryParse(txtDiscountPercentage.Text, out decimal discountPct) || discountPct < 0 || discountPct > 100)
+            {
+                MessageBox.Show("نسبة الخصم يجب أن تكون بين 0 و100.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (!decimal.TryParse(txtTaxPercentage.Text, out decimal taxPct) || taxPct < 0 || taxPct > 100)
+            {
+                MessageBox.Show("نسبة الضريبة يجب أن تكون بين 0 و100.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             return true;
         }
 
@@ -333,14 +388,24 @@ namespace ClinicManagementSystem
                 {
                     InvoiceId = _invoiceId == -1 ? 0 : _invoiceId,
                     VisitId = visitId,
-                    InvoiceNumber = InvoiceNumberGenerator.GenerateSemanticInvoiceNumber(),
+
+                    // رقم الفاتورة: يُولَّد مرة واحدة فقط عند الإنشاء.
+                    // عند التعديل، نُعيد إرسال الرقم الأصلي القديم كما هو ولا نولّد رقماً جديداً أبداً.
+                    InvoiceNumber = _invoiceId == -1
+                        ? InvoiceNumberGenerator.GenerateSemanticInvoiceNumber()
+                        : _originalInvoiceNumber,
+
                     ConsultationFee = string.IsNullOrEmpty(txtConsultationFee.Text) ? 0 : Convert.ToDecimal(txtConsultationFee.Text.Trim()),
                     LabTestFee = string.IsNullOrEmpty(txtLabTestFee.Text) ? 0 : Convert.ToDecimal(txtLabTestFee.Text.Trim()),
                     ProcedureFee = string.IsNullOrEmpty(txtProcedureFee.Text) ? 0 : Convert.ToDecimal(txtProcedureFee.Text.Trim()),
                     OtherCharges = string.IsNullOrEmpty(txtOtherCharges.Text) ? 0 : Convert.ToDecimal(txtOtherCharges.Text.Trim()),
                     DiscountPercentage = string.IsNullOrEmpty(txtDiscountPercentage.Text) ? 0 : Convert.ToDecimal(txtDiscountPercentage.Text.Trim()),
                     TaxPercentage = string.IsNullOrEmpty(txtTaxPercentage.Text) ? 0 : Convert.ToDecimal(txtTaxPercentage.Text.Trim()),
-                    StatusId = 4, // يمكن ربطه بكومبو بوكس لاحقاً في التعديل لتغيير حالة الفاتورة (مدفوعة، مرتجعة..الخ)
+
+                    // حالة الفاتورة: تكون 4 (افتراضية) عند الإنشاء فقط.
+                    // عند التعديل، نحافظ على الحالة الأصلية الحالية للفاتورة ولا نصفّرها.
+                    StatusId = _invoiceId == -1 ? (byte)4 : _originalStatusId,
+
                     DueDate = DateOnly.FromDateTime(dtpDueDate.Value),
                     IsActive = true
                 };

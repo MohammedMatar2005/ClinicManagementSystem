@@ -99,7 +99,7 @@ namespace ClinicManagementSystem
 
                 // ── بيانات الحساب ──
                 txtUsername.Text = dto.User.Username;
-                txtPassword.Text = string.Empty; // لا تعرض كلمة المرور أبداً
+                txtPassword.Text = dto.User.PasswordHash.ToString(); // لا تعرض كلمة المرور أبداً
                 chkUserIsActive.Checked = dto.User.IsActive;
 
                 // ── البيانات المهنية ──
@@ -237,7 +237,10 @@ namespace ClinicManagementSystem
                     User = new UserSaveDTO
                     {
                         Username = txtUsername.Text.Trim(),
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(txtPassword.Text.Trim()), 
+                        // 💡 إذا كان الحقل مليئاً نُشفر الكلمة الجديدة، وإذا كان فارغاً نمرر null
+                        PasswordHash = string.IsNullOrWhiteSpace(txtPassword.Text)
+                           ? null
+                           : BCrypt.Net.BCrypt.HashPassword(txtPassword.Text.Trim()),
                         IsActive = chkUserIsActive.Checked,
                         RoleId = 1
                     }
@@ -365,13 +368,13 @@ namespace ClinicManagementSystem
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtPassword.Text))
+            if (string.IsNullOrWhiteSpace(txtPassword.Text) && _doctorId == null)
             {
                 ShowValidationError("كلمة المرور حقل إجباري.", txtPassword);
                 return false;
             }
 
-            if (txtPassword.Text.Length < 6)
+            if (txtPassword.Text.Length < 6 && _doctorId == null)
             {
                 ShowValidationError("كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.", txtPassword);
                 return false;
