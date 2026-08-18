@@ -10,19 +10,35 @@ namespace ClinicManagementSystem.Finance
     public partial class frmPaymentsHistory : Form
     {
         private readonly clsPayment _paymentService;
+        private readonly clsInvoice _invoiceService;
+
 
         private BindingSource _paymentsBindingSource = new BindingSource();
         private List<PaymentViewDTO> _originalPaymentsList = new List<PaymentViewDTO>();
 
-        public frmPaymentsHistory(clsPayment paymentService)
+        public frmPaymentsHistory(clsPayment paymentService, clsInvoice invoiceService)
         {
             InitializeComponent();
             _paymentService = paymentService;
+            _invoiceService = invoiceService;
         }
 
         private async void frmPaymentsHistory_Load(object sender, EventArgs e)
         {
             await LoadPaymentsDataAsync();
+        }
+
+        private void btnAddPayment_Click(object sender, EventArgs e)
+        {
+            // افتح نموذج إضافة الدفعة كـ Dialog
+            // باستخدام اسم فورم إضافة الدفعات لديك (مثلاً: frmAddUpdatePayment)
+            using (var frm = new frmPayments(_paymentService, _invoiceService))
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+
+                }
+            }
         }
 
         private async System.Threading.Tasks.Task LoadPaymentsDataAsync()

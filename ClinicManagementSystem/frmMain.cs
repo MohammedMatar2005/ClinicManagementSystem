@@ -153,7 +153,7 @@ namespace ClinicManagementSystem
 
         private void btnPayments_Click(object sender, EventArgs e)
         {
-            using (Form frm = new frmPayments(_paymentService, _invoiceService))
+            using (Form frm = new frmPaymentsHistory(_paymentService, _invoiceService))
             {
                 frm.ShowDialog();
             }

@@ -36,13 +36,13 @@ namespace ClinicManagementSystem
             };
 
 
-            
+                
 
 
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new frmPaymentsHistory(paymentServcie));
+            ApplicationConfiguration.Initialize(); 
+            Application.Run(new frmLogin());
 
 
           
