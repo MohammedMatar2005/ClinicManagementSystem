@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../ClinicBuisnessLayer/ClinicBusinessLayer.csproj" Id="55d0333a-16c1-4d72-a05b-7ef5ab6a2b84" />
+  <Project Path="ClinicManagementSystem.csproj" />
+</Solution>

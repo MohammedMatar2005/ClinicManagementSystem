@@ -1,0 +1,530 @@
+﻿using ClinicBusinessLayer.Models; // الاعتماد على الموديلز الموحدة للبزنس
+using ClinicBusinessLayer.Services;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using ClinicBusinessLayer.DTO;
+using ClinicBusinessLayer.DTO.DoctorsDTOs;
+using ClinicBusinessLayer.DTO.PeopleDTOs;
+using ClinicBusinessLayer.DTO.UsersDTOs;
+
+namespace ClinicManagementSystem
+{
+    public partial class frmAddUpdateDoctor : Form
+    {
+        private static readonly Color ColorPrimary = Color.FromArgb(37, 99, 235);
+        private static readonly Color ColorSuccess = Color.FromArgb(37, 162, 87);
+        private static readonly Color ColorNeutral = Color.FromArgb(160, 174, 192);
+
+        private readonly ErrorProvider _errorProvider = new ErrorProvider();
+
+        // الاعتماد مباشرة على الـ DbContext والسيرفس
+        private readonly ClinicManagementSystemContext _context;
+        private readonly clsDoctor _doctorService;
+
+        // عناوين المراحل الثلاث
+        private static readonly string[] StepTitles = {
+            "المعلومات الشخصية",
+            "بيانات حساب المستخدم",
+            "البيانات المهنية للطبيب"
+        };
+
+        public frmAddUpdateDoctor()
+        {
+            InitializeComponent();
+
+            // حقن الـ Context مباشرة للفورم والسيرفس
+            _context = new ClinicManagementSystemContext();
+            _doctorService = new clsDoctor(_context);
+            _doctorId = null;
+        }
+
+        private readonly int? _doctorId;
+
+        public frmAddUpdateDoctor(int doctorId)
+        {
+            InitializeComponent();
+
+            // حقن الـ Context مباشرة للفورم والسيرفس
+            _context = new ClinicManagementSystemContext();
+            _doctorService = new clsDoctor(_context);
+            _doctorId = doctorId;
+
+
+        }
+
+        private void frmDoctor_Load(object sender, EventArgs e)
+        {
+            InitializeComboBoxes();
+            InitializeNumericControls();
+            InitializeDefaultValues();
+            UpdateButtonStates();
+
+            if (_doctorId.HasValue)
+                LoadDoctorData(_doctorId.Value);
+        }
+
+        private async void LoadDoctorData(int doctorId)
+        {
+            try
+            {
+                var dto = await _doctorService.GetDoctorByIdAsync(doctorId);
+
+                if (dto is null)
+                {
+                    MessageBox.Show(
+                        "لم يتم العثور على بيانات الطبيب.",
+                        "خطأ",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error,
+                        MessageBoxDefaultButton.Button1,
+                        MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+                    this.Close();
+                    return;
+                }
+
+                // ── البيانات الشخصية ──
+                txtFirstName.Text = dto.Person.FirstName;
+                txtSecondName.Text = dto.Person.SecondName;
+                txtThirdName.Text = dto.Person.ThirdName;
+                txtLastName.Text = dto.Person.LastName;
+                txtNationalNo.Text = dto.Person.NationalNumber;
+                txtPhone.Text = dto.Person.Phone;
+                txtEmail.Text = dto.Person.Email;
+                txtAddress.Text = dto.Person.Address;
+
+                dtpDateOfBirth.Value = dto.Person.DateOfBirth.ToDateTime(TimeOnly.MinValue);
+                cmbGender.SelectedIndex = dto.Person.Gender == true ? 0 : 1; // 0=ذكر، 1=أنثى
+
+                // ── بيانات الحساب ──
+                txtUsername.Text = dto.User.Username;
+                txtPassword.Text = dto.User.PasswordHash.ToString(); // لا تعرض كلمة المرور أبداً
+                chkUserIsActive.Checked = dto.User.IsActive;
+
+                // ── البيانات المهنية ──
+                txtSpecialization.Text = dto.DoctorDetails.Specialization;
+                txtLicenseNo.Text = dto.DoctorDetails.LicenseNumber;
+                txtClinicRoom.Text = dto.DoctorDetails.OfficeLocation;
+                nudSalary.Value = dto.DoctorDetails.Salary;
+                nudExperienceYears.Value = (byte)dto.DoctorDetails.ExperienceYears;
+                chkDoctorIsActive.Checked = dto.DoctorDetails.IsActive;
+
+                // ── تحديث عنوان النافذة ──
+                this.Text = $"تعديل بيانات الطبيب - {dto.Person.FirstName} {dto.Person.LastName}";
+                lblFormTitle.Text = $"تعديل بيانات الطبيب - {dto.Person.FirstName} {dto.Person.LastName}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"حدث خطأ أثناء تحميل البيانات:\n{ex.Message}",
+                    "خطأ",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+            }
+        }
+
+        private void InitializeComboBoxes()
+        {
+            // الجنس
+            cmbGender.Items.Clear();
+            cmbGender.Items.AddRange(new object[] { "ذكر", "أنثى" });
+            cmbGender.SelectedIndex = 0;
+
+            // الصلاحية
+            cmbRoleId.Items.Clear();
+            cmbRoleId.Items.Add("طبيب");
+            cmbRoleId.SelectedIndex = 0;
+        }
+
+        private void InitializeNumericControls()
+        {
+            nudSalary.Minimum = 0;
+            nudSalary.Maximum = 999_999;
+            nudSalary.DecimalPlaces = 2;
+            nudSalary.ThousandsSeparator = true;
+            nudSalary.Value = 0;
+
+            nudExperienceYears.Minimum = 0;
+            nudExperienceYears.Maximum = 60;
+            nudExperienceYears.Value = 0;
+        }
+
+        private void InitializeDefaultValues()
+        {
+            dtpDateOfBirth.Value = DateTime.Today.AddYears(-30);
+            chkUserIsActive.Checked = true;
+            chkDoctorIsActive.Checked = true;
+            wizardTabs.SelectedIndex = 0;
+        }
+
+        
+        private void UpdateButtonStates()
+        {
+            int currentStep = wizardTabs.SelectedIndex;
+            int totalSteps = wizardTabs.TabCount;
+
+            // تغيير العنوان حسب الحالة
+            string modeTitle = _doctorId.HasValue ? "تعديل بيانات الطبيب" : "إضافة طبيب جديد";
+            this.Text = $"{modeTitle} - {StepTitles[currentStep]}";
+
+            bool isFirst = currentStep == 0;
+            bool isLast = currentStep == totalSteps - 1;
+
+            btnBack.Visible = !isFirst;
+            btnNext.Visible = !isLast;
+            btnSave.Visible = isLast;
+
+            // تغيير نص الزر ليناسب العملية
+            btnSave.Text = _doctorId.HasValue ? "تحديث البيانات" : "حفظ الطبيب";
+        }
+
+        private void wizardTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateButtonStates();
+        }
+
+      
+
+        private bool ValidateCurrentStep(int stepIndex)
+        {
+            return stepIndex switch
+            {
+                0 => ValidatePersonalInfo(),
+                1 => ValidateCredentials(),
+                2 => ValidateProfessionalInfo(),
+                _ => true
+            };
+        }
+
+
+        private async void SaveDoctor()
+        {
+            try
+            {
+                // ── 1. بناء كائن الـ DTO المجمع ──
+                var doctorSaveDto = new DoctorSaveDTO
+                {
+                    // إذا كنا في حالة تعديل، نمرر المعرفات القديمة ليعرف الـ EF Core ماذا يحدّث
+                    DoctorDetails = new ClinicBusinessLayer.DTO.DoctorsDTOs.DoctorDetailsDTO
+                    {
+                        DoctorId = _doctorId ?? 0, // 👈 مهم جداً للتعديل
+                        Specialization = txtSpecialization.Text.Trim(),
+                        LicenseNumber = txtLicenseNo.Text.Trim(),
+                        Salary = nudSalary.Value,
+                        OfficeLocation = txtClinicRoom.Text.Trim(),
+                        ExperienceYears = Convert.ToByte(nudExperienceYears.Value),
+                        IsActive = chkDoctorIsActive.Checked
+                    },
+
+                    Person = new PersonSaveDTO
+                    {
+                        // ملاحظة: إذا كان لديك PersonId مخزن، يفضل تمريره هنا في حالة التعديل
+                        FirstName = txtFirstName.Text.Trim(),
+                        SecondName = txtSecondName.Text.Trim(),
+                        ThirdName = txtThirdName.Text.Trim(),
+                        LastName = txtLastName.Text.Trim(),
+                        DateOfBirth = DateOnly.FromDateTime(dtpDateOfBirth.Value),
+                        Gender = cmbGender.SelectedItem?.ToString() == "ذكر",
+                        Phone = txtPhone.Text.Trim(),
+                        Email = txtEmail.Text.Trim(),
+                        NationalNumber = txtNationalNo.Text.Trim(),
+                        Address = txtAddress.Text.Trim()
+                    },
+
+                    User = new UserSaveDTO
+                    {
+                        Username = txtUsername.Text.Trim(),
+                        // 💡 إذا كان الحقل مليئاً نُشفر الكلمة الجديدة، وإذا كان فارغاً نمرر null
+                        PasswordHash = string.IsNullOrWhiteSpace(txtPassword.Text)
+                        ? null
+                        : BCrypt.Net.BCrypt.HashPassword(txtPassword.Text.Trim()),
+                        IsActive = chkUserIsActive.Checked,
+                        RoleId = 1
+                    }
+                };
+
+                bool isSuccess = false;
+
+                // ── 2. التمييز الذكي بناءً على قيمة الـ _doctorId ──
+                if (_doctorId.HasValue)
+                {
+                    // 🔄 حالة التعديل (Update)
+                    isSuccess = await _doctorService.UpdateDoctorAsync(doctorSaveDto);
+                }
+                else
+                {
+                    // ➕ حالة الإضافة الجديدة (Add New)
+                    int newId = await _doctorService.AddNewDoctorAsync(doctorSaveDto);
+                    isSuccess = newId > 0;
+                }
+
+                // ── 3. معالجة النتيجة ──
+                if (!isSuccess)
+                    throw new Exception("فشل حفظ أو تحديث بيانات الطبيب في قاعدة البيانات.");
+
+                MessageBox.Show(
+                    _doctorId.HasValue ? "تم تحديث بيانات الطبيب بنجاح." : "تم حفظ بيانات الطبيب الجديد وحسابه بنجاح.",
+                    "تمت العملية",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                string fullMessage = ex.Message;
+                var innerEx = ex.InnerException;
+                while (innerEx != null)
+                {
+                    fullMessage += $"\n[تفاصيل إضافية]: {innerEx.Message}";
+                    innerEx = innerEx.InnerException;
+                }
+
+                MessageBox.Show(
+                    $"حدث خطأ أثناء حفظ البيانات:\n{fullMessage}",
+                    "خطأ في الحفظ",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+            }
+        }
+
+        private bool ValidatePersonalInfo()
+        {
+            bool isValid = true;
+
+            // فحص الاسم الأول
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
+            {
+                _errorProvider.SetError(txtFirstName, "الاسم الأول حقل إجباري.");
+                isValid = false;
+            }
+            else
+            {
+                _errorProvider.SetError(txtFirstName, string.Empty);
+            }
+
+            // فحص الاسم الأول
+            if (string.IsNullOrWhiteSpace(txtLastName.Text))
+            {
+                _errorProvider.SetError(txtFirstName, "اسم العائلة إجباري.");
+                isValid = false;
+            }
+            else
+            {
+                _errorProvider.SetError(txtFirstName, string.Empty);
+            }
+
+            // فحص رقم الهاتف
+            if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                _errorProvider.SetError(txtPhone, "رقم الجوال حقل إجباري.");
+                isValid = false;
+            }
+            else if (txtPhone.Text.Trim().Length < 10)
+            {
+                _errorProvider.SetError(txtPhone, "رقم الجوال يجب ألا يقل عن 10 أرقام.");
+                isValid = false;
+            }
+            else
+            {
+                _errorProvider.SetError(txtPhone, string.Empty);
+            }
+
+            // فحص البريد الإلكتروني
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text) && !IsValidEmail(txtEmail.Text))
+            {
+                _errorProvider.SetError(txtEmail, "صيغة البريد الإلكتروني غير صحيحة.");
+                isValid = false;
+            }
+            else
+            {
+                _errorProvider.SetError(txtEmail, string.Empty);
+            }
+
+            // إذا كانت هناك أخطاء، قم بتركيز المؤشر على أول حقل به خطأ اختصاراً للوقت
+            if (!isValid)
+            {
+                // يمكنك إزالة الـ MessageBox التقليدي لتكتفي بالأيقونات الحمراء اللحظية، 
+                // أو الإبقاء على تنبيه خفيف مجمع مثل التالي:
+                MessageBox.Show("يرجى تصحيح الحقول المحددة باللون الأحمر قبل الانتقال.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+            }
+
+            return isValid;
+        }
+
+        private bool ValidateCredentials()
+        {
+            if (string.IsNullOrWhiteSpace(txtUsername.Text))
+            {
+                ShowValidationError("اسم المستخدم حقل إجباري.", txtUsername);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPassword.Text) && _doctorId == null)
+            {
+                ShowValidationError("كلمة المرور حقل إجباري.", txtPassword);
+                return false;
+            }
+
+            if (txtPassword.Text.Length < 6 && _doctorId == null)
+            {
+                ShowValidationError("كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.", txtPassword);
+                return false;
+            }
+
+            if (cmbRoleId.SelectedIndex < 0)
+            {
+                ShowValidationError("يرجى تحديد الصلاحية / الدور.", cmbRoleId);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateProfessionalInfo()
+        {
+            if (string.IsNullOrWhiteSpace(txtSpecialization.Text))
+            {
+                ShowValidationError("التخصص الطبي حقل إجباري.", txtSpecialization);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtLicenseNo.Text))
+            {
+                ShowValidationError("رقم الرخصة الطبية حقل إجباري.", txtLicenseNo);
+                return false;
+            }
+
+            return true;
+        }
+
+      
+
+        private static void ShowValidationError(string message, Control focusControl)
+        {
+            MessageBox.Show(
+                message,
+                "بيانات غير مكتملة",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button1,
+                MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading);
+
+            focusControl.Focus();
+        }
+
+        private static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+
+            try
+            {
+               
+                string cleanedEmail = email.Trim();
+                var addr = new System.Net.Mail.MailAddress(cleanedEmail);
+                return addr.Address == cleanedEmail;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void btnSave_Click_1(object sender, EventArgs e)
+        {
+
+            for (int i = 0; i < wizardTabs.TabCount; i++)
+            {
+                if (!ValidateCurrentStep(i))
+                {
+                    wizardTabs.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            SaveDoctor();
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+
+
+            if (!ValidateCurrentStep(wizardTabs.SelectedIndex)) return;
+
+            if (wizardTabs.SelectedIndex < wizardTabs.TabCount - 1)
+                wizardTabs.SelectedIndex++;
+        }
+
+        private void btnBack_Click_1(object sender, EventArgs e)
+        {
+            if (wizardTabs.SelectedIndex > 0)
+            {
+                wizardTabs.SelectedIndex--;
+            }
+        }
+
+
+        private void txtPhone_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                _errorProvider.SetError(txtPhone, "رقم الجوال حقل إجباري.");
+            }
+            else if (txtPhone.Text.Trim().Length < 10)
+            {
+                _errorProvider.SetError(txtPhone, "رقم الجوال يجب ألا يقل عن 10 أرقام.");
+            }
+            else
+            {
+                _errorProvider.SetError(txtPhone, string.Empty); // إزالة الخطأ في حال كان الإدخال صحيحاً
+            }
+        }
+
+        private void txtEmail_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // البريد اختياري، لكن إذا كُتب يجب أن يكون صحيحاً
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text) && !IsValidEmail(txtEmail.Text))
+            {
+                _errorProvider.SetError(txtEmail, "صيغة البريد الإلكتروني غير صحيحة (مثال: name@example.com).");
+            }
+            else
+            {
+                _errorProvider.SetError(txtEmail, string.Empty); // إزالة الخطأ
+            }
+        }
+
+        private void wizardTabs_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            // الحصول على مؤشر الصفحة التي يحاول المستخدم الانتقال إليها
+            int targetStep = e.TabPageIndex;
+            int currentStep = wizardTabs.SelectedIndex;
+
+            // إذا كان المستخدم يحاول الانتقال لصفحة متقدمة (الأمام)
+            if (targetStep > currentStep)
+            {
+                // يجب فحص كل المراحل السابقة وصولاً للمرحلة المستهدفة
+                for (int i = currentStep; i < targetStep; i++)
+                {
+                    if (!ValidateCurrentStep(i))
+                    {
+                        e.Cancel = true; // إلغاء عملية الانتقال فوراً
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
