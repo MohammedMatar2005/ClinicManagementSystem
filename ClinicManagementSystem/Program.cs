@@ -36,7 +36,7 @@ namespace ClinicManagementSystem
             };
 
 
-
+            // when i switch to master it will be removed
 
 
             // To customize application configuration such as set high DPI settings or default font,
