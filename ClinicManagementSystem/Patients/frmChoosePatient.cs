@@ -282,5 +282,22 @@ namespace ClinicManagementSystem.Appointments
                 _patientsBindingSource.RemoveFilter();
             }
         }
+
+        private void tsmiUpdatePatientInfo_Click(object sender, EventArgs e)
+        {
+            int patientId = Convert.ToInt32(dgvPatients.CurrentRow.Cells["PatientId"].Value);
+
+            if (patientId <= 0) return;
+
+
+            using (Form frm = new frmAddUpdatePatient(patientId))
+            {
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    _LoadAllPatients();
+                }
+            }
+
+        }
     }
 }

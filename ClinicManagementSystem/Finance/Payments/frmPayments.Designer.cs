@@ -483,6 +483,7 @@ namespace ClinicManagementSystem.Finance
             txtRemainingAfterPayment.ReadOnly = true;
             txtRemainingAfterPayment.Size = new Size(233, 28);
             txtRemainingAfterPayment.TabIndex = 1;
+            txtRemainingAfterPayment.TextChanged += txtAmount_TextChanged;
             // 
             // pnlNotesField
             // 
@@ -734,7 +735,7 @@ namespace ClinicManagementSystem.Finance
             btnSavePayment.TabIndex = 0;
             btnSavePayment.Text = "حفظ الدفعة 💾";
             btnSavePayment.UseVisualStyleBackColor = false;
-            btnSavePayment.Click += this.btnSavePayment_Click;
+            btnSavePayment.Click += btnSavePayment_Click;
             // 
             // btnNewPayment
             // 

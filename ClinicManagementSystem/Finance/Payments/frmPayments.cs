@@ -52,23 +52,71 @@ namespace ClinicManagementSystem.Finance
             ConfigureGridMapping();
         }
 
+        private decimal _currentInvoiceRemaining = 0; // متغير بحجم الكلاس للتحفظ بقيمة المتبقي الحالي
+
         private async void frmPayments_Load(object sender, EventArgs e)
         {
-
-            cmbPaymentMethod.SelectedIndex = 0;
-            ConfigureGridMapping();
-            await LoadPaymentsDataAsync();
-            LoadPaymentMethods();
-
-            // 3. الفحص عند تحميل الفورم: هل هو وضع تعديل أم إضافة؟
-            if (_paymentId != -1)
+            try
             {
-                await LoadPaymentDataForUpdateAsync();
+                this.Cursor = Cursors.WaitCursor;
+
+                // 1. تحميل قائمة طرق الدفع أولاً ثم تحديد العنصر الأول
+                LoadPaymentMethods();
+                if (cmbPaymentMethod.Items.Count > 0)
+                {
+                    cmbPaymentMethod.SelectedIndex = 0;
+                }
+
+                ConfigureGridMapping();
+                await LoadPaymentsDataAsync();
+
+                // 2. تفريغ الحقول أولاً إذا كنا في وضع الإضافة حتى لا يمسح البيانات اللاحقة
+                if (_paymentId != -1)
+                {
+                    await LoadPaymentDataForUpdateAsync();
+                }
+                else
+                {
+                    ClearAllFields(); // وضع الإضافة الافتراضي
+                }
+
+                // 3. جلب بيانات الفاتورة المجمعة من الداتابيز
+                _currentInvoiceRemaining = await _invoiceService.GetInvoiceRemainingAmountAsync(_selectedInvoiceId);
+                decimal paidSoFar = await _invoiceService.GetInvoicePaidAmountAsync(_selectedInvoiceId);
+
+                // 4. عرض المبلغ المدفوع سابقاً
+                txtPaidSoFar.Text = paidSoFar.ToString("N2");
+
+                // 5. حساب وتحديث المبلغ المتبقي بعد الدفع بناءً على المبلغ المدخل حالياً
+                _UpdateRemainingAfterPayment();
             }
-            else
+            catch (Exception ex)
             {
-                ClearAllFields(); // وضع الإضافة الافتراضي
+                MessageBox.Show($"حدث خطأ أثناء تحميل البيانات: {ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // دالة لحساب المبلغ المتبقي بعد الخصم
+        private void _UpdateRemainingAfterPayment()
+        {
+            // قراءة المبلغ المكتوب حالياً في خانة الدفع
+            decimal.TryParse(txtAmountPaid.Text, out decimal currentPaymentAmount);
+
+            // حساب المتبقي = المتبقي الأصلي على الفاتورة - المبلغ الذي يريد دفعه الآن
+            decimal remainingAfter = _currentInvoiceRemaining - currentPaymentAmount;
+
+            // عرض النتيجة بالتنسيق المالي
+            txtRemainingAfterPayment.Text = remainingAfter.ToString("N2");
+        }
+
+        // 🌟 حدث يُربط مع txtAmount لتحديث المتبقي لحظياً أثناء كتابة المستخدم للمبلغ
+        private void txtAmount_TextChanged(object sender, EventArgs e)
+        {
+            _UpdateRemainingAfterPayment();
         }
 
         private void ConfigureGridMapping()

@@ -21,11 +21,7 @@ namespace ClinicManagementSystem
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             mainPanel = new Panel();
-            tabControl = new TabControl();
-            tabNewInvoice = new TabPage();
             scrollContainer = new Panel();
             tlpTabNewRoot = new TableLayoutPanel();
             pnlInvoiceMetaCard = new Panel();
@@ -80,26 +76,8 @@ namespace ClinicManagementSystem
             pnlFooterSeparator = new Panel();
             lblFinalTotalTitle = new Label();
             lblFinalTotalValue = new Label();
-            tabInvoiceHistory = new TabPage();
-            pnlHistoryCard = new Panel();
-            tlpHistoryLayout = new TableLayoutPanel();
-            flpHistoryHeader = new FlowLayoutPanel();
-            lblHistoryTitle = new Label();
-            btnExportPdf = new Button();
-            btnExportThisInvoice = new Button();
-            txtSearchValue = new TextBox();
-            dgvInvoices = new DataGridView();
-            colInvoiceId = new DataGridViewTextBoxColumn();
-            colPatientName = new DataGridViewTextBoxColumn();
-            colFinalAmount = new DataGridViewTextBoxColumn();
-            colInvoiceDate = new DataGridViewTextBoxColumn();
-            colInvoiceNumber = new DataGridViewTextBoxColumn();
-            colDueDate = new DataGridViewTextBoxColumn();
-            colVisitId = new DataGridViewTextBoxColumn();
             epInvoice = new ErrorProvider(components);
             mainPanel.SuspendLayout();
-            tabControl.SuspendLayout();
-            tabNewInvoice.SuspendLayout();
             scrollContainer.SuspendLayout();
             tlpTabNewRoot.SuspendLayout();
             pnlInvoiceMetaCard.SuspendLayout();
@@ -124,18 +102,13 @@ namespace ClinicManagementSystem
             pnlTaxField.SuspendLayout();
             flpActionButtons.SuspendLayout();
             tlpFooterRightTotals.SuspendLayout();
-            tabInvoiceHistory.SuspendLayout();
-            pnlHistoryCard.SuspendLayout();
-            tlpHistoryLayout.SuspendLayout();
-            flpHistoryHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvInvoices).BeginInit();
             ((System.ComponentModel.ISupportInitialize)epInvoice).BeginInit();
             SuspendLayout();
             // 
             // mainPanel
             // 
-            mainPanel.BackColor = Color.FromArgb(244, 247, 250);
-            mainPanel.Controls.Add(tabControl);
+            mainPanel.BackColor = Color.White;
+            mainPanel.Controls.Add(scrollContainer);
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.Location = new Point(0, 0);
             mainPanel.Name = "mainPanel";
@@ -143,38 +116,14 @@ namespace ClinicManagementSystem
             mainPanel.Size = new Size(1084, 749);
             mainPanel.TabIndex = 0;
             // 
-            // tabControl
-            // 
-            tabControl.Controls.Add(tabNewInvoice);
-            tabControl.Controls.Add(tabInvoiceHistory);
-            tabControl.Dock = DockStyle.Fill;
-            tabControl.Font = new Font("Segoe UI", 12F);
-            tabControl.ItemSize = new Size(180, 45);
-            tabControl.Location = new Point(10, 10);
-            tabControl.Name = "tabControl";
-            tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(1064, 729);
-            tabControl.SizeMode = TabSizeMode.Fixed;
-            tabControl.TabIndex = 0;
-            // 
-            // tabNewInvoice
-            // 
-            tabNewInvoice.BackColor = Color.Transparent;
-            tabNewInvoice.Controls.Add(scrollContainer);
-            tabNewInvoice.Location = new Point(4, 49);
-            tabNewInvoice.Name = "tabNewInvoice";
-            tabNewInvoice.Size = new Size(1056, 676);
-            tabNewInvoice.TabIndex = 0;
-            tabNewInvoice.Text = "إنشاء فاتورة جديدة";
-            // 
             // scrollContainer
             // 
             scrollContainer.AutoScroll = true;
             scrollContainer.Controls.Add(tlpTabNewRoot);
             scrollContainer.Dock = DockStyle.Fill;
-            scrollContainer.Location = new Point(0, 0);
+            scrollContainer.Location = new Point(10, 10);
             scrollContainer.Name = "scrollContainer";
-            scrollContainer.Size = new Size(1056, 676);
+            scrollContainer.Size = new Size(1064, 729);
             scrollContainer.TabIndex = 0;
             // 
             // tlpTabNewRoot
@@ -191,7 +140,7 @@ namespace ClinicManagementSystem
             tlpTabNewRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 160F));
             tlpTabNewRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlpTabNewRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 190F));
-            tlpTabNewRoot.Size = new Size(1039, 760);
+            tlpTabNewRoot.Size = new Size(1047, 760);
             tlpTabNewRoot.TabIndex = 0;
             // 
             // pnlInvoiceMetaCard
@@ -203,7 +152,7 @@ namespace ClinicManagementSystem
             pnlInvoiceMetaCard.Margin = new Padding(10);
             pnlInvoiceMetaCard.Name = "pnlInvoiceMetaCard";
             pnlInvoiceMetaCard.Padding = new Padding(20);
-            pnlInvoiceMetaCard.Size = new Size(1019, 140);
+            pnlInvoiceMetaCard.Size = new Size(1027, 140);
             pnlInvoiceMetaCard.TabIndex = 0;
             // 
             // tlpMetaCardLayout
@@ -218,7 +167,7 @@ namespace ClinicManagementSystem
             tlpMetaCardLayout.Name = "tlpMetaCardLayout";
             tlpMetaCardLayout.RowCount = 1;
             tlpMetaCardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpMetaCardLayout.Size = new Size(979, 100);
+            tlpMetaCardLayout.Size = new Size(987, 100);
             tlpMetaCardLayout.TabIndex = 0;
             // 
             // flpMetaFieldsLeft
@@ -229,7 +178,7 @@ namespace ClinicManagementSystem
             flpMetaFieldsLeft.FlowDirection = FlowDirection.TopDown;
             flpMetaFieldsLeft.Location = new Point(183, 3);
             flpMetaFieldsLeft.Name = "flpMetaFieldsLeft";
-            flpMetaFieldsLeft.Size = new Size(793, 94);
+            flpMetaFieldsLeft.Size = new Size(801, 94);
             flpMetaFieldsLeft.TabIndex = 0;
             flpMetaFieldsLeft.WrapContents = false;
             // 
@@ -238,7 +187,7 @@ namespace ClinicManagementSystem
             flpMetaFieldsLeft.SetFlowBreak(lblMetaTitle, true);
             lblMetaTitle.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold);
             lblMetaTitle.ForeColor = Color.FromArgb(26, 37, 51);
-            lblMetaTitle.Location = new Point(3, 0);
+            lblMetaTitle.Location = new Point(11, 0);
             lblMetaTitle.Name = "lblMetaTitle";
             lblMetaTitle.Size = new Size(787, 30);
             lblMetaTitle.TabIndex = 0;
@@ -249,7 +198,7 @@ namespace ClinicManagementSystem
             panel1.Controls.Add(txtPatientVisitId);
             panel1.Controls.Add(btnChooseVisit);
             panel1.Controls.Add(label1);
-            panel1.Location = new Point(493, 30);
+            panel1.Location = new Point(501, 30);
             panel1.Margin = new Padding(0, 0, 20, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(300, 63);
@@ -259,7 +208,7 @@ namespace ClinicManagementSystem
             // 
             txtPatientVisitId.Location = new Point(153, 31);
             txtPatientVisitId.Name = "txtPatientVisitId";
-            txtPatientVisitId.Size = new Size(144, 29);
+            txtPatientVisitId.Size = new Size(144, 25);
             txtPatientVisitId.TabIndex = 7;
             // 
             // btnChooseVisit
@@ -333,7 +282,7 @@ namespace ClinicManagementSystem
             pnlFeesCard.Margin = new Padding(10);
             pnlFeesCard.Name = "pnlFeesCard";
             pnlFeesCard.Padding = new Padding(20);
-            pnlFeesCard.Size = new Size(1019, 390);
+            pnlFeesCard.Size = new Size(1027, 390);
             pnlFeesCard.TabIndex = 1;
             // 
             // tlpFeesCardLayout
@@ -348,7 +297,7 @@ namespace ClinicManagementSystem
             tlpFeesCardLayout.RowCount = 2;
             tlpFeesCardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             tlpFeesCardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpFeesCardLayout.Size = new Size(979, 350);
+            tlpFeesCardLayout.Size = new Size(987, 350);
             tlpFeesCardLayout.TabIndex = 0;
             // 
             // tlpUniformGridFees
@@ -368,7 +317,7 @@ namespace ClinicManagementSystem
             tlpUniformGridFees.Name = "tlpUniformGridFees";
             tlpUniformGridFees.RowCount = 1;
             tlpUniformGridFees.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpUniformGridFees.Size = new Size(973, 67);
+            tlpUniformGridFees.Size = new Size(981, 67);
             tlpUniformGridFees.TabIndex = 0;
             // 
             // pnlConsultationField
@@ -376,10 +325,10 @@ namespace ClinicManagementSystem
             pnlConsultationField.Controls.Add(lblConsultationTitle);
             pnlConsultationField.Controls.Add(txtConsultationFee);
             pnlConsultationField.Dock = DockStyle.Fill;
-            pnlConsultationField.Location = new Point(735, 5);
+            pnlConsultationField.Location = new Point(741, 5);
             pnlConsultationField.Margin = new Padding(5);
             pnlConsultationField.Name = "pnlConsultationField";
-            pnlConsultationField.Size = new Size(233, 57);
+            pnlConsultationField.Size = new Size(235, 57);
             pnlConsultationField.TabIndex = 0;
             // 
             // lblConsultationTitle
@@ -400,7 +349,7 @@ namespace ClinicManagementSystem
             txtConsultationFee.Location = new Point(0, 19);
             txtConsultationFee.Multiline = true;
             txtConsultationFee.Name = "txtConsultationFee";
-            txtConsultationFee.Size = new Size(233, 38);
+            txtConsultationFee.Size = new Size(235, 38);
             txtConsultationFee.TabIndex = 1;
             txtConsultationFee.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtConsultationFee.KeyPress += preventLetters_KeyPress;
@@ -410,10 +359,10 @@ namespace ClinicManagementSystem
             pnlLabField.Controls.Add(lblLabTitle);
             pnlLabField.Controls.Add(txtLabTestFee);
             pnlLabField.Dock = DockStyle.Fill;
-            pnlLabField.Location = new Point(492, 5);
+            pnlLabField.Location = new Point(496, 5);
             pnlLabField.Margin = new Padding(5);
             pnlLabField.Name = "pnlLabField";
-            pnlLabField.Size = new Size(233, 57);
+            pnlLabField.Size = new Size(235, 57);
             pnlLabField.TabIndex = 1;
             // 
             // lblLabTitle
@@ -434,7 +383,7 @@ namespace ClinicManagementSystem
             txtLabTestFee.Location = new Point(0, 19);
             txtLabTestFee.Multiline = true;
             txtLabTestFee.Name = "txtLabTestFee";
-            txtLabTestFee.Size = new Size(233, 38);
+            txtLabTestFee.Size = new Size(235, 38);
             txtLabTestFee.TabIndex = 1;
             txtLabTestFee.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtLabTestFee.KeyPress += preventLetters_KeyPress;
@@ -444,10 +393,10 @@ namespace ClinicManagementSystem
             pnlProcedureField.Controls.Add(lblProcedureTitle);
             pnlProcedureField.Controls.Add(txtProcedureFee);
             pnlProcedureField.Dock = DockStyle.Fill;
-            pnlProcedureField.Location = new Point(249, 5);
+            pnlProcedureField.Location = new Point(251, 5);
             pnlProcedureField.Margin = new Padding(5);
             pnlProcedureField.Name = "pnlProcedureField";
-            pnlProcedureField.Size = new Size(233, 57);
+            pnlProcedureField.Size = new Size(235, 57);
             pnlProcedureField.TabIndex = 2;
             // 
             // lblProcedureTitle
@@ -468,7 +417,7 @@ namespace ClinicManagementSystem
             txtProcedureFee.Location = new Point(0, 19);
             txtProcedureFee.Multiline = true;
             txtProcedureFee.Name = "txtProcedureFee";
-            txtProcedureFee.Size = new Size(233, 38);
+            txtProcedureFee.Size = new Size(235, 38);
             txtProcedureFee.TabIndex = 1;
             txtProcedureFee.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtProcedureFee.KeyPress += preventLetters_KeyPress;
@@ -481,7 +430,7 @@ namespace ClinicManagementSystem
             pnlOtherField.Location = new Point(5, 5);
             pnlOtherField.Margin = new Padding(5);
             pnlOtherField.Name = "pnlOtherField";
-            pnlOtherField.Size = new Size(234, 57);
+            pnlOtherField.Size = new Size(236, 57);
             pnlOtherField.TabIndex = 3;
             // 
             // lblOtherTitle
@@ -502,7 +451,7 @@ namespace ClinicManagementSystem
             txtOtherCharges.Location = new Point(0, 19);
             txtOtherCharges.Multiline = true;
             txtOtherCharges.Name = "txtOtherCharges";
-            txtOtherCharges.Size = new Size(234, 38);
+            txtOtherCharges.Size = new Size(236, 38);
             txtOtherCharges.TabIndex = 1;
             txtOtherCharges.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtOtherCharges.KeyPress += preventLetters_KeyPress;
@@ -514,7 +463,7 @@ namespace ClinicManagementSystem
             pnlBrandingSplash.Dock = DockStyle.Fill;
             pnlBrandingSplash.Location = new Point(3, 93);
             pnlBrandingSplash.Name = "pnlBrandingSplash";
-            pnlBrandingSplash.Size = new Size(973, 254);
+            pnlBrandingSplash.Size = new Size(981, 254);
             pnlBrandingSplash.TabIndex = 1;
             // 
             // tlpBrandingCentering
@@ -531,7 +480,7 @@ namespace ClinicManagementSystem
             tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             tlpBrandingCentering.RowStyles.Add(new RowStyle(SizeType.Percent, 30F));
-            tlpBrandingCentering.Size = new Size(973, 254);
+            tlpBrandingCentering.Size = new Size(981, 254);
             tlpBrandingCentering.TabIndex = 0;
             // 
             // lblBrandingIcon
@@ -540,7 +489,7 @@ namespace ClinicManagementSystem
             lblBrandingIcon.Font = new Font("Segoe UI", 48F);
             lblBrandingIcon.Location = new Point(3, 0);
             lblBrandingIcon.Name = "lblBrandingIcon";
-            lblBrandingIcon.Size = new Size(967, 114);
+            lblBrandingIcon.Size = new Size(975, 114);
             lblBrandingIcon.TabIndex = 0;
             lblBrandingIcon.Text = "\U0001fa7a";
             lblBrandingIcon.TextAlign = ContentAlignment.BottomCenter;
@@ -552,7 +501,7 @@ namespace ClinicManagementSystem
             lblBrandingTitle.ForeColor = Color.FromArgb(46, 125, 50);
             lblBrandingTitle.Location = new Point(3, 114);
             lblBrandingTitle.Name = "lblBrandingTitle";
-            lblBrandingTitle.Size = new Size(967, 63);
+            lblBrandingTitle.Size = new Size(975, 63);
             lblBrandingTitle.TabIndex = 1;
             lblBrandingTitle.Text = "نظام إدارة الفواتير الطبية";
             lblBrandingTitle.TextAlign = ContentAlignment.MiddleCenter;
@@ -564,7 +513,7 @@ namespace ClinicManagementSystem
             lblBrandingSubtitle.ForeColor = Color.FromArgb(102, 187, 106);
             lblBrandingSubtitle.Location = new Point(3, 177);
             lblBrandingSubtitle.Name = "lblBrandingSubtitle";
-            lblBrandingSubtitle.Size = new Size(967, 77);
+            lblBrandingSubtitle.Size = new Size(975, 77);
             lblBrandingSubtitle.TabIndex = 2;
             lblBrandingSubtitle.Text = "تأكد من مراجعة الرسوم بدقة قبل الحفظ";
             lblBrandingSubtitle.TextAlign = ContentAlignment.TopCenter;
@@ -578,7 +527,7 @@ namespace ClinicManagementSystem
             pnlFooterCard.Margin = new Padding(10);
             pnlFooterCard.Name = "pnlFooterCard";
             pnlFooterCard.Padding = new Padding(25);
-            pnlFooterCard.Size = new Size(1019, 170);
+            pnlFooterCard.Size = new Size(1027, 170);
             pnlFooterCard.TabIndex = 2;
             // 
             // tlpFooterCardLayout
@@ -593,7 +542,7 @@ namespace ClinicManagementSystem
             tlpFooterCardLayout.Name = "tlpFooterCardLayout";
             tlpFooterCardLayout.RowCount = 1;
             tlpFooterCardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpFooterCardLayout.Size = new Size(969, 120);
+            tlpFooterCardLayout.Size = new Size(977, 120);
             tlpFooterCardLayout.TabIndex = 0;
             // 
             // tlpFooterLeftActions
@@ -608,7 +557,7 @@ namespace ClinicManagementSystem
             tlpFooterLeftActions.RowCount = 2;
             tlpFooterLeftActions.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             tlpFooterLeftActions.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpFooterLeftActions.Size = new Size(613, 114);
+            tlpFooterLeftActions.Size = new Size(621, 114);
             tlpFooterLeftActions.TabIndex = 0;
             // 
             // tlpUniformGridPercentages
@@ -624,7 +573,7 @@ namespace ClinicManagementSystem
             tlpUniformGridPercentages.Name = "tlpUniformGridPercentages";
             tlpUniformGridPercentages.RowCount = 1;
             tlpUniformGridPercentages.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpUniformGridPercentages.Size = new Size(590, 54);
+            tlpUniformGridPercentages.Size = new Size(598, 54);
             tlpUniformGridPercentages.TabIndex = 0;
             // 
             // pnlDiscountField
@@ -632,10 +581,10 @@ namespace ClinicManagementSystem
             pnlDiscountField.Controls.Add(lblDiscountTitle);
             pnlDiscountField.Controls.Add(txtDiscountPercentage);
             pnlDiscountField.Dock = DockStyle.Fill;
-            pnlDiscountField.Location = new Point(305, 0);
+            pnlDiscountField.Location = new Point(309, 0);
             pnlDiscountField.Margin = new Padding(0, 0, 10, 0);
             pnlDiscountField.Name = "pnlDiscountField";
-            pnlDiscountField.Size = new Size(285, 54);
+            pnlDiscountField.Size = new Size(289, 54);
             pnlDiscountField.TabIndex = 0;
             // 
             // lblDiscountTitle
@@ -659,7 +608,7 @@ namespace ClinicManagementSystem
             txtDiscountPercentage.Location = new Point(0, 19);
             txtDiscountPercentage.Multiline = true;
             txtDiscountPercentage.Name = "txtDiscountPercentage";
-            txtDiscountPercentage.Size = new Size(285, 35);
+            txtDiscountPercentage.Size = new Size(289, 35);
             txtDiscountPercentage.TabIndex = 1;
             txtDiscountPercentage.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtDiscountPercentage.KeyPress += preventLetters_KeyPress;
@@ -672,7 +621,7 @@ namespace ClinicManagementSystem
             pnlTaxField.Location = new Point(0, 0);
             pnlTaxField.Margin = new Padding(0);
             pnlTaxField.Name = "pnlTaxField";
-            pnlTaxField.Size = new Size(295, 54);
+            pnlTaxField.Size = new Size(299, 54);
             pnlTaxField.TabIndex = 1;
             // 
             // lblTaxTitle
@@ -696,7 +645,7 @@ namespace ClinicManagementSystem
             txtTaxPercentage.Location = new Point(0, 19);
             txtTaxPercentage.Multiline = true;
             txtTaxPercentage.Name = "txtTaxPercentage";
-            txtTaxPercentage.Size = new Size(295, 35);
+            txtTaxPercentage.Size = new Size(299, 35);
             txtTaxPercentage.TabIndex = 1;
             txtTaxPercentage.TextChanged += txtUpdateSummaryLables_TextChanged;
             txtTaxPercentage.KeyPress += preventLetters_KeyPress;
@@ -708,7 +657,7 @@ namespace ClinicManagementSystem
             flpActionButtons.Dock = DockStyle.Fill;
             flpActionButtons.Location = new Point(3, 63);
             flpActionButtons.Name = "flpActionButtons";
-            flpActionButtons.Size = new Size(607, 48);
+            flpActionButtons.Size = new Size(615, 48);
             flpActionButtons.TabIndex = 1;
             // 
             // btnSaveInvoice
@@ -718,7 +667,7 @@ namespace ClinicManagementSystem
             btnSaveInvoice.FlatStyle = FlatStyle.Flat;
             btnSaveInvoice.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
             btnSaveInvoice.ForeColor = Color.White;
-            btnSaveInvoice.Location = new Point(447, 3);
+            btnSaveInvoice.Location = new Point(455, 3);
             btnSaveInvoice.Margin = new Padding(0, 3, 10, 3);
             btnSaveInvoice.Name = "btnSaveInvoice";
             btnSaveInvoice.Size = new Size(160, 45);
@@ -734,7 +683,7 @@ namespace ClinicManagementSystem
             btnNewInvoice.FlatStyle = FlatStyle.Flat;
             btnNewInvoice.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
             btnNewInvoice.ForeColor = Color.White;
-            btnNewInvoice.Location = new Point(274, 3);
+            btnNewInvoice.Location = new Point(282, 3);
             btnNewInvoice.Name = "btnNewInvoice";
             btnNewInvoice.Size = new Size(160, 45);
             btnNewInvoice.TabIndex = 1;
@@ -848,204 +797,6 @@ namespace ClinicManagementSystem
             lblFinalTotalValue.Text = "0.00 $";
             lblFinalTotalValue.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // tabInvoiceHistory
-            // 
-            tabInvoiceHistory.BackColor = Color.Transparent;
-            tabInvoiceHistory.Controls.Add(pnlHistoryCard);
-            tabInvoiceHistory.Location = new Point(4, 49);
-            tabInvoiceHistory.Name = "tabInvoiceHistory";
-            tabInvoiceHistory.Size = new Size(1056, 676);
-            tabInvoiceHistory.TabIndex = 1;
-            tabInvoiceHistory.Text = "سجل الفواتير السابقة";
-            // 
-            // pnlHistoryCard
-            // 
-            pnlHistoryCard.BackColor = Color.White;
-            pnlHistoryCard.Controls.Add(tlpHistoryLayout);
-            pnlHistoryCard.Dock = DockStyle.Fill;
-            pnlHistoryCard.Location = new Point(0, 0);
-            pnlHistoryCard.Margin = new Padding(10);
-            pnlHistoryCard.Name = "pnlHistoryCard";
-            pnlHistoryCard.Padding = new Padding(20);
-            pnlHistoryCard.Size = new Size(1056, 676);
-            pnlHistoryCard.TabIndex = 0;
-            // 
-            // tlpHistoryLayout
-            // 
-            tlpHistoryLayout.ColumnCount = 1;
-            tlpHistoryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Controls.Add(flpHistoryHeader, 0, 0);
-            tlpHistoryLayout.Controls.Add(dgvInvoices, 0, 1);
-            tlpHistoryLayout.Dock = DockStyle.Fill;
-            tlpHistoryLayout.Location = new Point(20, 20);
-            tlpHistoryLayout.Name = "tlpHistoryLayout";
-            tlpHistoryLayout.RowCount = 2;
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Size = new Size(1016, 636);
-            tlpHistoryLayout.TabIndex = 0;
-            // 
-            // flpHistoryHeader
-            // 
-            flpHistoryHeader.Controls.Add(lblHistoryTitle);
-            flpHistoryHeader.Controls.Add(btnExportPdf);
-            flpHistoryHeader.Controls.Add(btnExportThisInvoice);
-            flpHistoryHeader.Controls.Add(txtSearchValue);
-            flpHistoryHeader.Dock = DockStyle.Fill;
-            flpHistoryHeader.FlowDirection = FlowDirection.RightToLeft;
-            flpHistoryHeader.Location = new Point(3, 3);
-            flpHistoryHeader.Name = "flpHistoryHeader";
-            flpHistoryHeader.Size = new Size(1010, 44);
-            flpHistoryHeader.TabIndex = 0;
-            // 
-            // lblHistoryTitle
-            // 
-            lblHistoryTitle.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold);
-            lblHistoryTitle.ForeColor = Color.FromArgb(26, 37, 51);
-            lblHistoryTitle.Location = new Point(3, 0);
-            lblHistoryTitle.Name = "lblHistoryTitle";
-            lblHistoryTitle.Size = new Size(250, 40);
-            lblHistoryTitle.TabIndex = 0;
-            lblHistoryTitle.Text = "قائمة الفواتير المسجلة";
-            lblHistoryTitle.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // btnExportPdf
-            // 
-            btnExportPdf.BackColor = Color.FromArgb(22, 160, 133);
-            btnExportPdf.FlatAppearance.BorderSize = 0;
-            btnExportPdf.FlatStyle = FlatStyle.Flat;
-            btnExportPdf.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnExportPdf.ForeColor = Color.White;
-            btnExportPdf.Location = new Point(286, 3);
-            btnExportPdf.Margin = new Padding(0, 3, 30, 3);
-            btnExportPdf.Name = "btnExportPdf";
-            btnExportPdf.Padding = new Padding(15, 0, 15, 0);
-            btnExportPdf.Size = new Size(197, 38);
-            btnExportPdf.TabIndex = 1;
-            btnExportPdf.Text = "📄 تصدير الكل إلى PDF";
-            btnExportPdf.UseVisualStyleBackColor = false;
-            btnExportPdf.Click += btnExportPdf_Click;
-            // 
-            // btnExportThisInvoice
-            // 
-            btnExportThisInvoice.BackColor = Color.FromArgb(52, 152, 219);
-            btnExportThisInvoice.FlatAppearance.BorderSize = 0;
-            btnExportThisInvoice.FlatStyle = FlatStyle.Flat;
-            btnExportThisInvoice.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
-            btnExportThisInvoice.ForeColor = Color.White;
-            btnExportThisInvoice.Location = new Point(513, 3);
-            btnExportThisInvoice.Margin = new Padding(0, 3, 30, 3);
-            btnExportThisInvoice.Name = "btnExportThisInvoice";
-            btnExportThisInvoice.Padding = new Padding(15, 0, 15, 0);
-            btnExportThisInvoice.Size = new Size(197, 38);
-            btnExportThisInvoice.TabIndex = 3;
-            btnExportThisInvoice.Text = "تصدير إلى PDF 📄";
-            btnExportThisInvoice.UseVisualStyleBackColor = false;
-            btnExportThisInvoice.Click += btnExportThisInvoice_Click;
-            // 
-            // txtSearchValue
-            // 
-            txtSearchValue.Anchor = AnchorStyles.None;
-            txtSearchValue.BorderStyle = BorderStyle.FixedSingle;
-            txtSearchValue.ForeColor = Color.Gray;
-            txtSearchValue.Location = new Point(713, 7);
-            txtSearchValue.Name = "txtSearchValue";
-            txtSearchValue.Size = new Size(260, 29);
-            txtSearchValue.TabIndex = 2;
-            txtSearchValue.Text = "🔍 أدخل الرقم الوطني للبحث السريع...";
-            txtSearchValue.TextChanged += txtSearchValue_TextChanged;
-            // 
-            // dgvInvoices
-            // 
-            dgvInvoices.AllowUserToAddRows = false;
-            dgvInvoices.AllowUserToDeleteRows = false;
-            dgvInvoices.AllowUserToResizeRows = false;
-            dgvInvoices.BackgroundColor = Color.White;
-            dgvInvoices.BorderStyle = BorderStyle.None;
-            dgvInvoices.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvInvoices.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = Color.FromArgb(52, 73, 94);
-            dataGridViewCellStyle1.Padding = new Padding(10, 5, 10, 5);
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(244, 247, 250);
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvInvoices.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dgvInvoices.ColumnHeadersHeight = 45;
-            dgvInvoices.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvInvoices.Columns.AddRange(new DataGridViewColumn[] { colInvoiceId, colPatientName, colFinalAmount, colInvoiceDate, colInvoiceNumber });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F);
-            dataGridViewCellStyle2.ForeColor = Color.FromArgb(44, 62, 80);
-            dataGridViewCellStyle2.Padding = new Padding(10, 0, 10, 0);
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(235, 243, 250);
-            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(44, 62, 80);
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dgvInvoices.DefaultCellStyle = dataGridViewCellStyle2;
-            dgvInvoices.Dock = DockStyle.Fill;
-            dgvInvoices.EnableHeadersVisualStyles = false;
-            dgvInvoices.GridColor = Color.FromArgb(235, 240, 245);
-            dgvInvoices.Location = new Point(3, 53);
-            dgvInvoices.MultiSelect = false;
-            dgvInvoices.Name = "dgvInvoices";
-            dgvInvoices.ReadOnly = true;
-            dgvInvoices.RowHeadersVisible = false;
-            dgvInvoices.RowTemplate.Height = 40;
-            dgvInvoices.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvInvoices.Size = new Size(1010, 580);
-            dgvInvoices.TabIndex = 1;
-            // 
-            // colInvoiceId
-            // 
-            colInvoiceId.DataPropertyName = "InvoiceId";
-            colInvoiceId.HeaderText = "معرف الفاتورة";
-            colInvoiceId.Name = "colInvoiceId";
-            colInvoiceId.ReadOnly = true;
-            colInvoiceId.Width = 150;
-            // 
-            // colPatientName
-            // 
-            colPatientName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            colPatientName.DataPropertyName = "PatientFullName";
-            colPatientName.HeaderText = "اسم المريض";
-            colPatientName.Name = "colPatientName";
-            colPatientName.ReadOnly = true;
-            // 
-            // colFinalAmount
-            // 
-            colFinalAmount.DataPropertyName = "TotalAmount";
-            colFinalAmount.HeaderText = "المبلغ";
-            colFinalAmount.Name = "colFinalAmount";
-            colFinalAmount.ReadOnly = true;
-            colFinalAmount.Width = 120;
-            // 
-            // colInvoiceDate
-            // 
-            colInvoiceDate.DataPropertyName = "InvoiceDate";
-            colInvoiceDate.HeaderText = "تاريخ الفاتورة";
-            colInvoiceDate.Name = "colInvoiceDate";
-            colInvoiceDate.ReadOnly = true;
-            colInvoiceDate.Width = 150;
-            // 
-            // colInvoiceNumber
-            // 
-            colInvoiceNumber.DataPropertyName = "InvoiceNumber";
-            colInvoiceNumber.HeaderText = "رقم الفاتورة";
-            colInvoiceNumber.Name = "colInvoiceNumber";
-            colInvoiceNumber.ReadOnly = true;
-            colInvoiceNumber.Width = 120;
-            // 
-            // colDueDate
-            // 
-            colDueDate.Name = "colDueDate";
-            // 
-            // colVisitId
-            // 
-            colVisitId.Name = "colVisitId";
-            // 
             // epInvoice
             // 
             epInvoice.ContainerControl = this;
@@ -1055,6 +806,7 @@ namespace ClinicManagementSystem
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
+            BackColor = Color.White;
             ClientSize = new Size(1084, 749);
             Controls.Add(mainPanel);
             Font = new Font("Segoe UI", 9.75F);
@@ -1063,8 +815,6 @@ namespace ClinicManagementSystem
             WindowState = FormWindowState.Maximized;
             Load += frmInvoices_Load;
             mainPanel.ResumeLayout(false);
-            tabControl.ResumeLayout(false);
-            tabNewInvoice.ResumeLayout(false);
             scrollContainer.ResumeLayout(false);
             tlpTabNewRoot.ResumeLayout(false);
             pnlInvoiceMetaCard.ResumeLayout(false);
@@ -1097,12 +847,6 @@ namespace ClinicManagementSystem
             pnlTaxField.PerformLayout();
             flpActionButtons.ResumeLayout(false);
             tlpFooterRightTotals.ResumeLayout(false);
-            tabInvoiceHistory.ResumeLayout(false);
-            pnlHistoryCard.ResumeLayout(false);
-            tlpHistoryLayout.ResumeLayout(false);
-            flpHistoryHeader.ResumeLayout(false);
-            flpHistoryHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvInvoices).EndInit();
             ((System.ComponentModel.ISupportInitialize)epInvoice).EndInit();
             ResumeLayout(false);
         }
@@ -1110,8 +854,6 @@ namespace ClinicManagementSystem
         #endregion
 
         private System.Windows.Forms.Panel mainPanel;
-        private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabNewInvoice;
         private System.Windows.Forms.Panel scrollContainer;
         private System.Windows.Forms.TableLayoutPanel tlpTabNewRoot;
         private System.Windows.Forms.Panel pnlInvoiceMetaCard;
@@ -1162,23 +904,6 @@ namespace ClinicManagementSystem
         private System.Windows.Forms.Panel pnlFooterSeparator;
         private System.Windows.Forms.Label lblFinalTotalTitle;
         private System.Windows.Forms.Label lblFinalTotalValue;
-        private System.Windows.Forms.TabPage tabInvoiceHistory;
-        private System.Windows.Forms.Panel pnlHistoryCard;
-        private System.Windows.Forms.TableLayoutPanel tlpHistoryLayout;
-        private System.Windows.Forms.FlowLayoutPanel flpHistoryHeader;
-        private System.Windows.Forms.Label lblHistoryTitle;
-        private System.Windows.Forms.Button btnExportPdf;
-        private System.Windows.Forms.DataGridView dgvInvoices;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceNumber;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colVisitId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPatientName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDueDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colFinalAmount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPatientNationalNumber;
-        private TextBox txtSearchValue;
-        private Button btnExportThisInvoice;
         private ErrorProvider epInvoice;
         private Panel panel1;
         private TextBox txtPatientVisitId;
