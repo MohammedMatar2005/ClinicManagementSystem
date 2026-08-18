@@ -22,12 +22,7 @@ namespace ClinicManagementSystem.Finance
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             mainPanel = new Panel();
-            tabControl = new TabControl();
-            tabNewPayment = new TabPage();
             scrollContainer = new Panel();
             tlpTabNewRoot = new TableLayoutPanel();
             pnlPaymentMetaCard = new Panel();
@@ -82,28 +77,8 @@ namespace ClinicManagementSystem.Finance
             pnlFooterSeparator = new Panel();
             lblInvoiceStatusTitle = new Label();
             lblInvoiceStatusValue = new Label();
-            tabPaymentsHistory = new TabPage();
-            pnlHistoryCard = new Panel();
-            tlpHistoryLayout = new TableLayoutPanel();
-            flpHistoryHeader = new FlowLayoutPanel();
-            lblHistoryTitle = new Label();
-            btnExportPdf = new Button();
-            btnExportThisPayment = new Button();
-            txtSearchValue = new TextBox();
-            dgvPayments = new DataGridView();
-            colPaymentId = new DataGridViewTextBoxColumn();
-            colInvoiceId = new DataGridViewTextBoxColumn();
-            colPatientName = new DataGridViewTextBoxColumn();
-            colDoctorName = new DataGridViewTextBoxColumn();
-            colPaymentAmount = new DataGridViewTextBoxColumn();
-            colPaymentDate = new DataGridViewTextBoxColumn();
-            colPaymentMethod = new DataGridViewTextBoxColumn();
-            colTransactionReference = new DataGridViewTextBoxColumn();
-            colPaymentStatusName = new DataGridViewTextBoxColumn();
             epPayment = new ErrorProvider(components);
             mainPanel.SuspendLayout();
-            tabControl.SuspendLayout();
-            tabNewPayment.SuspendLayout();
             scrollContainer.SuspendLayout();
             tlpTabNewRoot.SuspendLayout();
             pnlPaymentMetaCard.SuspendLayout();
@@ -128,18 +103,13 @@ namespace ClinicManagementSystem.Finance
             pnlPaidSoFarField.SuspendLayout();
             flpActionButtons.SuspendLayout();
             tlpFooterRightTotals.SuspendLayout();
-            tabPaymentsHistory.SuspendLayout();
-            pnlHistoryCard.SuspendLayout();
-            tlpHistoryLayout.SuspendLayout();
-            flpHistoryHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvPayments).BeginInit();
             ((System.ComponentModel.ISupportInitialize)epPayment).BeginInit();
             SuspendLayout();
             // 
             // mainPanel
             // 
             mainPanel.BackColor = Color.FromArgb(248, 250, 252);
-            mainPanel.Controls.Add(tabControl);
+            mainPanel.Controls.Add(scrollContainer);
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.Location = new Point(0, 0);
             mainPanel.Name = "mainPanel";
@@ -147,39 +117,14 @@ namespace ClinicManagementSystem.Finance
             mainPanel.Size = new Size(1084, 749);
             mainPanel.TabIndex = 0;
             // 
-            // tabControl
-            // 
-            tabControl.Controls.Add(tabNewPayment);
-            tabControl.Controls.Add(tabPaymentsHistory);
-            tabControl.Dock = DockStyle.Fill;
-            tabControl.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            tabControl.ItemSize = new Size(180, 42);
-            tabControl.Location = new Point(16, 16);
-            tabControl.Name = "tabControl";
-            tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(1052, 717);
-            tabControl.SizeMode = TabSizeMode.Fixed;
-            tabControl.TabIndex = 0;
-            // 
-            // tabNewPayment
-            // 
-            tabNewPayment.BackColor = Color.FromArgb(248, 250, 252);
-            tabNewPayment.Controls.Add(scrollContainer);
-            tabNewPayment.Font = new Font("Segoe UI", 10F);
-            tabNewPayment.Location = new Point(4, 46);
-            tabNewPayment.Name = "tabNewPayment";
-            tabNewPayment.Size = new Size(1044, 667);
-            tabNewPayment.TabIndex = 0;
-            tabNewPayment.Text = "إضافة دفعة جديدة";
-            // 
             // scrollContainer
             // 
             scrollContainer.AutoScroll = true;
             scrollContainer.Controls.Add(tlpTabNewRoot);
             scrollContainer.Dock = DockStyle.Fill;
-            scrollContainer.Location = new Point(0, 0);
+            scrollContainer.Location = new Point(16, 16);
             scrollContainer.Name = "scrollContainer";
-            scrollContainer.Size = new Size(1044, 667);
+            scrollContainer.Size = new Size(1052, 717);
             scrollContainer.TabIndex = 0;
             // 
             // tlpTabNewRoot
@@ -863,204 +808,6 @@ namespace ClinicManagementSystem.Finance
             lblInvoiceStatusValue.Text = "غير محددة";
             lblInvoiceStatusValue.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // tabPaymentsHistory
-            // 
-            tabPaymentsHistory.BackColor = Color.FromArgb(248, 250, 252);
-            tabPaymentsHistory.Controls.Add(pnlHistoryCard);
-            tabPaymentsHistory.Font = new Font("Segoe UI", 10F);
-            tabPaymentsHistory.Location = new Point(4, 46);
-            tabPaymentsHistory.Name = "tabPaymentsHistory";
-            tabPaymentsHistory.Size = new Size(1044, 667);
-            tabPaymentsHistory.TabIndex = 1;
-            tabPaymentsHistory.Text = "سجل المدفوعات";
-            // 
-            // pnlHistoryCard
-            // 
-            pnlHistoryCard.BackColor = Color.White;
-            pnlHistoryCard.Controls.Add(tlpHistoryLayout);
-            pnlHistoryCard.Dock = DockStyle.Fill;
-            pnlHistoryCard.Location = new Point(0, 0);
-            pnlHistoryCard.Name = "pnlHistoryCard";
-            pnlHistoryCard.Padding = new Padding(16);
-            pnlHistoryCard.Size = new Size(1044, 667);
-            pnlHistoryCard.TabIndex = 0;
-            // 
-            // tlpHistoryLayout
-            // 
-            tlpHistoryLayout.ColumnCount = 1;
-            tlpHistoryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Controls.Add(flpHistoryHeader, 0, 0);
-            tlpHistoryLayout.Controls.Add(dgvPayments, 0, 1);
-            tlpHistoryLayout.Dock = DockStyle.Fill;
-            tlpHistoryLayout.Location = new Point(16, 16);
-            tlpHistoryLayout.Name = "tlpHistoryLayout";
-            tlpHistoryLayout.RowCount = 2;
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            tlpHistoryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tlpHistoryLayout.Size = new Size(1012, 635);
-            tlpHistoryLayout.TabIndex = 0;
-            // 
-            // flpHistoryHeader
-            // 
-            flpHistoryHeader.Controls.Add(lblHistoryTitle);
-            flpHistoryHeader.Controls.Add(btnExportPdf);
-            flpHistoryHeader.Controls.Add(btnExportThisPayment);
-            flpHistoryHeader.Controls.Add(txtSearchValue);
-            flpHistoryHeader.Dock = DockStyle.Fill;
-            flpHistoryHeader.Location = new Point(3, 3);
-            flpHistoryHeader.Name = "flpHistoryHeader";
-            flpHistoryHeader.Size = new Size(1006, 44);
-            flpHistoryHeader.TabIndex = 0;
-            // 
-            // lblHistoryTitle
-            // 
-            lblHistoryTitle.Font = new Font("Segoe UI", 13F, FontStyle.Bold);
-            lblHistoryTitle.ForeColor = Color.FromArgb(30, 41, 59);
-            lblHistoryTitle.Location = new Point(823, 0);
-            lblHistoryTitle.Name = "lblHistoryTitle";
-            lblHistoryTitle.Size = new Size(180, 38);
-            lblHistoryTitle.TabIndex = 0;
-            lblHistoryTitle.Text = "سجل المدفوعات السابقة";
-            lblHistoryTitle.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // btnExportPdf
-            // 
-            btnExportPdf.BackColor = Color.FromArgb(225, 29, 72);
-            btnExportPdf.Cursor = Cursors.Hand;
-            btnExportPdf.FlatAppearance.BorderSize = 0;
-            btnExportPdf.FlatStyle = FlatStyle.Flat;
-            btnExportPdf.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-            btnExportPdf.ForeColor = Color.White;
-            btnExportPdf.Location = new Point(687, 3);
-            btnExportPdf.Name = "btnExportPdf";
-            btnExportPdf.Size = new Size(130, 34);
-            btnExportPdf.TabIndex = 1;
-            btnExportPdf.Text = "تصدير الكل PDF";
-            btnExportPdf.UseVisualStyleBackColor = false;
-            // 
-            // btnExportThisPayment
-            // 
-            btnExportThisPayment.BackColor = Color.FromArgb(14, 116, 144);
-            btnExportThisPayment.Cursor = Cursors.Hand;
-            btnExportThisPayment.FlatAppearance.BorderSize = 0;
-            btnExportThisPayment.FlatStyle = FlatStyle.Flat;
-            btnExportThisPayment.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-            btnExportThisPayment.ForeColor = Color.White;
-            btnExportThisPayment.Location = new Point(541, 3);
-            btnExportThisPayment.Name = "btnExportThisPayment";
-            btnExportThisPayment.Size = new Size(140, 34);
-            btnExportThisPayment.TabIndex = 2;
-            btnExportThisPayment.Text = "طباعة السند الحالي";
-            btnExportThisPayment.UseVisualStyleBackColor = false;
-            // 
-            // txtSearchValue
-            // 
-            txtSearchValue.BorderStyle = BorderStyle.FixedSingle;
-            txtSearchValue.Font = new Font("Segoe UI", 10.5F);
-            txtSearchValue.Location = new Point(308, 6);
-            txtSearchValue.Margin = new Padding(10, 6, 3, 3);
-            txtSearchValue.Name = "txtSearchValue";
-            txtSearchValue.PlaceholderText = "ابحث بالاسم أو رقم الفاتورة...";
-            txtSearchValue.Size = new Size(220, 26);
-            txtSearchValue.TabIndex = 3;
-            // 
-            // dgvPayments
-            // 
-            dgvPayments.AllowUserToAddRows = false;
-            dgvPayments.AllowUserToDeleteRows = false;
-            dgvPayments.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(248, 250, 252);
-            dgvPayments.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dgvPayments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPayments.BackgroundColor = Color.White;
-            dgvPayments.BorderStyle = BorderStyle.None;
-            dgvPayments.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgvPayments.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(241, 245, 249);
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = Color.FromArgb(30, 41, 59);
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(241, 245, 249);
-            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(30, 41, 59);
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-            dgvPayments.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            dgvPayments.ColumnHeadersHeight = 40;
-            dgvPayments.Columns.AddRange(new DataGridViewColumn[] { colPaymentId, colInvoiceId, colPatientName, colDoctorName, colPaymentAmount, colPaymentDate, colPaymentMethod, colTransactionReference, colPaymentStatusName });
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = Color.White;
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 10F);
-            dataGridViewCellStyle3.ForeColor = Color.FromArgb(51, 65, 85);
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(224, 231, 255);
-            dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(30, 41, 59);
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
-            dgvPayments.DefaultCellStyle = dataGridViewCellStyle3;
-            dgvPayments.Dock = DockStyle.Fill;
-            dgvPayments.EnableHeadersVisualStyles = false;
-            dgvPayments.GridColor = Color.FromArgb(226, 232, 240);
-            dgvPayments.Location = new Point(3, 53);
-            dgvPayments.MultiSelect = false;
-            dgvPayments.Name = "dgvPayments";
-            dgvPayments.ReadOnly = true;
-            dgvPayments.RowHeadersVisible = false;
-            dgvPayments.RowTemplate.Height = 35;
-            dgvPayments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPayments.Size = new Size(1006, 579);
-            dgvPayments.TabIndex = 1;
-            // 
-            // colPaymentId
-            // 
-            colPaymentId.HeaderText = "رقم الدفعة";
-            colPaymentId.Name = "colPaymentId";
-            colPaymentId.ReadOnly = true;
-            // 
-            // colInvoiceId
-            // 
-            colInvoiceId.HeaderText = "رقم الفاتورة";
-            colInvoiceId.Name = "colInvoiceId";
-            colInvoiceId.ReadOnly = true;
-            // 
-            // colPatientName
-            // 
-            colPatientName.HeaderText = "اسم المريض";
-            colPatientName.Name = "colPatientName";
-            colPatientName.ReadOnly = true;
-            // 
-            // colDoctorName
-            // 
-            colDoctorName.HeaderText = "اسم الطبيب";
-            colDoctorName.Name = "colDoctorName";
-            colDoctorName.ReadOnly = true;
-            // 
-            // colPaymentAmount
-            // 
-            colPaymentAmount.HeaderText = "المبلغ المدفوع";
-            colPaymentAmount.Name = "colPaymentAmount";
-            colPaymentAmount.ReadOnly = true;
-            // 
-            // colPaymentDate
-            // 
-            colPaymentDate.HeaderText = "تاريخ الدفع";
-            colPaymentDate.Name = "colPaymentDate";
-            colPaymentDate.ReadOnly = true;
-            // 
-            // colPaymentMethod
-            // 
-            colPaymentMethod.HeaderText = "طريقة الدفع";
-            colPaymentMethod.Name = "colPaymentMethod";
-            colPaymentMethod.ReadOnly = true;
-            // 
-            // colTransactionReference
-            // 
-            colTransactionReference.HeaderText = "الرقم المرجعي";
-            colTransactionReference.Name = "colTransactionReference";
-            colTransactionReference.ReadOnly = true;
-            // 
-            // colPaymentStatusName
-            // 
-            colPaymentStatusName.HeaderText = "حالة الدفعة";
-            colPaymentStatusName.Name = "colPaymentStatusName";
-            colPaymentStatusName.ReadOnly = true;
-            // 
             // epPayment
             // 
             epPayment.ContainerControl = this;
@@ -1076,12 +823,10 @@ namespace ClinicManagementSystem.Finance
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "شاشة إدارة المدفوعات المالية";
+            Text = "شاشة إصدار دفعة مالية";
             WindowState = FormWindowState.Maximized;
             Load += frmPayments_Load;
             mainPanel.ResumeLayout(false);
-            tabControl.ResumeLayout(false);
-            tabNewPayment.ResumeLayout(false);
             scrollContainer.ResumeLayout(false);
             tlpTabNewRoot.ResumeLayout(false);
             pnlPaymentMetaCard.ResumeLayout(false);
@@ -1115,12 +860,6 @@ namespace ClinicManagementSystem.Finance
             flpActionButtons.ResumeLayout(false);
             tlpFooterRightTotals.ResumeLayout(false);
             tlpFooterRightTotals.PerformLayout();
-            tabPaymentsHistory.ResumeLayout(false);
-            pnlHistoryCard.ResumeLayout(false);
-            tlpHistoryLayout.ResumeLayout(false);
-            flpHistoryHeader.ResumeLayout(false);
-            flpHistoryHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvPayments).EndInit();
             ((System.ComponentModel.ISupportInitialize)epPayment).EndInit();
             ResumeLayout(false);
         }
@@ -1128,8 +867,6 @@ namespace ClinicManagementSystem.Finance
         #endregion
 
         private Panel mainPanel;
-        private TabControl tabControl;
-        private TabPage tabNewPayment;
         private Panel scrollContainer;
         private TableLayoutPanel tlpTabNewRoot;
         private Panel pnlPaymentMetaCard;
@@ -1184,27 +921,6 @@ namespace ClinicManagementSystem.Finance
         private Panel pnlFooterSeparator;
         private Label lblInvoiceStatusTitle;
         private Label lblInvoiceStatusValue;
-        private TabPage tabPaymentsHistory;
-        private Panel pnlHistoryCard;
-        private TableLayoutPanel tlpHistoryLayout;
-        private FlowLayoutPanel flpHistoryHeader;
-        private Label lblHistoryTitle;
-        private Button btnExportPdf;
-        private Button btnExportThisPayment;
-        private TextBox txtSearchValue;
-        private DataGridView dgvPayments;
-        private DataGridViewTextBoxColumn colPaymentId;
-        private DataGridViewTextBoxColumn colInvoiceNumber;
-        private DataGridViewTextBoxColumn colPatientName;
-        private DataGridViewTextBoxColumn colAmountPaid;
-        private DataGridViewTextBoxColumn colPaymentDate;
-        private DataGridViewTextBoxColumn colPaymentMethod;
-        private DataGridViewTextBoxColumn colInvoiceStatus;
         private ErrorProvider epPayment;
-        private DataGridViewTextBoxColumn colInvoiceId;
-        private DataGridViewTextBoxColumn colDoctorName;
-        private DataGridViewTextBoxColumn colPaymentAmount;
-        private DataGridViewTextBoxColumn colTransactionReference;
-        private DataGridViewTextBoxColumn colPaymentStatusName;
     }
 }
