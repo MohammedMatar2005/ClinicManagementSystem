@@ -1,26 +1,26 @@
-﻿namespace ClinicManagementSystem.Appointments
-{
-    partial class frmChoosePatient
+﻿    namespace ClinicManagementSystem.Appointments
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        partial class frmChoosePatient
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+            /// <summary>
+            /// Required designer variable.
+            /// </summary>
+            private System.ComponentModel.IContainer components = null;
 
-        #region Windows Form Designer generated code
+            /// <summary>
+            /// Clean up any resources being used.
+            /// </summary>
+            /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing && (components != null))
+                {
+                    components.Dispose();
+                }
+                base.Dispose(disposing);
+            }
+
+            #region Windows Form Designer generated code
 
         /// <summary>
         /// Required method for Designer support - do not modify
@@ -252,20 +252,20 @@
             PerformLayout();
         }
 
-        #endregion
+            #endregion
 
-        private System.Windows.Forms.Panel pnlTopHeader;
-        private System.Windows.Forms.Label lblHeaderTitle;
-        private System.Windows.Forms.ComboBox cmbSearchType;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dgvPatients;
-        private System.Windows.Forms.Button btnSelect;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnAddNewPatient;
-        private System.Windows.Forms.ContextMenuStrip cmsOptions;
-        private System.Windows.Forms.ToolStripMenuItem tsmiViewPatientDetails;
-        private System.Windows.Forms.ToolStripMenuItem tsmiAddNewPatient;
-        private System.Windows.Forms.ToolStripMenuItem tsmiUpdatePatientInfo;
-        private System.Windows.Forms.ToolStripMenuItem tsmiDeletePatient;
+            private System.Windows.Forms.Panel pnlTopHeader;
+            private System.Windows.Forms.Label lblHeaderTitle;
+            private System.Windows.Forms.ComboBox cmbSearchType;
+            private System.Windows.Forms.TextBox txtSearch;
+            private System.Windows.Forms.DataGridView dgvPatients;
+            private System.Windows.Forms.Button btnSelect;
+            private System.Windows.Forms.Button btnCancel;
+            private System.Windows.Forms.Button btnAddNewPatient;
+            private System.Windows.Forms.ContextMenuStrip cmsOptions;
+            private System.Windows.Forms.ToolStripMenuItem tsmiViewPatientDetails;
+            private System.Windows.Forms.ToolStripMenuItem tsmiAddNewPatient;
+            private System.Windows.Forms.ToolStripMenuItem tsmiUpdatePatientInfo;
+            private System.Windows.Forms.ToolStripMenuItem tsmiDeletePatient;
+        }
     }
-}
